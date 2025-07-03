@@ -1,8 +1,14 @@
 #include "script_wrappable.h"
 
-namespace svm {
+#include <node.h>
 
-ScriptWrappable::ScriptWrappable() = default;
+namespace cppgc {
+namespace internal {
+AtomicEntryFlag WriteBarrier::write_barrier_enabled_;
+}
+}  // namespace cppgc
+
+namespace svm {
 
 ScriptWrappable::~ScriptWrappable() = default;
 

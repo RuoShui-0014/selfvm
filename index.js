@@ -1,10 +1,4 @@
-const path = require('path');
-const bindings = require('bindings');
+// const addon = require('./build/Release/self-vm.node');
+const svm = require('./cmake-build-debug/self-vm.node');
 
-// 使用 bindings 加载原生模块
-const addon = bindings('my-native-addon');
-
-// 或者直接指定路径
-// const addon = require('./build/Release/self-vm');
-
-module.exports = addon;
+module.exports = svm;

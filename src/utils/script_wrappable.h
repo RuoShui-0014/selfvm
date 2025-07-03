@@ -1,8 +1,6 @@
 #pragma once
 
 #include <node.h>
-#include <v8-isolate.h>
-#include <v8-object.h>
 
 #include <cassert>
 
@@ -11,12 +9,12 @@
 #include "cppgc/visitor.h"
 #include "v8-cppgc.h"
 #include "v8-traced-handle.h"
+#include "v8.h"
 
 namespace svm {
 
 class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
  public:
-  ScriptWrappable();
   virtual ~ScriptWrappable();
 
   static void Wrap(v8::Local<v8::Object> object, ScriptWrappable* wrappable);
@@ -31,6 +29,7 @@ class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
     ScriptWrappable* ptr = static_cast<ScriptWrappable*>(
         object->GetAlignedPointerFromInternalField(
             descriptor.wrappable_instance_index));
+
     return static_cast<T*>(ptr);
   }
 
@@ -42,16 +41,19 @@ class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
     visitor->Trace(wrapper_);
   }
 
+ protected:
+  ScriptWrappable() = default;
+
  private:
   v8::TracedReference<v8::Object> wrapper_;
 };
 
-template <typename T, typename... Args>
-T* MakeCppGcObject(Args&&... args) {
-  return cppgc::MakeGarbageCollected<T>(
-      v8::Isolate::GetCurrent()->GetCppHeap()->GetAllocationHandle(),
-      std::forward<Args>(args)...);
-}
+// template <typename T, typename... Args>
+// T* MakeCppGcObject(Args&&... args) {
+//   return cppgc::MakeGarbageCollected<T>(
+//       v8::Isolate::GetCurrent()->GetCppHeap()->GetAllocationHandle(),
+//       std::forward<Args>(args)...);
+// }
 
 template <typename T, typename... Args>
 T* MakeCppGcObject(v8::Isolate* isolate, Args&&... args) {

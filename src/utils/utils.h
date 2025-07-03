@@ -2,9 +2,6 @@
 
 #include <v8.h>
 
-#include <array>
-#include <iterator>
-
 namespace svm {
 
 inline v8::Local<v8::String> toString(const char* str) {

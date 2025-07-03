@@ -1,12 +1,12 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.1)
 
 project(self-vm)
 
 set(CMAKE_CXX_STANDARD 20)
 
-if(MSVC)
+if (MSVC)
     add_compile_options(/wd4275 /wd4251)
-endif()
+endif ()
 
 include_directories(${CMAKE_JS_INC})
 #include_directories(C:/Users/ruosh/.cmake-js/node-x64/v22.17.0/include/node)
@@ -15,19 +15,31 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_JS_BIN})
 
 add_library(${PROJECT_NAME} SHARED
         src/addon.cpp
-        src/platform_delegate.cpp
-        src/platform_delegate.h
+
         src/utils/script_wrappable.cpp
         src/utils/script_wrappable.h
         src/utils/utils.h
         src/utils/utils.h
-        src/isolate_handle/isolate_handle.cpp
-        src/isolate_handle/isolate_handle.h
-        src/isolate_handle/context_handle.cpp
-        src/isolate_handle/context_handle.h
+
+        src/lib/thread_pool.cpp
+        src/lib/thread_pool.h
+
+        src/isolate/platform_delegate.cpp
+        src/isolate/platform_delegate.h
+        src/isolate/isolate_holder.cpp
+        src/isolate/isolate_holder.h
+        src/isolate/scheduler.cpp
+        src/isolate/scheduler.h
+
+        src/module/isolate_handle.cpp
+        src/module/isolate_handle.h
+        src/module/context_handle.cpp
+        src/module/context_handle.h
+
 )
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
-#target_link_libraries(${PROJECT_NAME} C:/Users/ruosh/.cmake-js/node-x64/v22.17.0/win-x64/node.lib)
+#target_link_libraries(${PROJECT_NAME} E:/src/node-v22.17.0/Release/lib/v8_base_without_compiler.lib)
+#target_link_libraries(${PROJECT_NAME} E:/src/node-v22.17.0/Release/node.lib)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
