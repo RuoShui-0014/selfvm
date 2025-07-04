@@ -60,17 +60,17 @@ void ConstructCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 void ContextAttributeGetCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Object> reciver = info.This();
+  v8::Local<v8::Object> receiver = info.This();
   IsolateHandle* isolate_handle =
-      ScriptWrappable::Unwrap<IsolateHandle>(reciver);
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   ContextHandle* context_handle = isolate_handle->GetContextHandle();
   info.GetReturnValue().Set(context_handle->V8Object(info.GetIsolate()));
 }
 
 void ReleaseOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Object> reciver = info.This();
+  v8::Local<v8::Object> receiver = info.This();
   IsolateHandle* isolate_handle =
-      ScriptWrappable::Unwrap<IsolateHandle>(reciver);
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   isolate_handle->Release();
 }
 

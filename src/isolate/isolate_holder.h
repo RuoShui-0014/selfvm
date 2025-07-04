@@ -5,6 +5,7 @@
 #pragma once
 #include <v8-isolate.h>
 
+#include "per_isolate_data.h"
 #include "scheduler.h"
 
 namespace svm {
@@ -24,6 +25,7 @@ class IsolateHolder {
   v8::Isolate* self_isolate_;
 
   std::shared_ptr<Scheduler> scheduler_;
+  std::unique_ptr<PerIsolateData> per_isolate_data_;
   std::unique_ptr<v8::ArrayBuffer::Allocator> allocator_;
 
   size_t memory_limit = 128;

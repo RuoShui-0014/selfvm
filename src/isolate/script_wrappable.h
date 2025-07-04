@@ -48,4 +48,31 @@ class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
   v8::TracedReference<v8::Object> wrapper_;
 };
 
+
+/**
+ * new object in v8 cppgc pool
+ */
+template <typename T, typename... Args>
+T* MakeCppGcObject_1(Args&&... args) {
+  return cppgc::MakeGarbageCollected<T>(
+      v8::Isolate::GetCurrent()->GetCppHeap()->GetAllocationHandle(),
+      std::forward<Args>(args)...);
+}
+template <typename T, typename... Args>
+T* MakeCppGcObject_2(v8::Isolate* isolate, Args&&... args) {
+  return cppgc::MakeGarbageCollected<T>(
+      isolate->GetCppHeap()->GetAllocationHandle(),
+      std::forward<Args>(args)...);
+}
+
+enum class GC { kCurrent, kSpecified };
+template <GC e, typename T, typename... Args>
+T* MakeCppGcObject(Args&&... args) {
+  if constexpr (e == GC::kCurrent) {
+    return MakeCppGcObject_1<T>(std::forward<Args>(args)...);
+  } else {
+    return MakeCppGcObject_2<T>(std::forward<Args>(args)...);
+  }
+}
+
 }  // namespace svm

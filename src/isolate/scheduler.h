@@ -12,6 +12,22 @@
 
 namespace svm {
 
+class ScriptTask : public v8::Task {
+ public:
+  ScriptTask(v8::Isolate* isolate,
+             v8::Local<v8::Context> context,
+             std::string& script);
+  ~ScriptTask() override;
+  void Run() override;
+  v8::Local<v8::Value> GetResult() { return result.Get(isolate_); }
+
+ private:
+  v8::Isolate* isolate_;
+  v8::Global<v8::Context> context_;
+  std::string script_;
+  v8::Global<v8::Value> result;
+};
+
 class Scheduler : public node::IsolatePlatformDelegate,
                   public v8::TaskRunner,
                   public std::enable_shared_from_this<Scheduler> {

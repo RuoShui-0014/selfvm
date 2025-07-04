@@ -13,12 +13,15 @@ class IsolateHandle;
 
 class ContextHandle : public ScriptWrappable {
  public:
-  static v8::Local<v8::FunctionTemplate> Interface(v8::Isolate* isolate);
   static ContextHandle* Create(IsolateHandle* isolate_handle);
 
   explicit ContextHandle(IsolateHandle* isolate_handle,
                          v8::Local<v8::Context> context);
   ~ContextHandle() override;
+
+  void Eval(std::string, v8::Local<v8::Value>* result) const;
+
+  void Release();
 
   void Trace(cppgc::Visitor* visitor) const override;
 

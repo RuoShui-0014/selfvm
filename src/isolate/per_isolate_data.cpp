@@ -1,8 +1,5 @@
 #include "per_isolate_data.h"
 
-#include <iostream>
-#include <ostream>
-
 #include "wrapper_type_info.h"
 
 namespace svm {
@@ -15,9 +12,7 @@ PerIsolateData::PerIsolateData(v8::Isolate* isolate) : isolate_(isolate) {
   isolate->SetData(IsolateData::kPerIsolateData, this);
 }
 
-PerIsolateData::~PerIsolateData() {
-  std::cout << "PerIsolateData::~PerIsolateData" << std::endl;
-}
+PerIsolateData::~PerIsolateData() = default;
 
 v8::Local<v8::Template> PerIsolateData::FindV8Template(const void* key) {
   auto result = template_map_.find(key);

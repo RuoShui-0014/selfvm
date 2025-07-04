@@ -6,14 +6,26 @@ function sleep(time) {
     }
 }
 
-for (let i = 0; i < 10000; i++) {
-    var isolate = new svm.Isolate();
-    console.log(isolate[Symbol.toStringTag]);
-    console.log(isolate.context);
-    isolate.release();
-}
+const isolate = new svm.Isolate();
 
-sleep(5000)
+// isolate有一个默认的context
+const default_ctx = isolate.context
+
+// context可通过eval进行代码的同步运行
+const result = default_ctx.eval("this.a = {name: 'Jack', age: 18}")
+console.log(result);
+
+let start = Date.now()
+for (let i = 0; i < 10000; i++) {
+    const resu = default_ctx.eval("this.a = {name: 'Jack', age: 18}")
+    console.log(resu, `第${i}次`)
+}
+console.log(Date.now() - start, "ms")
+
+sleep(10000)
+
+// 释放isolate隔离实例的相关资源
+isolate.release();
 svm.gc();
 
-sleep(5000)
+sleep(10000)

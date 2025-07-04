@@ -21,6 +21,8 @@ add_library(${PROJECT_NAME} SHARED
 
         src/lib/thread_pool.cpp
         src/lib/thread_pool.h
+#        src/lib/logger.cpp
+#        src/lib/logger.h
 
         src/isolate/platform_delegate.cpp
         src/isolate/platform_delegate.h
@@ -39,6 +41,8 @@ add_library(${PROJECT_NAME} SHARED
         src/module/isolate_handle.h
         src/module/context_handle.cpp
         src/module/context_handle.h
+        src/isolate/external_data.cpp
+        src/isolate/external_data.h
 )
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})

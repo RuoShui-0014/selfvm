@@ -2,11 +2,9 @@
 
 #include <node.h>
 
-namespace cppgc {
-namespace internal {
+namespace cppgc::internal {
 AtomicEntryFlag WriteBarrier::write_barrier_enabled_;
 }
-}  // namespace cppgc
 
 namespace svm {
 

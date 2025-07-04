@@ -21,7 +21,6 @@ IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
       2, std::min(sizeof(void*) >= 8 ? 4.0 : 3.0, memory_limit_in_mb / 128.0) +
              10));
   size_t old_generation_size_in_mb = memory_limit_in_mb;
-  // TODO: Give `ConfigureDefaultsFromHeapSize` a try
   rc.set_max_young_generation_size_in_bytes(young_space_in_kb * 1024);
   rc.set_max_old_generation_size_in_bytes(old_generation_size_in_mb * 1024 *
                                           1024);
@@ -36,6 +35,8 @@ IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
     PlatformDelegate::RegisterIsolate(self_isolate_, scheduler_.get());
   }
   v8::Isolate::Initialize(self_isolate_, create_params);
+
+  per_isolate_data_ = std::move(std::make_unique<PerIsolateData>(self_isolate_));
 }
 
 IsolateHolder::~IsolateHolder() {

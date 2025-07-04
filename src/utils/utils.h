@@ -118,11 +118,9 @@ void InstallOperations(v8::Isolate* isolate,
     act->SetClassName(toString(opera.name));
 
     if (opera.dep == Dependence ::kPrototype) {
-      prototype->Set(isolate, opera.name, act,
-                     opera.propertyAttribute);
+      prototype->Set(isolate, opera.name, act, opera.propertyAttribute);
     } else if (opera.dep == Dependence ::kInstance) {
-      instance->Set(isolate, opera.name, act,
-                    opera.propertyAttribute);
+      instance->Set(isolate, opera.name, act, opera.propertyAttribute);
     } else if (opera.dep == Dependence ::kConstruct) {
       interface_template->Set(isolate, opera.name, act,
                               opera.propertyAttribute);
@@ -130,30 +128,27 @@ void InstallOperations(v8::Isolate* isolate,
   }
 }
 
-/**
- * new object in v8 cppgc pool
- */
-template <typename T, typename... Args>
-T* MakeCppGcObject_1(Args&&... args) {
-  return cppgc::MakeGarbageCollected<T>(
-      v8::Isolate::GetCurrent()->GetCppHeap()->GetAllocationHandle(),
-      std::forward<Args>(args)...);
-}
-template <typename T, typename... Args>
-T* MakeCppGcObject_2(v8::Isolate* isolate, Args&&... args) {
-  return cppgc::MakeGarbageCollected<T>(
-      isolate->GetCppHeap()->GetAllocationHandle(),
-      std::forward<Args>(args)...);
-}
+class V8Scope {
+ public:
+  V8Scope(v8::Isolate* isolate, v8::Local<v8::Context> context)
+      : handle_scope_(isolate),
+        context_scope_(context),
+        isolate_(isolate),
+        context_(context) {}
+  V8Scope(v8::Isolate* isolate, const v8::Global<v8::Context>* context)
+      : handle_scope_(isolate),
+        context_scope_(context->Get(isolate)),
+        isolate_(isolate),
+        context_(context->Get(isolate)) {}
 
-enum class GC { kCurrent, kSpecified };
-template <GC e, typename T, typename... Args>
-T* MakeCppGcObject(Args&&... args) {
-  if constexpr (e == GC::kCurrent) {
-    return MakeCppGcObject_1<T>(std::forward<Args>(args)...);
-  } else {
-    return MakeCppGcObject_2<T>(std::forward<Args>(args)...);
-  }
-}
+  v8::Isolate* GetIsolate() const { return isolate_; }
+  v8::Local<v8::Context> GetContext() const { return context_; }
+
+ private:
+  v8::HandleScope handle_scope_;
+  v8::Context::Scope context_scope_;
+  v8::Isolate* isolate_;
+  v8::Local<v8::Context> context_;
+};
 
 }  // namespace svm

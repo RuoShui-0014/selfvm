@@ -4,7 +4,6 @@
 
 #include "isolate/per_isolate_data.h"
 #include "isolate/platform_delegate.h"
-#include "isolate/script_wrappable.h"
 #include "module/isolate_handle.h"
 #include "utils/utils.h"
 
