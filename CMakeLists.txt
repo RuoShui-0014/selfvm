@@ -16,8 +16,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_JS_BIN})
 add_library(${PROJECT_NAME} SHARED
         src/addon.cpp
 
-        src/utils/script_wrappable.cpp
-        src/utils/script_wrappable.h
         src/utils/utils.h
         src/utils/utils.h
 
@@ -30,12 +28,17 @@ add_library(${PROJECT_NAME} SHARED
         src/isolate/isolate_holder.h
         src/isolate/scheduler.cpp
         src/isolate/scheduler.h
+        src/isolate/script_wrappable.cpp
+        src/isolate/script_wrappable.h
+        src/isolate/per_isolate_data.cpp
+        src/isolate/per_isolate_data.h
+        src/isolate/wrapper_type_info.cpp
+        src/isolate/wrapper_type_info.h
 
         src/module/isolate_handle.cpp
         src/module/isolate_handle.h
         src/module/context_handle.cpp
         src/module/context_handle.h
-
 )
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
@@ -43,3 +46,13 @@ target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 #target_link_libraries(${PROJECT_NAME} E:/src/node-v22.17.0/Release/node.lib)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
+
+set(TARGET_COPY_DIR ${PROJECT_SOURCE_DIR}/out)  # 修改为你想要复制到的目录
+
+# 添加自定义命令在构建后复制文件
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_FILE:${PROJECT_NAME}>
+        ${TARGET_COPY_DIR}
+        COMMENT "Copying ${PROJECT_NAME} to ${TARGET_COPY_DIR}"
+)

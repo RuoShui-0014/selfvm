@@ -1,13 +1,19 @@
 const svm = require("../index.js")
 
-this.a = new svm.test();
-console.log('1 + 2 =', this.a);
-
-var a = new svm.test();
-
-for (let i = 0; i < 999; i++) {
-    var isolate = new svm.Isolate();
-    // console.log(isolate[Symbol.toStringTag]);
-    console.log(isolate.context);
-    svm.gc();
+function sleep(time) {
+    let start = Date.now()
+    while (Date.now() - start <= time) {
+    }
 }
+
+for (let i = 0; i < 10000; i++) {
+    var isolate = new svm.Isolate();
+    console.log(isolate[Symbol.toStringTag]);
+    console.log(isolate.context);
+    isolate.release();
+}
+
+sleep(5000)
+svm.gc();
+
+sleep(5000)

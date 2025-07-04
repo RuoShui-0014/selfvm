@@ -11,8 +11,8 @@ std::mutex isolate_allocator_mutex{};
 
 IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
                              size_t memory_limit_in_mb)
-    : parent_isolate_(parent_isolate) {
-  scheduler_ = std::make_shared<Scheduler>();
+    : parent_isolate_{parent_isolate},
+      scheduler_{std::make_shared<Scheduler>()} {
   // base::ThreadPool::Get()->PostTask(&Scheduler::Entry, scheduler_.get());
 
   memory_limit = memory_limit_in_mb * 1024 * 1024;
@@ -31,7 +31,7 @@ IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = allocator_.get();
   {
-    std::lock_guard allocator_lock{isolate_allocator_mutex};
+    std::lock_guard lock{isolate_allocator_mutex};
     self_isolate_ = v8::Isolate::Allocate();
     PlatformDelegate::RegisterIsolate(self_isolate_, scheduler_.get());
   }
@@ -40,7 +40,7 @@ IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
 
 IsolateHolder::~IsolateHolder() {
   {
-    std::lock_guard allocator_lock{isolate_allocator_mutex};
+    std::lock_guard lock{isolate_allocator_mutex};
     self_isolate_->Dispose();
 
     // Unregister from Platform

@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "../utils/script_wrappable.h"
+#include "../isolate/script_wrappable.h"
+#include "../isolate/wrapper_type_info.h"
 
 namespace svm {
 
@@ -25,6 +26,23 @@ class ContextHandle : public ScriptWrappable {
   v8::Global<v8::Context> context_;
 
   cppgc::Member<IsolateHandle> isolate_handle_;
+};
+
+
+
+class V8ContextHandle {
+public:
+  static constexpr const WrapperTypeInfo* GetWrapperTypeInfo() {
+    return &wrapper_type_info_;
+  }
+
+  static void InstallInterfaceTemplate(
+      v8::Isolate* isolate,
+      v8::Local<v8::Template> interface_template);
+
+private:
+  friend V8ContextHandle;
+  static const WrapperTypeInfo wrapper_type_info_;
 };
 
 }  // namespace svm

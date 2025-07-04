@@ -45,27 +45,32 @@ struct OperationItem {
   v8::SideEffectType sideEffectType = v8::SideEffectType::kHasNoSideEffect;
 };
 
-inline v8::Local<v8::FunctionTemplate> InstallConstructor(
-    v8::Isolate* isolate,
-    const ConstructItem& constructor) {
-  v8::Local<v8::FunctionTemplate> ctor = v8::FunctionTemplate::New(
-      isolate, constructor.callback, v8::Local<v8::Value>(),
-      v8::Local<v8::Signature>(), constructor.length,
-      v8::ConstructorBehavior::kAllow);
-  ctor->SetClassName(toString(isolate, constructor.name));
-  ctor->InstanceTemplate()->SetInternalFieldCount(2);
-  ctor->PrototypeTemplate()->Set(v8::Symbol::GetToStringTag(isolate),
-                                 toString(isolate, constructor.name));
-  return ctor;
+inline void InstallConstructor(v8::Isolate* isolate,
+                               v8::Local<v8::Template> interface_template,
+                               const ConstructItem& constructor) {
+  v8::Local<v8::FunctionTemplate> constructor_template =
+      interface_template.As<v8::FunctionTemplate>();
+
+  constructor_template->SetLength(constructor.length);
+  constructor_template->SetClassName(toString(isolate, constructor.name));
+  constructor_template->SetCallHandler(constructor.callback);
+
+  constructor_template->InstanceTemplate()->SetInternalFieldCount(2);
+  constructor_template->PrototypeTemplate()->Set(
+      v8::Symbol::GetToStringTag(isolate), toString(isolate, constructor.name));
 }
 
 template <size_t N>
 void InstallAttributes(v8::Isolate* isolate,
-                       v8::Local<v8::FunctionTemplate> interface,
+                       v8::Local<v8::Template> interface_template,
                        const AttributeItem (&attributes)[N],
-                       v8::Local<v8::Signature>& signature) {
-  v8::Local<v8::ObjectTemplate> prototype = interface->PrototypeTemplate();
-  v8::Local<v8::ObjectTemplate> instance = interface->InstanceTemplate();
+                       v8::Local<v8::Signature> signature) {
+  v8::Local<v8::FunctionTemplate> constructor_template =
+      interface_template.As<v8::FunctionTemplate>();
+  v8::Local<v8::ObjectTemplate> prototype =
+      constructor_template->PrototypeTemplate();
+  v8::Local<v8::ObjectTemplate> instance =
+      constructor_template->InstanceTemplate();
 
   for (const auto& attr : attributes) {
     v8::Local<v8::FunctionTemplate> get, set;
@@ -81,26 +86,30 @@ void InstallAttributes(v8::Isolate* isolate,
           v8::ConstructorBehavior::kThrow, attr.sideEffectType);
       set->SetClassName(toString(std::string{"set "} + std::string{attr.name}));
     }
-    if (attr.dep == Dependence ::kConstruct) {
-      interface->SetAccessorProperty(toString(attr.name), get, set,
-                                     attr.propertyAttribute);
-    } else if (attr.dep == Dependence ::kPrototype) {
+    if (attr.dep == Dependence ::kPrototype) {
       prototype->SetAccessorProperty(toString(attr.name), get, set,
                                      attr.propertyAttribute);
     } else if (attr.dep == Dependence ::kInstance) {
       instance->SetAccessorProperty(toString(attr.name), get, set,
                                     attr.propertyAttribute);
+    } else if (attr.dep == Dependence ::kConstruct) {
+      constructor_template->SetAccessorProperty(toString(attr.name), get, set,
+                                                attr.propertyAttribute);
     }
   }
 }
 
 template <size_t N>
 void InstallOperations(v8::Isolate* isolate,
-                       v8::Local<v8::FunctionTemplate> interface,
+                       v8::Local<v8::Template> interface_template,
                        const OperationItem (&operations)[N],
-                       v8::Local<v8::Signature>& signature) {
-  v8::Local<v8::ObjectTemplate> prototype = interface->PrototypeTemplate();
-  v8::Local<v8::ObjectTemplate> instance = interface->InstanceTemplate();
+                       v8::Local<v8::Signature> signature) {
+  v8::Local<v8::FunctionTemplate> constructor_template =
+      interface_template.As<v8::FunctionTemplate>();
+  v8::Local<v8::ObjectTemplate> prototype =
+      constructor_template->PrototypeTemplate();
+  v8::Local<v8::ObjectTemplate> instance =
+      constructor_template->InstanceTemplate();
 
   for (const auto& opera : operations) {
     v8::Local<v8::FunctionTemplate> act = v8::FunctionTemplate::New(
@@ -109,15 +118,41 @@ void InstallOperations(v8::Isolate* isolate,
     act->SetClassName(toString(opera.name));
 
     if (opera.dep == Dependence ::kPrototype) {
-      prototype->Set(isolate, toString(opera.name), act,
+      prototype->Set(isolate, opera.name, act,
                      opera.propertyAttribute);
     } else if (opera.dep == Dependence ::kInstance) {
-      instance->Set(isolate, toString(opera.name), act,
+      instance->Set(isolate, opera.name, act,
                     opera.propertyAttribute);
     } else if (opera.dep == Dependence ::kConstruct) {
-      interface->Set(isolate, toString(opera.name), act,
-                     opera.propertyAttribute);
+      interface_template->Set(isolate, opera.name, act,
+                              opera.propertyAttribute);
     }
+  }
+}
+
+/**
+ * new object in v8 cppgc pool
+ */
+template <typename T, typename... Args>
+T* MakeCppGcObject_1(Args&&... args) {
+  return cppgc::MakeGarbageCollected<T>(
+      v8::Isolate::GetCurrent()->GetCppHeap()->GetAllocationHandle(),
+      std::forward<Args>(args)...);
+}
+template <typename T, typename... Args>
+T* MakeCppGcObject_2(v8::Isolate* isolate, Args&&... args) {
+  return cppgc::MakeGarbageCollected<T>(
+      isolate->GetCppHeap()->GetAllocationHandle(),
+      std::forward<Args>(args)...);
+}
+
+enum class GC { kCurrent, kSpecified };
+template <GC e, typename T, typename... Args>
+T* MakeCppGcObject(Args&&... args) {
+  if constexpr (e == GC::kCurrent) {
+    return MakeCppGcObject_1<T>(std::forward<Args>(args)...);
+  } else {
+    return MakeCppGcObject_2<T>(std::forward<Args>(args)...);
   }
 }
 
