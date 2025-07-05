@@ -12,11 +12,13 @@ namespace svm {
 
 class IsolateHolder {
  public:
-  explicit IsolateHolder(v8::Isolate* parent_isolate, size_t memory_limit = 128);
+  explicit IsolateHolder(v8::Isolate* parent_isolate,
+                         size_t memory_limit = 128);
   ~IsolateHolder();
 
   v8::Isolate* GetIsolate() const { return self_isolate_; }
   v8::Isolate* GetParentIsolate() const { return parent_isolate_; }
+  Scheduler* GetScheduler() const { return scheduler_.get(); }
 
   v8::Local<v8::Context> NewContext();
 

@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 if (MSVC)
     add_compile_options(/wd4275 /wd4251)
+    add_compile_definitions(NOMINMAX)
 endif ()
 
 include_directories(${CMAKE_JS_INC})
@@ -36,13 +37,17 @@ add_library(${PROJECT_NAME} SHARED
         src/isolate/per_isolate_data.h
         src/isolate/wrapper_type_info.cpp
         src/isolate/wrapper_type_info.h
+        src/isolate/external_data.cpp
+        src/isolate/external_data.h
+        src/isolate/task.cpp
+        src/isolate/task.h
 
+        src/module/async_manager.cpp
+        src/module/async_manager.h
         src/module/isolate_handle.cpp
         src/module/isolate_handle.h
         src/module/context_handle.cpp
         src/module/context_handle.h
-        src/isolate/external_data.cpp
-        src/isolate/external_data.h
 )
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})

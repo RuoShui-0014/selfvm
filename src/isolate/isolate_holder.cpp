@@ -13,7 +13,7 @@ IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
                              size_t memory_limit_in_mb)
     : parent_isolate_{parent_isolate},
       scheduler_{std::make_shared<Scheduler>()} {
-  // base::ThreadPool::Get()->PostTask(&Scheduler::Entry, scheduler_.get());
+  base::ThreadPool::Get()->PostTask(&Scheduler::Entry, scheduler_.get());
 
   memory_limit = memory_limit_in_mb * 1024 * 1024;
   v8::ResourceConstraints rc;
@@ -36,15 +36,15 @@ IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
   }
   v8::Isolate::Initialize(self_isolate_, create_params);
 
-  per_isolate_data_ = std::move(std::make_unique<PerIsolateData>(self_isolate_));
+  per_isolate_data_ =
+      std::move(std::make_unique<PerIsolateData>(self_isolate_));
 }
 
 IsolateHolder::~IsolateHolder() {
+  per_isolate_data_.reset();
   {
     std::lock_guard lock{isolate_allocator_mutex};
     self_isolate_->Dispose();
-
-    // Unregister from Platform
     PlatformDelegate::UnregisterIsolate(self_isolate_);
   }
 }

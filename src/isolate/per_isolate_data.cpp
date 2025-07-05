@@ -12,7 +12,11 @@ PerIsolateData::PerIsolateData(v8::Isolate* isolate) : isolate_(isolate) {
   isolate->SetData(IsolateData::kPerIsolateData, this);
 }
 
-PerIsolateData::~PerIsolateData() = default;
+PerIsolateData::~PerIsolateData() {
+  if (isolate_) {
+    isolate_->SetData(IsolateData::kPerIsolateData, nullptr);
+  }
+}
 
 v8::Local<v8::Template> PerIsolateData::FindV8Template(const void* key) {
   auto result = template_map_.find(key);

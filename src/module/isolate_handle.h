@@ -7,6 +7,7 @@
 #include "../isolate/isolate_holder.h"
 #include "../isolate/script_wrappable.h"
 #include "../isolate/wrapper_type_info.h"
+#include "async_manager.h"
 
 namespace svm {
 
@@ -24,6 +25,7 @@ class IsolateHandle : public ScriptWrappable {
   v8::Isolate* GetParentIsolate() const {
     return isolate_holder_->GetParentIsolate();
   }
+  AsyncManager* GetAsyncManager() const { return async_manager_.get(); }
   ContextHandle* GetContextHandle();
 
   void Release();
@@ -31,6 +33,8 @@ class IsolateHandle : public ScriptWrappable {
   void Trace(cppgc::Visitor* visitor) const override;
 
  private:
+  std::unique_ptr<AsyncManager> async_manager_{
+      std::make_unique<AsyncManager>()};
   std::unique_ptr<IsolateHolder> isolate_holder_;
 
   cppgc::Member<ContextHandle> default_context_;

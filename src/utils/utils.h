@@ -128,15 +128,17 @@ void InstallOperations(v8::Isolate* isolate,
   }
 }
 
-class V8Scope {
+class V8CtxScope {
  public:
-  V8Scope(v8::Isolate* isolate, v8::Local<v8::Context> context)
-      : handle_scope_(isolate),
+  V8CtxScope(v8::Isolate* isolate, v8::Local<v8::Context> context)
+      : isolate_scope_(isolate),
+        handle_scope_(isolate),
         context_scope_(context),
         isolate_(isolate),
         context_(context) {}
-  V8Scope(v8::Isolate* isolate, const v8::Global<v8::Context>* context)
-      : handle_scope_(isolate),
+  V8CtxScope(v8::Isolate* isolate, const v8::Global<v8::Context>* context)
+      : isolate_scope_(isolate),
+        handle_scope_(isolate),
         context_scope_(context->Get(isolate)),
         isolate_(isolate),
         context_(context->Get(isolate)) {}
@@ -145,6 +147,7 @@ class V8Scope {
   v8::Local<v8::Context> GetContext() const { return context_; }
 
  private:
+  v8::Isolate::Scope isolate_scope_;
   v8::HandleScope handle_scope_;
   v8::Context::Scope context_scope_;
   v8::Isolate* isolate_;

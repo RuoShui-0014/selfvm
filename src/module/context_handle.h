@@ -19,8 +19,8 @@ class ContextHandle : public ScriptWrappable {
                          v8::Local<v8::Context> context);
   ~ContextHandle() override;
 
-  void Eval(std::string, v8::Local<v8::Value>* result) const;
-
+  void EvalSync(std::string script, v8::Local<v8::Value>* result) const;
+  void EvalAsync(std::string script, v8::Local<v8::Promise::Resolver> result) const;
   void Release();
 
   void Trace(cppgc::Visitor* visitor) const override;

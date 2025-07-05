@@ -2,9 +2,10 @@
 
 #include <iostream>
 
-#include "../isolate/external_data.h"
 #include "../isolate/per_isolate_data.h"
+#include "../isolate/task.h"
 #include "../utils/utils.h"
+#include "async_manager.h"
 #include "isolate_handle.h"
 
 namespace svm {
@@ -39,28 +40,48 @@ ContextHandle::~ContextHandle() {
   std::cout << "~ContextHandle()" << std::endl;
 }
 
-void ContextHandle::Eval(std::string script,
-                         v8::Local<v8::Value>* result) const {
-  v8::Isolate* self_isolate = isolate_handle_->GetIsolate();
-  v8::Isolate* parent_isolate = isolate_handle_->GetParentIsolate();
+// 同步任务
+void ContextHandle::EvalSync(std::string script,
+                             v8::Local<v8::Value>* result) const {
+  v8::Isolate* isolate = isolate_handle_->GetIsolate();
+  v8::Locker locker(isolate);
+  v8::HandleScope scope(isolate);
 
-  v8::Locker self_locker(self_isolate);
-  V8Scope self_scope(self_isolate, &context_);
-
-  ScriptTask task(self_isolate, self_scope.GetContext(), script);
-  task.Run();
-  ExternalData::Data source_data = {self_isolate, self_scope.GetContext(),
-                                    task.GetResult()};
+  ScriptTask::CallInfo call_info{isolate, context_.Get(isolate),
+                                 std::move(script)};
 
   {
-    v8::Locker parent_locker(parent_isolate);
-    V8Scope parent_scope(parent_isolate, parent_isolate->GetCurrentContext());
+    v8::Isolate* result_isolate = isolate_handle_->GetParentIsolate();
+    v8::Locker result_locker(isolate);
+    v8::HandleScope result_scope(isolate);
+    ScriptTask::ResultInfo result_info{
+        result_isolate, result_isolate->GetCurrentContext(), result};
+    ScriptTask task(call_info, result_info);
+    task.Run();
+  }
+}
 
-    ExternalData::Data target_data = {parent_isolate,
-                                      parent_scope.GetContext()};
-    if (ExternalData::Copy(target_data, source_data)) {
-      *result = target_data.value;
-    }
+void ContextHandle::EvalAsync(std::string script,
+                              v8::Local<v8::Promise::Resolver> resolver) const {
+  v8::Isolate* isolate = isolate_handle_->GetIsolate();
+  v8::Locker locker(isolate);
+  v8::HandleScope scope(isolate);
+
+  ScriptTaskAsync::CallInfo call_info{
+      isolate, {isolate, context_.Get(isolate)}, std::move(script)};
+
+  {
+    v8::Isolate* result_isolate = isolate_handle_->GetParentIsolate();
+    v8::Locker result_locker(isolate);
+    AsyncManager* async_manager = isolate_handle_->GetAsyncManager();
+    ScriptTaskAsync::ResultInfo result_info{
+        async_manager,
+        result_isolate,
+        {isolate, result_isolate->GetCurrentContext()},
+        {isolate, resolver}};
+    ScriptTaskAsync task(call_info, result_info);
+    task.Run();
+    async_manager->Send();
   }
 }
 
@@ -75,19 +96,39 @@ void ContextHandle::Trace(cppgc::Visitor* visitor) const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+void EvalSyncOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1 || !info[0]->IsString()) {
     return;
   }
 
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::HandleScope scope(isolate);
   v8::Local<v8::Object> receiver = info.This();
   ContextHandle* context_handle =
       ScriptWrappable::Unwrap<ContextHandle>(receiver);
-  v8::Local<v8::Value> result = v8::Undefined(info.GetIsolate());
-  context_handle->Eval(*v8::String::Utf8Value(info.GetIsolate(), info[0]),
-                       &result);
+  v8::Local<v8::Value> result = v8::Undefined(isolate);
+  context_handle->EvalSync(*v8::String::Utf8Value(isolate, info[0]), &result);
 
   info.GetReturnValue().Set(result);
+}
+
+void EvalAsyncOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1 || !info[0]->IsString()) {
+    return;
+  }
+
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::HandleScope scope(isolate);
+  v8::Local<v8::Object> receiver = info.This();
+  ContextHandle* context_handle =
+      ScriptWrappable::Unwrap<ContextHandle>(receiver);
+  v8::Local<v8::Promise::Resolver> resolver =
+      v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
+  context_handle->EvalAsync(*v8::String::Utf8Value(isolate, info[0]), resolver);
+
+  info.GetReturnValue().Set(resolver->GetPromise());
 }
 
 void V8ContextHandle::InstallInterfaceTemplate(
@@ -99,8 +140,10 @@ void V8ContextHandle::InstallInterfaceTemplate(
   //      v8::PropertyAttribute::ReadOnly, Dependence::kPrototype},
   // };
   OperationItem operas[]{
-      {"eval", 2, EvalOperationCallback, v8::PropertyAttribute::DontDelete,
-       Dependence::kPrototype},
+      {"evalSync", 2, EvalSyncOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"evalAsync", 2, EvalAsyncOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
 
   InstallConstructor(isolate, interface_template, constructor);

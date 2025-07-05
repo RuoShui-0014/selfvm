@@ -10,13 +10,19 @@ namespace svm {
 
 class ExternalData {
  public:
-  struct Data {
+  struct SourceData {
     v8::Isolate* isolate;
     v8::Local<v8::Context> context;
-    v8::Local<v8::Value> value;
+    v8::Local<v8::Value> result;
+  };
+  struct TargetData {
+    v8::Isolate* isolate;
+    v8::Local<v8::Context> context;
+    v8::Local<v8::Value>* result;
   };
 
-  static bool Copy(Data& target, Data& source);
+  static bool CopySync(SourceData& source, TargetData& target);
+  static std::pair<uint8_t*, size_t> CopyAsync(SourceData& source);
 };
 
 }  // namespace svm

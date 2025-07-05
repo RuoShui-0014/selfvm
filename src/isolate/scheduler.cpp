@@ -4,45 +4,10 @@
 
 namespace svm {
 
-ScriptTask::ScriptTask(v8::Isolate* isolate,
-                       v8::Local<v8::Context> context,
-                       std::string& script)
-    : isolate_(isolate),
-      context_(isolate, context),
-      script_(std::move(script)) {}
-ScriptTask::~ScriptTask() {
-  context_.Reset();
-}
-void ScriptTask::Run() {
-
-  v8::Isolate::Scope isolate_scope(isolate_);
-  v8::HandleScope handle_scope(isolate_);
-  v8::Local<v8::Context> context = context_.Get(isolate_);
-  v8::Context::Scope scope(context);
-
-  v8::TryCatch try_catch(isolate_);
-  v8::Local<v8::Script> script;
-  v8::Local<v8::String> code = toString(script_);
-  v8::ScriptOrigin scriptOrigin = v8::ScriptOrigin(toString("vm_01"));
-  if (v8::Script::Compile(context_.Get(isolate_), code, &scriptOrigin)
-          .ToLocal(&script)) {
-    v8::MaybeLocal<v8::Value> maybe_result = script->Run(context);
-    if (!maybe_result.IsEmpty()) {
-      result.Reset(isolate_, maybe_result.ToLocalChecked());
-      return;
-    }
-  }
-
-  if (try_catch.HasCaught()) {
-    try_catch.ReThrow();
-  }
-  result.Reset(isolate_, Undefined(isolate_));
-}
-
-Scheduler::Scheduler() {
+Scheduler::Scheduler(v8::Isolate* isolate) : isolate_(isolate) {
   // thread_ = std::thread(&Scheduler::Entry, this);
 }
-Scheduler::~Scheduler() {}
+Scheduler::~Scheduler() = default;
 
 void Scheduler::PostTask(std::unique_ptr<v8::Task> task) {
   {
@@ -74,6 +39,7 @@ auto ExchangeDefault(Type& container) {
 }
 void Scheduler::RunTask() {
   while (true) {
+    // v8::Locker v8_locker(isolate_);
     TaskQueue tasks;
     TaskQueue handle_tasks;
     TaskQueue interrupts;
@@ -113,8 +79,9 @@ void Scheduler::RunTask() {
   while (true) {
     {
       std::unique_lock lock(exec_mutex_);
-      cv_.wait_for(lock, std::chrono::milliseconds(10),
-                   [&] { return !tasks_.empty(); });
+      // cv_.wait_for(lock, std::chrono::milliseconds(10),
+      //              [&] { return !tasks_.empty(); });
+      cv_.wait(lock, [&] { return !tasks_.empty(); });
     }
     RunTask();
   }
