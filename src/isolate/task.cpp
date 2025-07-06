@@ -1,8 +1,8 @@
 #include "task.h"
 
-#include "../module/async_manager.h"
 #include "../utils/utils.h"
 #include "external_data.h"
+#include "scheduler.h"
 
 namespace svm {
 
@@ -83,7 +83,7 @@ void ScriptTaskAsync::Run() {
       ExternalData::SourceData source_data = {isolate, context,
                                               maybe_result.ToLocalChecked()};
       std::pair<uint8_t*, size_t> buff = ExternalData::CopyAsync(source_data);
-      result_info_.async_manager->PostTask(
+      result_info_.scheduler->PostTask(
           std::make_unique<DeserializeTaskAsync>(result_info_, buff));
       return;
     }

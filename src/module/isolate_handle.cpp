@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "../isolate/task.h"
 #include "../utils/utils.h"
 #include "context_handle.h"
 
@@ -34,6 +35,10 @@ ContextHandle* IsolateHandle::GetContextHandle() {
     default_context_ = ContextHandle::Create(this);
   }
   return default_context_.Get();
+}
+void IsolateHandle::Gc() const {
+  isolate_holder_->GetScheduler()->PostTask(
+      std::make_unique<GcTaskAsync>(isolate_holder_->GetIsolate()));
 }
 
 void IsolateHandle::Release() {
@@ -67,6 +72,13 @@ void ContextAttributeGetCallback(
   info.GetReturnValue().Set(context_handle->V8Object(info.GetIsolate()));
 }
 
+void GcOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Object> receiver = info.This();
+  IsolateHandle* isolate_handle =
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
+  isolate_handle->Gc();
+}
+
 void ReleaseOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
   IsolateHandle* isolate_handle =
@@ -83,6 +95,8 @@ void V8IsolateHandle::InstallInterfaceTemplate(
        v8::PropertyAttribute::ReadOnly, Dependence::kPrototype},
   };
   OperationItem operas[]{
+      {"gc", 0, GcOperationCallback, v8::PropertyAttribute::DontDelete,
+       Dependence::kPrototype},
       {"release", 0, ReleaseOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };

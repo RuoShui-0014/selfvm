@@ -128,6 +128,23 @@ void InstallOperations(v8::Isolate* isolate,
   }
 }
 
+template <typename T>
+class RemoteHandle {
+ public:
+  RemoteHandle(v8::Isolate* isolate, v8::Local<T> value)
+      : handle_{isolate, value} {}
+  explicit RemoteHandle(v8::Global<T>&& value) : handle_{std::move(value)} {}
+  RemoteHandle(RemoteHandle&& other) noexcept
+      : handle_{std::move(other.handle_)} {}
+
+  v8::Local<T> Get(v8::Isolate* isolate) { return handle_.Get(isolate); }
+
+  ~RemoteHandle() { handle_.Clear(); }
+
+ private:
+  v8::Global<T> handle_;
+};
+
 class V8CtxScope {
  public:
   V8CtxScope(v8::Isolate* isolate, v8::Local<v8::Context> context)

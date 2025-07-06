@@ -13,14 +13,14 @@ void GcCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   info.GetIsolate()->LowMemoryNotification();
 }
 
-static PerIsolateData node_per_isolate_data{nullptr};
+PerIsolateData* g_per_isolate_data{nullptr};
 
 void Initialize(v8::Local<v8::Object> exports) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   // init nodejs env
-  node_per_isolate_data.Reset(isolate);
+  g_per_isolate_data = new PerIsolateData(isolate);
 
   // can release nodejs isolate memory
   v8::Local<v8::FunctionTemplate> tpl1 =
@@ -37,6 +37,10 @@ void Initialize(v8::Local<v8::Object> exports) {
                isolate_handle_template->GetFunction(context).ToLocalChecked());
 
   PlatformDelegate::InitializeDelegate();
+
+  node::AddEnvironmentCleanupHook(isolate, [](void* arg) {
+    delete static_cast<PerIsolateData*>(arg);
+  }, g_per_isolate_data);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize)

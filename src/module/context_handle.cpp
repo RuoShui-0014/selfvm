@@ -67,21 +67,22 @@ void ContextHandle::EvalAsync(std::string script,
   v8::Locker locker(isolate);
   v8::HandleScope scope(isolate);
 
-  ScriptTaskAsync::CallInfo call_info{
-      isolate, {isolate, context_.Get(isolate)}, std::move(script)};
+  ScriptTaskAsync::CallInfo call_info{isolate, context_.Get(isolate),
+                                      std::move(script)};
 
   {
     v8::Isolate* result_isolate = isolate_handle_->GetParentIsolate();
     v8::Locker result_locker(isolate);
-    AsyncManager* async_manager = isolate_handle_->GetAsyncManager();
-    ScriptTaskAsync::ResultInfo result_info{
-        async_manager,
-        result_isolate,
-        {isolate, result_isolate->GetCurrentContext()},
-        {isolate, resolver}};
-    ScriptTaskAsync task(call_info, result_info);
-    task.Run();
-    async_manager->Send();
+    Scheduler* scheduler = isolate_handle_->GetIsolateHolder()->GetScheduler();
+    Scheduler* scheduler_parent =
+        isolate_handle_->GetIsolateHolder()->GetParentScheduler();
+
+    ScriptTaskAsync::ResultInfo result_info{scheduler_parent, result_isolate,
+                                            result_isolate->GetCurrentContext(),
+                                            resolver};
+    auto task = std::make_unique<ScriptTaskAsync>(call_info, result_info);
+    scheduler->PostTask(std::move(task));
+    scheduler_parent->Send();
   }
 }
 

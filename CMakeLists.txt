@@ -42,8 +42,6 @@ add_library(${PROJECT_NAME} SHARED
         src/isolate/task.cpp
         src/isolate/task.h
 
-        src/module/async_manager.cpp
-        src/module/async_manager.h
         src/module/isolate_handle.cpp
         src/module/isolate_handle.h
         src/module/context_handle.cpp

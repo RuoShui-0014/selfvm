@@ -16,17 +16,20 @@ class IsolateHolder {
                          size_t memory_limit = 128);
   ~IsolateHolder();
 
-  v8::Isolate* GetIsolate() const { return self_isolate_; }
-  v8::Isolate* GetParentIsolate() const { return parent_isolate_; }
-  Scheduler* GetScheduler() const { return scheduler_.get(); }
+  v8::Isolate* GetIsolate() const { return isolate_self_; }
+  v8::Isolate* GetParentIsolate() const { return isolate_parent_; }
+  Scheduler* GetScheduler() const { return scheduler_self_.get(); }
+  Scheduler* GetParentScheduler() const { return scheduler_parent_.get(); }
 
   v8::Local<v8::Context> NewContext();
 
  private:
-  v8::Isolate* parent_isolate_;
-  v8::Isolate* self_isolate_;
+  v8::Isolate* isolate_parent_;
+  v8::Isolate* isolate_self_;
 
-  std::shared_ptr<Scheduler> scheduler_;
+  std::shared_ptr<Scheduler> scheduler_parent_;
+  std::shared_ptr<Scheduler> scheduler_self_;
+
   std::unique_ptr<PerIsolateData> per_isolate_data_;
   std::unique_ptr<v8::ArrayBuffer::Allocator> allocator_;
 

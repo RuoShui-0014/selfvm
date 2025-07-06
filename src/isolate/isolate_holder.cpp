@@ -1,5 +1,6 @@
 #include "isolate_holder.h"
 
+#include <iostream>
 #include <mutex>
 
 #include "../lib/thread_pool.h"
@@ -9,11 +10,11 @@ namespace svm {
 
 std::mutex isolate_allocator_mutex{};
 
-IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
+IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
                              size_t memory_limit_in_mb)
-    : parent_isolate_{parent_isolate},
-      scheduler_{std::make_shared<Scheduler>()} {
-  base::ThreadPool::Get()->PostTask(&Scheduler::Entry, scheduler_.get());
+    : isolate_parent_{isolate_parent} {
+  scheduler_self_ = std::make_shared<Scheduler>(isolate_self_, nullptr);
+  std::cout << scheduler_self_.use_count() << std::endl;
 
   memory_limit = memory_limit_in_mb * 1024 * 1024;
   v8::ResourceConstraints rc;
@@ -31,22 +32,30 @@ IsolateHolder::IsolateHolder(v8::Isolate* parent_isolate,
   create_params.array_buffer_allocator = allocator_.get();
   {
     std::lock_guard lock{isolate_allocator_mutex};
-    self_isolate_ = v8::Isolate::Allocate();
-    PlatformDelegate::RegisterIsolate(self_isolate_, scheduler_.get());
+    isolate_self_ = v8::Isolate::Allocate();
+    PlatformDelegate::RegisterIsolate(isolate_self_, scheduler_self_.get());
   }
-  v8::Isolate::Initialize(self_isolate_, create_params);
+  v8::Isolate::Initialize(isolate_self_, create_params);
+
+  scheduler_parent_ = std::make_shared<Scheduler>(
+      isolate_parent_, node::GetCurrentEventLoop(isolate_parent_));
 
   per_isolate_data_ =
-      std::move(std::make_unique<PerIsolateData>(self_isolate_));
+      std::move(std::make_unique<PerIsolateData>(isolate_self_));
 }
 
 IsolateHolder::~IsolateHolder() {
+  scheduler_self_.reset();
+  scheduler_parent_.reset();
+
   per_isolate_data_.reset();
   {
     std::lock_guard lock{isolate_allocator_mutex};
-    self_isolate_->Dispose();
-    PlatformDelegate::UnregisterIsolate(self_isolate_);
+    isolate_self_->Dispose();
+    PlatformDelegate::UnregisterIsolate(isolate_self_);
   }
+
+
 }
 
 static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
@@ -55,10 +64,10 @@ static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
                                               void* /*data*/) {}
 
 v8::Local<v8::Context> IsolateHolder::NewContext() {
-  v8::Isolate::Scope isolate_scope(self_isolate_);
-  v8::HandleScope handle_scope(self_isolate_);
+  v8::Isolate::Scope isolate_scope(isolate_self_);
+  v8::HandleScope handle_scope(isolate_self_);
   v8::Local<v8::Context> context = v8::Context::New(
-      self_isolate_, nullptr, {}, {}, &DeserializeInternalFieldsCallback);
+      isolate_self_, nullptr, {}, {}, &DeserializeInternalFieldsCallback);
   context->AllowCodeGenerationFromStrings(false);
   // TODO (but I'm not going to do it): This causes a DCHECK failure in debug
   // builds. Tested nodejs v14.17.3 & v16.5.1.
