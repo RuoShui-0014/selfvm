@@ -77,6 +77,7 @@ void ContextHandle::EvalAsync(std::string script,
                                             resolver};
     auto task = std::make_unique<ScriptTaskAsync>(call_info, result_info);
     scheduler->TaskRunner()->PostTask(std::move(task));
+    scheduler_parent->KeepAlive();
   }
 }
 

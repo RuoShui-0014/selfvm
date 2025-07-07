@@ -53,7 +53,6 @@ IsolateHolder::~IsolateHolder() {
   per_isolate_data_.reset();
   {
     std::lock_guard lock{isolate_allocator_mutex};
-
     isolate_self_->Dispose();
   }
 }

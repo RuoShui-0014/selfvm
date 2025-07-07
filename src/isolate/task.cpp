@@ -58,6 +58,7 @@ void DeserializeTaskAsync::Run() {
         context, v8::Exception::Error(
                      toString(result_info_.isolate, "evalAsync failed.")));
   }
+  result_info_.scheduler->WillDie();
 }
 
 ScriptTaskAsync::ScriptTaskAsync(CallInfo& call_info, ResultInfo& result_info)

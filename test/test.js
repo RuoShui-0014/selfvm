@@ -12,17 +12,20 @@ const isolate = new svm.Isolate();
 const default_ctx = isolate.context
 
 // context可通过eval进行代码的同步运行
+console.time("evalSync")
 const result = default_ctx.evalSync("this.a = {name: 'Jack', age: 18}")
-console.log(`result = `, result);
+console.timeEnd("evalSync")
+console.log(`evalSync() = `, result);
+console.log("---------");
 
 // context可通过evalSync进行代码的异步运行
-async function main() {
+async function test(i) {
     try {
-        const syncResult = default_ctx.evalSync("this.a = {name: 'Jack', age: 18}");
-        console.log(`Sync result = `, syncResult);
+        let start = Date.now();
+        console.log("宏任务", start);
 
         const asyncResult = await default_ctx.evalAsync(`this.a = {name: 'Jack', age: 19}`);
-        console.log(`Async result = `, asyncResult);
+        console.log(`微任务 ${Date.now()} ${Date.now() - start} evalAsync() = `, asyncResult);
     } catch (err) {
         console.error('Error:', err);
     } finally {
@@ -30,21 +33,13 @@ async function main() {
     }
 }
 
-main().then(() => {
-    console.log('All operations completed');
-    process.exit(0);
-});
+test(1)
+test(2)
 
-console.log(Date.now());
+setInterval(function () {
+    test()
+}, 100);
 
-setTimeout(function () {
-
-}, 10000)
-
-// sleep(10000)
-//
-// // 释放isolate隔离实例的相关资源
+// 释放isolate隔离实例的相关资源
 // isolate.release();
 // svm.gc();
-//
-// sleep(10000)

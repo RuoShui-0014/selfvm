@@ -19,14 +19,16 @@ class Scheduler {
   virtual ~Scheduler() = default;
 
   virtual uv_loop_t* GetUvLoop() const { return nullptr; }
-  virtual std::shared_ptr<v8::TaskRunner> TaskRunner() const { return{}; }
+  virtual std::shared_ptr<v8::TaskRunner> TaskRunner() const { return {}; }
+  virtual void KeepAlive() {}
+  virtual void WillDie() {}
 };
 
 class IsolateScheduler : public Scheduler,
                          public node::IsolatePlatformDelegate,
                          public v8::TaskRunner,
                          public std::enable_shared_from_this<IsolateScheduler> {
-public:
+ public:
   IsolateScheduler();
   ~IsolateScheduler() override;
 
@@ -47,19 +49,23 @@ public:
 
 class UVScheduler : public Scheduler {
  public:
-  using TaskQueue = std::queue<std::unique_ptr<v8::Task>>;
-
-  UVScheduler() = default;
+  UVScheduler();
   explicit UVScheduler(v8::Isolate* isolate, uv_loop_t* loop);
   ~UVScheduler() override;
 
+  void KeepAlive() override;
+  void WillDie() override;
   std::shared_ptr<v8::TaskRunner> TaskRunner() const override;
   uv_loop_t* GetUvLoop() const override { return uv_loop_; }
 
  private:
+  std::mutex mutex_;
+  bool is_self_;
+
   v8::Isolate* isolate_;
   uv_loop_t* uv_loop_;
-  uv_idle_t* keep_alive_ = nullptr;
+  uv_async_t* keep_alive_;
+  std::atomic<int> uv_ref_count{0};
   std::thread thread_;
 };
 

@@ -72,6 +72,7 @@ class ScriptTaskAsync : public v8::Task {
   };
   ScriptTaskAsync(CallInfo& call_info, ResultInfo& result_info);
   ~ScriptTaskAsync() override;
+
   void Run() override;
 
  private:
