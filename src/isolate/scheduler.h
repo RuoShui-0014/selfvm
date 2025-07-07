@@ -13,31 +13,22 @@
 
 namespace svm {
 
-class Scheduler : public node::IsolatePlatformDelegate,
-                  public v8::TaskRunner,
-                  public std::enable_shared_from_this<Scheduler> {
+class Scheduler {
  public:
-  using TaskQueue = std::queue<std::unique_ptr<v8::Task>>;
-
-  auto Lock() {
-    class Lock {
-     public:
-      auto operator*() -> auto& { return scheduler; }
-      auto operator->() { return &scheduler; }
-
-      explicit Lock(Scheduler& scheduler, std::mutex& mutex)
-          : lock{mutex}, scheduler{scheduler} {}
-
-     private:
-      std::unique_lock<std::mutex> lock;
-      Scheduler& scheduler;
-    };
-    return Lock{*this, mutex_};
-  }
-
   Scheduler() = default;
-  explicit Scheduler(v8::Isolate* isolate, uv_loop_t* loop);
-  ~Scheduler() override;
+  virtual ~Scheduler() = default;
+
+  virtual uv_loop_t* GetUvLoop() const { return nullptr; }
+  virtual std::shared_ptr<v8::TaskRunner> TaskRunner() const { return{}; }
+};
+
+class IsolateScheduler : public Scheduler,
+                         public node::IsolatePlatformDelegate,
+                         public v8::TaskRunner,
+                         public std::enable_shared_from_this<IsolateScheduler> {
+public:
+  IsolateScheduler();
+  ~IsolateScheduler() override;
 
   // node::IsolatePlatformDelegate overrides
   std::shared_ptr<v8::TaskRunner> GetForegroundTaskRunner() override {
@@ -52,20 +43,22 @@ class Scheduler : public node::IsolatePlatformDelegate,
   void PostDelayedTask(std::unique_ptr<v8::Task> task,
                        double delay_in_seconds) final;
   void PostNonNestableTask(std::unique_ptr<v8::Task> task) final;
+};
 
-  static void RunTask(uv_async_t* uv_async);
-  void Send() const;
+class UVScheduler : public Scheduler {
+ public:
+  using TaskQueue = std::queue<std::unique_ptr<v8::Task>>;
+
+  UVScheduler() = default;
+  explicit UVScheduler(v8::Isolate* isolate, uv_loop_t* loop);
+  ~UVScheduler() override;
+
+  std::shared_ptr<v8::TaskRunner> TaskRunner() const override;
+  uv_loop_t* GetUvLoop() const override { return uv_loop_; }
 
  private:
-  mutable std::mutex mutex_;
-  std::condition_variable cv_;
-  TaskQueue tasks_;
-  TaskQueue handle_tasks_;
-  TaskQueue interrupts_;
-
   v8::Isolate* isolate_;
   uv_loop_t* uv_loop_;
-  uv_async_t* flush_ = nullptr;
   uv_idle_t* keep_alive_ = nullptr;
   std::thread thread_;
 };

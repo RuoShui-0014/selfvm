@@ -5,7 +5,10 @@ project(self-vm)
 set(CMAKE_CXX_STANDARD 20)
 
 if (MSVC)
-    add_compile_options(/wd4275 /wd4251)
+    add_compile_options(/wd4275 /wd4251 /GR-)
+    if (CMAKE_BUILD MATCHES "Release")
+        add_compile_options(/Ox)
+    endif ()
     add_compile_definitions(NOMINMAX)
 endif ()
 
@@ -22,8 +25,8 @@ add_library(${PROJECT_NAME} SHARED
 
         src/lib/thread_pool.cpp
         src/lib/thread_pool.h
-#        src/lib/logger.cpp
-#        src/lib/logger.h
+        #        src/lib/logger.cpp
+        #        src/lib/logger.h
 
         src/isolate/platform_delegate.cpp
         src/isolate/platform_delegate.h

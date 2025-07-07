@@ -30,19 +30,14 @@ ContextHandle* ContextHandle::Create(IsolateHandle* isolate_handle) {
 
 ContextHandle::ContextHandle(IsolateHandle* isolate_handle,
                              v8::Local<v8::Context> context)
-    : isolate_handle_(isolate_handle) {
-  context_.Reset(isolate_handle->GetIsolate(), context);
-  std::cout << "ContextHandle()" << std::endl;
-}
+    : context_(isolate_handle->GetIsolate(), context),
+      isolate_handle_(isolate_handle) {}
 
-ContextHandle::~ContextHandle() {
-  context_.Clear();
-  std::cout << "~ContextHandle()" << std::endl;
-}
+ContextHandle::~ContextHandle() = default;
 
 // 同步任务
 void ContextHandle::EvalSync(std::string script,
-                             v8::Local<v8::Value>* result) const {
+                             v8::Local<v8::Value>* result) {
   v8::Isolate* isolate = isolate_handle_->GetIsolate();
   v8::Locker locker(isolate);
   v8::HandleScope scope(isolate);
@@ -62,7 +57,7 @@ void ContextHandle::EvalSync(std::string script,
 }
 
 void ContextHandle::EvalAsync(std::string script,
-                              v8::Local<v8::Promise::Resolver> resolver) const {
+                              v8::Local<v8::Promise::Resolver> resolver) {
   v8::Isolate* isolate = isolate_handle_->GetIsolate();
   v8::Locker locker(isolate);
   v8::HandleScope scope(isolate);
@@ -81,8 +76,7 @@ void ContextHandle::EvalAsync(std::string script,
                                             result_isolate->GetCurrentContext(),
                                             resolver};
     auto task = std::make_unique<ScriptTaskAsync>(call_info, result_info);
-    scheduler->PostTask(std::move(task));
-    scheduler_parent->Send();
+    scheduler->TaskRunner()->PostTask(std::move(task));
   }
 }
 
@@ -129,7 +123,7 @@ void EvalAsyncOperationCallback(
       v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
   context_handle->EvalAsync(*v8::String::Utf8Value(isolate, info[0]), resolver);
 
-  info.GetReturnValue().Set(resolver->GetPromise());
+  info.GetReturnValue().Set(resolver);
 }
 
 void V8ContextHandle::InstallInterfaceTemplate(

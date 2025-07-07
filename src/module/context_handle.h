@@ -6,6 +6,7 @@
 
 #include "../isolate/script_wrappable.h"
 #include "../isolate/wrapper_type_info.h"
+#include "../utils/utils.h"
 
 namespace svm {
 
@@ -19,14 +20,14 @@ class ContextHandle : public ScriptWrappable {
                          v8::Local<v8::Context> context);
   ~ContextHandle() override;
 
-  void EvalSync(std::string script, v8::Local<v8::Value>* result) const;
-  void EvalAsync(std::string script, v8::Local<v8::Promise::Resolver> result) const;
+  void EvalSync(std::string script, v8::Local<v8::Value>* result);
+  void EvalAsync(std::string script, v8::Local<v8::Promise::Resolver> result);
   void Release();
 
   void Trace(cppgc::Visitor* visitor) const override;
 
  private:
-  v8::Global<v8::Context> context_;
+  RemoteHandle<v8::Context> context_;
 
   cppgc::Member<IsolateHandle> isolate_handle_;
 };

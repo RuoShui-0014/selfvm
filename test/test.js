@@ -16,61 +16,30 @@ const result = default_ctx.evalSync("this.a = {name: 'Jack', age: 18}")
 console.log(`result = `, result);
 
 // context可通过evalSync进行代码的异步运行
-async function test(i = 0) {
-    for (let i = 0; i < 10000; i++) {
-        var a = {
-            name: "Jack",
-            age: 999,
-            ary: new Array(10000)
-        };
-        a.ary[i] = a.ary;
+async function main() {
+    try {
+        const syncResult = default_ctx.evalSync("this.a = {name: 'Jack', age: 18}");
+        console.log(`Sync result = `, syncResult);
+
+        const asyncResult = await default_ctx.evalAsync(`this.a = {name: 'Jack', age: 19}`);
+        console.log(`Async result = `, asyncResult);
+    } catch (err) {
+        console.error('Error:', err);
+    } finally {
+        // 清理资源
     }
-    const result = await default_ctx.evalAsync(`this.a = {name: 'Jack', age: 18}
-    for (let i = 0; i < 10000; i++) {
-        var a = {
-            name: "Jack",
-            age: 999,
-            ary: new Array(10000)
-        };
-        a.ary[i] = a.ary;
-    }`)
-    console.log(Date.now());
-    // console.log(`${i} -> result = ${result}`);
-    // result.then((e) => {
-    //     console.log(`success e = `, e);
-    // }, (e) => {
-    //     console.log(`failed e = `, e);
-    // })
 }
 
-// console.log(process.memoryUsage())
-// let start = Date.now()
-// for (let i = 0; i < 100; i++) {
-test();
-// test();
-// test();
-// test();
-// test();
-// }
-// console.log(Date.now() - start, "ms")
+main().then(() => {
+    console.log('All operations completed');
+    process.exit(0);
+});
+
 console.log(Date.now());
-let all = 20;
-let a = setInterval(function () {
-    console.log("--------------------");
-    test();
-    console.log(Date.now());
-}, 200)
 
-let b = setInterval(function () {
-    isolate.gc();
-    svm.gc();
-}, 3000)
+setTimeout(function () {
 
-
-let c = setTimeout(function () {
-    clearInterval(a);
-    clearInterval(b);
-}, 20000)
+}, 10000)
 
 // sleep(10000)
 //

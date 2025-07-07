@@ -3,12 +3,24 @@
 #include <iostream>
 
 #include "../utils/utils.h"
+#include "platform_delegate.h"
 #include "uv.h"
 
 namespace svm {
 
-Scheduler::Scheduler(v8::Isolate* isolate, uv_loop_t* loop)
-    : isolate_(isolate), uv_loop_(loop), flush_(new uv_async_t) {
+IsolateScheduler::IsolateScheduler() = default;
+IsolateScheduler::~IsolateScheduler() = default;
+
+void IsolateScheduler::PostTask(std::unique_ptr<v8::Task> task) {}
+
+void IsolateScheduler::PostDelayedTask(std::unique_ptr<v8::Task> task,
+                                       double delay_in_seconds) {}
+
+void IsolateScheduler::PostNonNestableTask(std::unique_ptr<v8::Task> task) {}
+
+
+UVScheduler::UVScheduler(v8::Isolate* isolate, uv_loop_t* loop)
+    : isolate_(isolate), uv_loop_(loop) {
   if (!loop) {
     uv_loop_ = new uv_loop_t;
     uv_loop_init(uv_loop_);
@@ -32,89 +44,18 @@ Scheduler::Scheduler(v8::Isolate* isolate, uv_loop_t* loop)
       delete uv_loop_;
     });
   }
-
-  uv_async_init(uv_loop_, flush_, &Scheduler::RunTask);
-  flush_->data = this;
-  uv_unref(reinterpret_cast<uv_handle_t*>(flush_));
 }
-Scheduler::~Scheduler() {
+
+UVScheduler::~UVScheduler() {
   if (keep_alive_) {
     uv_stop(uv_loop_);
     if (thread_.joinable()) {
       thread_.join();
     }
-    uv_close(reinterpret_cast<uv_handle_t*>(flush_), [](uv_handle_t* handle) {
-      delete reinterpret_cast<uv_async_t*>(handle);
-    });
-    return;
-  }
-
-  uv_close(reinterpret_cast<uv_handle_t*>(flush_), [](uv_handle_t* handle) {
-    delete reinterpret_cast<uv_async_t*>(handle);
-  });
-}
-
-void Scheduler::PostTask(std::unique_ptr<v8::Task> task) {
-  {
-    std::lock_guard lock(mutex_);
-    tasks_.push(std::move(task));
-  }
-  uv_async_send(flush_);
-}
-
-void Scheduler::PostDelayedTask(std::unique_ptr<v8::Task> task,
-                                double delay_in_seconds) {
-  {
-    std::lock_guard lock(mutex_);
-    tasks_.push(std::move(task));
-  }
-  uv_async_send(flush_);
-}
-
-void Scheduler::PostNonNestableTask(std::unique_ptr<v8::Task> task) {
-  {
-    std::lock_guard lock(mutex_);
-    tasks_.push(std::move(task));
-  }
-  uv_async_send(flush_);
-}
-
-void Scheduler::RunTask(uv_async_t* flush) {
-  auto& scheduler = *static_cast<Scheduler*>(flush->data);
-  while (true) {
-    TaskQueue tasks;
-    TaskQueue handle_tasks;
-    TaskQueue interrupts;
-    {
-      // Grab current tasks
-      auto lock = scheduler.Lock();
-      tasks = std::exchange(scheduler.tasks_, {});
-      handle_tasks = std::exchange(scheduler.handle_tasks_, {});
-      interrupts = std::exchange(scheduler.interrupts_, {});
-      if (tasks.empty() && handle_tasks.empty() && interrupts.empty()) {
-        return;
-      }
-    }
-
-    while (!interrupts.empty()) {
-      interrupts.front()->Run();
-      interrupts.pop();
-    }
-
-    while (!handle_tasks.empty()) {
-      handle_tasks.front()->Run();
-      handle_tasks.pop();
-    }
-
-    while (!tasks.empty()) {
-      tasks.front()->Run();
-      tasks.pop();
-    }
   }
 }
 
-void Scheduler::Send() const {
-  uv_async_send(flush_);
+std::shared_ptr<v8::TaskRunner> UVScheduler::TaskRunner() const {
+  return PlatformDelegate::GetNodePlatform()->GetForegroundTaskRunner(isolate_);
 }
-
 }  // namespace svm

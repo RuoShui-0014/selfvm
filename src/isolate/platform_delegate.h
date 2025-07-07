@@ -1,6 +1,7 @@
 #pragma once
 
 #include <node.h>
+#include <uv.h>
 
 namespace svm {
 class PlatformDelegate {
@@ -26,6 +27,9 @@ class PlatformDelegate {
 
   static void RegisterIsolate(v8::Isolate* isolate,
                               node::IsolatePlatformDelegate* isolate_delegate);
+
+  static void RegisterIsolate(v8::Isolate* isolate,
+                              uv_loop_t* loop);
 
   static void UnregisterIsolate(v8::Isolate* isolate);
 

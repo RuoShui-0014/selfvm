@@ -13,9 +13,6 @@ std::mutex isolate_allocator_mutex{};
 IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
                              size_t memory_limit_in_mb)
     : isolate_parent_{isolate_parent} {
-  scheduler_self_ = std::make_shared<Scheduler>(isolate_self_, nullptr);
-  std::cout << scheduler_self_.use_count() << std::endl;
-
   memory_limit = memory_limit_in_mb * 1024 * 1024;
   v8::ResourceConstraints rc;
   size_t young_space_in_kb = static_cast<size_t>(std::pow(
@@ -33,11 +30,14 @@ IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
   {
     std::lock_guard lock{isolate_allocator_mutex};
     isolate_self_ = v8::Isolate::Allocate();
-    PlatformDelegate::RegisterIsolate(isolate_self_, scheduler_self_.get());
+
+    scheduler_self_ = std::make_shared<UVScheduler>(isolate_self_, nullptr);
+    PlatformDelegate::RegisterIsolate(isolate_self_,
+                                      scheduler_self_->GetUvLoop());
   }
   v8::Isolate::Initialize(isolate_self_, create_params);
 
-  scheduler_parent_ = std::make_shared<Scheduler>(
+  scheduler_parent_ = std::make_shared<UVScheduler>(
       isolate_parent_, node::GetCurrentEventLoop(isolate_parent_));
 
   per_isolate_data_ =
@@ -45,17 +45,17 @@ IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
 }
 
 IsolateHolder::~IsolateHolder() {
+  PlatformDelegate::UnregisterIsolate(isolate_self_);
+
   scheduler_self_.reset();
   scheduler_parent_.reset();
 
   per_isolate_data_.reset();
   {
     std::lock_guard lock{isolate_allocator_mutex};
+
     isolate_self_->Dispose();
-    PlatformDelegate::UnregisterIsolate(isolate_self_);
   }
-
-
 }
 
 static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,

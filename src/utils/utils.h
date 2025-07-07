@@ -139,6 +139,15 @@ class RemoteHandle {
 
   v8::Local<T> Get(v8::Isolate* isolate) { return handle_.Get(isolate); }
 
+  void Clear() { handle_.Clear(); }
+
+  void Reset() { handle_.Clear(); }
+
+  void Reset(v8::Isolate* isolate, v8::Local<T> value) {
+    handle_.Clear();
+    handle_.Reset(isolate, value);
+  }
+
   ~RemoteHandle() { handle_.Clear(); }
 
  private:

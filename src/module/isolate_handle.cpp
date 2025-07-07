@@ -22,13 +22,9 @@ IsolateHandle* IsolateHandle::Create(v8::Isolate* isolate) {
 }
 
 IsolateHandle::IsolateHandle(std::unique_ptr<IsolateHolder>& isolate_holder)
-    : isolate_holder_(std::move(isolate_holder)) {
-  std::cout << "IsolateHandle()" << std::endl;
-}
+    : isolate_holder_(std::move(isolate_holder)) {}
 
-IsolateHandle::~IsolateHandle() {
-  std::cout << "~IsolateHandle()" << std::endl;
-}
+IsolateHandle::~IsolateHandle() = default;
 
 ContextHandle* IsolateHandle::GetContextHandle() {
   if (!default_context_) {
@@ -37,7 +33,7 @@ ContextHandle* IsolateHandle::GetContextHandle() {
   return default_context_.Get();
 }
 void IsolateHandle::Gc() const {
-  isolate_holder_->GetScheduler()->PostTask(
+  isolate_holder_->GetScheduler()->TaskRunner()->PostTask(
       std::make_unique<GcTaskAsync>(isolate_holder_->GetIsolate()));
 }
 
