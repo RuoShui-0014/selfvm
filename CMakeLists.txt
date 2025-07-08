@@ -49,6 +49,8 @@ add_library(${PROJECT_NAME} SHARED
         src/module/isolate_handle.h
         src/module/context_handle.cpp
         src/module/context_handle.h
+        src/web/local_dom_window.cpp
+        src/web/local_dom_window.h
 )
 
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})

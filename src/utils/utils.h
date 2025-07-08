@@ -2,6 +2,8 @@
 
 #include <v8.h>
 
+#include "../isolate/wrapper_type_info.h"
+
 namespace svm {
 
 inline v8::Local<v8::String> toString(const char* str) {
@@ -43,6 +45,11 @@ struct OperationItem {
   v8::PropertyAttribute propertyAttribute;
   Dependence dep;
   v8::SideEffectType sideEffectType = v8::SideEffectType::kHasNoSideEffect;
+};
+struct ExposedConstructItem {
+  const char* name = "";
+  v8::AccessorNameGetterCallback callback = nullptr;
+  Dependence dep;
 };
 
 inline void InstallConstructor(v8::Isolate* isolate,
@@ -128,6 +135,26 @@ void InstallOperations(v8::Isolate* isolate,
   }
 }
 
+template <size_t N>
+void InstallExposedConstructs(
+    v8::Isolate* isolate,
+    v8::Local<v8::Template> interface_template,
+    const ExposedConstructItem (&exposedConstructs)[N]) {
+  v8::Local<v8::FunctionTemplate> constructor_template =
+      interface_template.As<v8::FunctionTemplate>();
+  v8::Local<v8::ObjectTemplate> prototype_template =
+      constructor_template->PrototypeTemplate();
+  v8::Local<v8::ObjectTemplate> instance_template =
+      constructor_template->InstanceTemplate();
+
+  for (const auto& config : exposedConstructs) {
+    v8::Local<v8::String> name = toString(isolate, config.name);
+    instance_template->SetLazyDataProperty(
+        name, config.callback, v8::Local<v8::Value>(), v8::DontEnum,
+        v8::SideEffectType::kHasNoSideEffect);
+  }
+}
+
 template <typename T>
 class RemoteHandle {
  public:
@@ -179,5 +206,16 @@ class V8CtxScope {
   v8::Isolate* isolate_;
   v8::Local<v8::Context> context_;
 };
+
+inline v8::Local<v8::Value> GetExposedInterfaceObject(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> creation_context,
+    const WrapperTypeInfo* wrapper_type_info) {
+  v8::Local<v8::FunctionTemplate> ftmp =
+      wrapper_type_info->GetV8ClassTemplate(isolate).As<v8::FunctionTemplate>();
+  v8::Local<v8::Context> context =
+      creation_context->GetCreationContextChecked();
+  return ftmp->GetFunction(context).ToLocalChecked();
+}
 
 }  // namespace svm

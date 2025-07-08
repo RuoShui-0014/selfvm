@@ -6,6 +6,7 @@
 #include "../lib/thread_pool.h"
 #include "../module/isolate_handle.h"
 #include "../utils/utils.h"
+#include "../web/local_dom_window.h"
 #include "platform_delegate.h"
 
 namespace svm {
@@ -72,17 +73,18 @@ v8::Local<v8::Context> IsolateHolder::NewContext() {
   v8::HandleScope handle_scope(isolate_self_);
 
   v8::Local<v8::ObjectTemplate> object_template =
-      v8::ObjectTemplate::New(isolate_self_);
-  v8::Local<v8::FunctionTemplate> isolate_handle_template =
-      V8IsolateHandle::GetWrapperTypeInfo()
+      V8Window::GetWrapperTypeInfo()
           ->GetV8ClassTemplate(isolate_self_)
-          .As<v8::FunctionTemplate>();
-  object_template->Set(toString(isolate_self_, "Isolate"),
-                       isolate_handle_template);
+          .As<v8::FunctionTemplate>()
+          ->InstanceTemplate();
 
   v8::Local<v8::Context> context =
       v8::Context::New(isolate_self_, nullptr, object_template, {},
                        &DeserializeInternalFieldsCallback);
+  ScriptWrappable::Wrap(
+      context->Global(),
+      MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_self_));
+
   context->AllowCodeGenerationFromStrings(false);
   return context;
 }
