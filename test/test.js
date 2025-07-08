@@ -29,6 +29,7 @@ async function test() {
         let start = Date.now();
         console.log("宏任务", start);
 
+        // 套娃，在子环境中创建新的环境，并同步运行代码，将结果返回
         const asyncResult = await default_ctx.evalAsync(`
 isolate = new Isolate();
 result = isolate.context.evalSync("this.a = {name: 'Jack', age: 18}")
