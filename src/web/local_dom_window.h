@@ -13,6 +13,8 @@ class LocalDOMWindow : public ScriptWrappable {
  public:
   LocalDOMWindow();
   ~LocalDOMWindow() override;
+
+  LocalDOMWindow* window() { return this; }
 };
 
 class V8Window {

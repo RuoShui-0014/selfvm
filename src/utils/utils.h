@@ -2,6 +2,7 @@
 
 #include <v8.h>
 
+#include "../isolate/script_wrappable.h"
 #include "../isolate/wrapper_type_info.h"
 
 namespace svm {
@@ -216,6 +217,11 @@ inline v8::Local<v8::Value> GetExposedInterfaceObject(
   v8::Local<v8::Context> context =
       creation_context->GetCreationContextChecked();
   return ftmp->GetFunction(context).ToLocalChecked();
+}
+
+template <typename Info, typename T>
+inline void V8SetReturnValue(Info& info, T* value) {
+  info.GetReturnValue().Set(value->V8Object(info.GetIsolate()));
 }
 
 }  // namespace svm

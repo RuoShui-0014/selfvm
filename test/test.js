@@ -15,19 +15,17 @@ console.log(isolate.getHeapStatistics())
 console.time("evalSync")
 // const result = default_ctx.evalSync("this.a = {name: 'Jack', age: 18}")
 const result = default_ctx.evalSync(`
-isolate = new Isolate();
-isolate.context.evalSync("this.a = {name: 'Jack', age: 18}")
-this.a = {name: 'Jack', age: 18}
+this.a = "" + btoa("test");
 `)
 console.timeEnd("evalSync")
-console.log(`evalSync() = `, result);
+console.log(`evalSync result = `, result);
 console.log("---------");
 
 // context可通过evalSync进行代码的异步运行
 async function test() {
     try {
         let start = Date.now();
-        console.log("宏任务", start);
+        console.log("宏任务");
 
         // 套娃，在子环境中创建新的环境，并同步运行代码，将结果返回
         const asyncResult = await default_ctx.evalAsync(`
@@ -35,7 +33,7 @@ isolate = new Isolate();
 result = isolate.context.evalSync("this.a = {name: 'Jack', age: 18}")
 this.a = {name: 'Jack', age: 18, value: result}
 `);
-        console.log(`微任务 ${Date.now()} ${Date.now() - start} evalAsync() = `, asyncResult);
+        console.log(`微任务 ${Date.now() - start} evalAsync() = `, asyncResult);
     } catch (err) {
         console.error('Error:', err);
     } finally {
