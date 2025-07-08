@@ -1,5 +1,7 @@
 #include "platform_delegate.h"
 
+#include <map>
+
 namespace svm {
 namespace {
 PlatformDelegate delegate;

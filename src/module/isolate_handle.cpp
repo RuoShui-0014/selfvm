@@ -41,6 +41,13 @@ void IsolateHandle::Release() {
   isolate_holder_.reset();
 }
 
+v8::HeapStatistics IsolateHandle::GetHeapStatistics() const {
+  v8::Isolate* isolate = isolate_holder_->GetIsolate();
+  v8::HeapStatistics heap_statistics;
+  isolate->GetHeapStatistics(&heap_statistics);
+  return heap_statistics;
+}
+
 void IsolateHandle::Trace(cppgc::Visitor* visitor) const {
   visitor->Trace(default_context_);
   ScriptWrappable::Trace(visitor);
@@ -75,6 +82,41 @@ void GcOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   isolate_handle->Gc();
 }
 
+void GetHeapStatisticsOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+
+  v8::Local<v8::Object> receiver = info.This();
+  IsolateHandle* isolate_handle =
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
+  v8::HeapStatistics heap_info = isolate_handle->GetHeapStatistics();
+  v8::Local<v8::Object> heap_statistics = v8::Object::New(isolate);
+  heap_statistics->Set(context, toString("total_heap_size"),
+                       v8::Number::New(isolate, heap_info.total_heap_size()));
+  heap_statistics->Set(
+      context, toString("total_heap_size_executable"),
+      v8::Number::New(isolate, heap_info.total_heap_size_executable()));
+  heap_statistics->Set(
+      context, toString("total_physical_size"),
+      v8::Number::New(isolate, heap_info.total_physical_size()));
+  heap_statistics->Set(
+      context, toString("total_available_size"),
+      v8::Number::New(isolate, heap_info.total_available_size()));
+  heap_statistics->Set(context, toString("used_heap_size"),
+                       v8::Number::New(isolate, heap_info.used_heap_size()));
+  heap_statistics->Set(context, toString("heap_size_limit"),
+                       v8::Number::New(isolate, heap_info.heap_size_limit()));
+  heap_statistics->Set(context, toString("malloced_memory"),
+                       v8::Number::New(isolate, heap_info.malloced_memory()));
+  heap_statistics->Set(
+      context, toString("peak_malloced_memory"),
+      v8::Number::New(isolate, heap_info.peak_malloced_memory()));
+  heap_statistics->Set(context, toString("does_zap_garbage"),
+                       v8::Number::New(isolate, heap_info.does_zap_garbage()));
+  info.GetReturnValue().Set(heap_statistics);
+}
+
 void ReleaseOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
   IsolateHandle* isolate_handle =
@@ -93,6 +135,8 @@ void V8IsolateHandle::InstallInterfaceTemplate(
   OperationItem operas[]{
       {"gc", 0, GcOperationCallback, v8::PropertyAttribute::DontDelete,
        Dependence::kPrototype},
+      {"getHeapStatistics", 0, GetHeapStatisticsOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"release", 0, ReleaseOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };

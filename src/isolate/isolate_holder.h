@@ -24,14 +24,16 @@ class IsolateHolder {
   v8::Local<v8::Context> NewContext();
 
  private:
-  v8::Isolate* isolate_parent_;
   v8::Isolate* isolate_self_;
+  node::IsolateData* isolate_data_;
 
-  std::shared_ptr<Scheduler> scheduler_parent_;
+  v8::Isolate* isolate_parent_;
+
   std::shared_ptr<Scheduler> scheduler_self_;
+  std::shared_ptr<Scheduler> scheduler_parent_;
 
   std::unique_ptr<PerIsolateData> per_isolate_data_;
-  std::unique_ptr<v8::ArrayBuffer::Allocator> allocator_;
+  std::unique_ptr<node::ArrayBufferAllocator> allocator_;
 
   size_t memory_limit = 128;
 };

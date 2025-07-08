@@ -38,31 +38,11 @@ void ScriptTask::Run() {
     }
   }
 }
-DeserializeTaskAsync::DeserializeTaskAsync(
-    ScriptTaskAsync::ResultInfo& result_info,
-    std::pair<uint8_t*, size_t>& buff)
-    : result_info_{std::move(result_info)}, buff_(buff) {}
-DeserializeTaskAsync::~DeserializeTaskAsync() = default;
-void DeserializeTaskAsync::Run() {
-  v8::Isolate* isolate = result_info_.isolate;
-  v8::HandleScope target_scope(isolate);
-  v8::Local<v8::Context> context = result_info_.context.Get(isolate);
-  v8::Context::Scope context_scope{context};
-
-  v8::ValueDeserializer deserializer(isolate, buff_.first, buff_.second);
-  v8::Local<v8::Value> result;
-  if (deserializer.ReadValue(context).ToLocal(&result)) {
-    result_info_.resolver.Get(isolate)->Resolve(context, result);
-  } else {
-    result_info_.resolver.Get(isolate)->Reject(
-        context, v8::Exception::Error(
-                     toString(result_info_.isolate, "evalAsync failed.")));
-  }
-  result_info_.scheduler->WillDie();
-}
 
 ScriptTaskAsync::ScriptTaskAsync(CallInfo& call_info, ResultInfo& result_info)
-    : call_info_{std::move(call_info)}, result_info_{std::move(result_info)} {}
+    : AsyncTask(result_info.scheduler),
+      call_info_{std::move(call_info)},
+      result_info_{std::move(result_info)} {}
 ScriptTaskAsync::~ScriptTaskAsync() = default;
 void ScriptTaskAsync::Run() {
   v8::Isolate* isolate = call_info_.isolate;
@@ -93,6 +73,30 @@ void ScriptTaskAsync::Run() {
   if (try_catch.HasCaught()) {
   }
   try_catch.ReThrow();
+}
+
+DeserializeTaskAsync::DeserializeTaskAsync(
+    ScriptTaskAsync::ResultInfo& result_info,
+    std::pair<uint8_t*, size_t>& buff)
+    : AsyncTask(result_info.scheduler),
+      result_info_{std::move(result_info)},
+      buff_(buff) {}
+DeserializeTaskAsync::~DeserializeTaskAsync() = default;
+void DeserializeTaskAsync::Run() {
+  v8::Isolate* isolate = result_info_.isolate;
+  v8::HandleScope target_scope(isolate);
+  v8::Local<v8::Context> context = result_info_.context.Get(isolate);
+  v8::Context::Scope context_scope{context};
+
+  v8::ValueDeserializer deserializer(isolate, buff_.first, buff_.second);
+  v8::Local<v8::Value> result;
+  if (deserializer.ReadValue(context).ToLocal(&result)) {
+    result_info_.resolver.Get(isolate)->Resolve(context, result);
+  } else {
+    result_info_.resolver.Get(isolate)->Reject(
+        context, v8::Exception::Error(
+                     toString(result_info_.isolate, "evalAsync failed.")));
+  }
 }
 
 }  // namespace svm

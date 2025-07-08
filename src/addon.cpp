@@ -20,6 +20,7 @@ void Initialize(v8::Local<v8::Object> exports) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   // init nodejs env
+  Scheduler::RegisterIsolate(isolate, node::GetCurrentEventLoop(isolate));
   g_per_isolate_data = new PerIsolateData(isolate);
 
   // can release nodejs isolate memory
@@ -38,9 +39,9 @@ void Initialize(v8::Local<v8::Object> exports) {
 
   PlatformDelegate::InitializeDelegate();
 
-  node::AddEnvironmentCleanupHook(isolate, [](void* arg) {
-    delete static_cast<PerIsolateData*>(arg);
-  }, g_per_isolate_data);
+  node::AddEnvironmentCleanupHook(
+      isolate, [](void* arg) { delete static_cast<PerIsolateData*>(arg); },
+      g_per_isolate_data);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize)

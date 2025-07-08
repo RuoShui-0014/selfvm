@@ -5,7 +5,6 @@
 #include "../isolate/per_isolate_data.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
-#include "async_manager.h"
 #include "isolate_handle.h"
 
 namespace svm {
@@ -77,7 +76,6 @@ void ContextHandle::EvalAsync(std::string script,
                                             resolver};
     auto task = std::make_unique<ScriptTaskAsync>(call_info, result_info);
     scheduler->TaskRunner()->PostTask(std::move(task));
-    scheduler_parent->KeepAlive();
   }
 }
 

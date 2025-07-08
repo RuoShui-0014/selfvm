@@ -7,7 +7,6 @@
 #include "../isolate/isolate_holder.h"
 #include "../isolate/script_wrappable.h"
 #include "../isolate/wrapper_type_info.h"
-#include "async_manager.h"
 
 namespace svm {
 
@@ -27,8 +26,10 @@ class IsolateHandle : public ScriptWrappable {
   }
   ContextHandle* GetContextHandle();
 
+  /*********************** js interface *************************/
   void Gc() const;
   void Release();
+  v8::HeapStatistics GetHeapStatistics() const;
 
   void Trace(cppgc::Visitor* visitor) const override;
 

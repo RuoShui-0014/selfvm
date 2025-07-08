@@ -7,6 +7,7 @@
 #include <v8.h>
 
 #include "../utils/utils.h"
+#include "scheduler.h"
 
 namespace svm {
 
@@ -33,8 +34,18 @@ class ScriptTask : public v8::Task {
   ResultInfo& target_;
 };
 
-class AsyncManager;
-class ScriptTaskAsync : public v8::Task {
+class AsyncTask : public v8::Task {
+ public:
+  AsyncTask(Scheduler* scheduler) : scheduler_(scheduler) {
+    scheduler_->KeepAlive();
+  }
+  ~AsyncTask() override { scheduler_->WillDie(); }
+
+ private:
+  Scheduler* scheduler_;
+};
+
+class ScriptTaskAsync : public AsyncTask {
  public:
   struct CallInfo {
     v8::Isolate* isolate;
@@ -80,19 +91,6 @@ class ScriptTaskAsync : public v8::Task {
   ResultInfo result_info_;
 };
 
-class DeserializeTaskAsync : public v8::Task {
- public:
-  DeserializeTaskAsync(ScriptTaskAsync::ResultInfo& result_info,
-                       std::pair<uint8_t*, size_t>& buff);
-  ~DeserializeTaskAsync() override;
-
-  void Run() override;
-
- private:
-  ScriptTaskAsync::ResultInfo result_info_;
-  std::pair<uint8_t*, size_t> buff_;
-};
-
 class GcTaskAsync : public v8::Task {
  public:
   explicit GcTaskAsync(v8::Isolate* isolate) : isolate_(isolate) {}
@@ -102,6 +100,19 @@ class GcTaskAsync : public v8::Task {
 
  private:
   v8::Isolate* isolate_;
+};
+
+class DeserializeTaskAsync : public AsyncTask {
+public:
+  DeserializeTaskAsync(ScriptTaskAsync::ResultInfo& result_info,
+                       std::pair<uint8_t*, size_t>& buff);
+  ~DeserializeTaskAsync() override;
+
+  void Run() override;
+
+private:
+  ScriptTaskAsync::ResultInfo result_info_;
+  std::pair<uint8_t*, size_t> buff_;
 };
 
 }  // namespace svm

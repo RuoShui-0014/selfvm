@@ -8,8 +8,11 @@
 #include <uv.h>
 #include <v8-platform.h>
 
+#include <iostream>
 #include <mutex>
 #include <queue>
+
+#include "platform_delegate.h"
 
 namespace svm {
 
@@ -18,7 +21,10 @@ class Scheduler {
   Scheduler() = default;
   virtual ~Scheduler() = default;
 
-  virtual uv_loop_t* GetUvLoop() const { return nullptr; }
+  static void RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop);
+  static uv_loop_t* GetIsolateUvLoop(v8::Isolate* isolate);
+
+  virtual uv_loop_t* GetUVLoop() const { return nullptr; }
   virtual std::shared_ptr<v8::TaskRunner> TaskRunner() const { return {}; }
   virtual void KeepAlive() {}
   virtual void WillDie() {}
@@ -41,32 +47,99 @@ class IsolateScheduler : public Scheduler,
   // v8::TaskRunner override
   bool NonNestableTasksEnabled() const override { return true; }
   bool NonNestableDelayedTasksEnabled() const override { return true; }
-  void PostTask(std::unique_ptr<v8::Task> task) final;
+  void PostTask(std::unique_ptr<v8::Task> task) override;
   void PostDelayedTask(std::unique_ptr<v8::Task> task,
-                       double delay_in_seconds) final;
-  void PostNonNestableTask(std::unique_ptr<v8::Task> task) final;
+                       double delay_in_seconds) override;
+  void PostNonNestableTask(std::unique_ptr<v8::Task> task) override;
 };
 
+template <bool Is_Self>
 class UVScheduler : public Scheduler {
  public:
-  UVScheduler();
-  explicit UVScheduler(v8::Isolate* isolate, uv_loop_t* loop);
+  explicit UVScheduler(v8::Isolate* isolate);
   ~UVScheduler() override;
 
   void KeepAlive() override;
   void WillDie() override;
   std::shared_ptr<v8::TaskRunner> TaskRunner() const override;
-  uv_loop_t* GetUvLoop() const override { return uv_loop_; }
+  uv_loop_t* GetUVLoop() const override { return uv_loop_; }
+  void Stop() { uv_async_send(keep_alive_); }
 
  private:
-  std::mutex mutex_;
-  bool is_self_;
-
   v8::Isolate* isolate_;
   uv_loop_t* uv_loop_;
   uv_async_t* keep_alive_;
   std::atomic<int> uv_ref_count{0};
-  std::thread thread_;
+
+  using ThreadType = std::conditional_t<Is_Self, std::thread, std::nullptr_t>;
+  ThreadType thread_;
 };
 
+template <bool Is_Self>
+UVScheduler<Is_Self>::UVScheduler(v8::Isolate* isolate) : isolate_(isolate) {
+  if constexpr (Is_Self) {
+    uv_loop_ = new uv_loop_t;
+    uv_loop_init(uv_loop_);
+
+    Scheduler::RegisterIsolate(isolate_, uv_loop_);
+
+    keep_alive_ = new uv_async_t;
+    uv_async_init(uv_loop_, keep_alive_,
+                  [](uv_async_t* handle) { uv_stop(handle->loop); });
+
+    thread_ = std::thread([=]() {
+      uv_run(uv_loop_, UV_RUN_DEFAULT);
+
+      uv_close(reinterpret_cast<uv_handle_t*>(keep_alive_),
+               [](uv_handle_t* handle) {
+                 delete reinterpret_cast<uv_async_t*>(handle);
+               });
+      uv_loop_close(uv_loop_);
+      delete uv_loop_;
+    });
+  } else {
+    uv_loop_ = Scheduler::GetIsolateUvLoop(isolate_);
+    keep_alive_ = new uv_async_t;
+    uv_async_init(uv_loop_, keep_alive_, [](uv_async_t*) {});
+    uv_unref(reinterpret_cast<uv_handle_t*>(keep_alive_));
+  }
+}
+
+template <bool Is_Self>
+UVScheduler<Is_Self>::~UVScheduler() {
+  if constexpr (Is_Self) {
+    uv_async_send(keep_alive_);
+    if (thread_.joinable()) {
+      thread_.join();
+    }
+  } else {
+    uv_close(reinterpret_cast<uv_handle_t*>(keep_alive_),
+             [](uv_handle_t* handle) {
+               delete reinterpret_cast<uv_async_t*>(handle);
+             });
+  }
+}
+
+template <bool Is_Self>
+void UVScheduler<Is_Self>::KeepAlive() {
+  if (++uv_ref_count == 1) {
+    uv_ref(reinterpret_cast<uv_handle_t*>(keep_alive_));
+  }
+}
+
+template <bool Is_Self>
+void UVScheduler<Is_Self>::WillDie() {
+  if (--uv_ref_count == 0) {
+    uv_unref(reinterpret_cast<uv_handle_t*>(keep_alive_));
+  }
+}
+
+template <bool Is_Self>
+std::shared_ptr<v8::TaskRunner> UVScheduler<Is_Self>::TaskRunner() const {
+  if (isolate_) {
+    return PlatformDelegate::GetNodePlatform()->GetForegroundTaskRunner(
+        isolate_);
+  }
+  return {};
+}
 }  // namespace svm
