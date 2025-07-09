@@ -7,6 +7,7 @@
 #include <v8.h>
 
 #include "../utils/utils.h"
+#include "isolate_holder.h"
 #include "scheduler.h"
 
 namespace svm {
@@ -15,7 +16,7 @@ class Scheduler;
 
 class ScriptTask : public v8::Task {
  public:
-  struct CallInfo {
+  struct ScriptInfo {
     v8::Isolate* isolate;
     v8::Local<v8::Context> context;
     std::string script;
@@ -25,70 +26,109 @@ class ScriptTask : public v8::Task {
     v8::Local<v8::Context> context;
     v8::Local<v8::Value>* result;
   };
-  ScriptTask(CallInfo& source, ResultInfo& target);
+  ScriptTask(ScriptInfo& source, ResultInfo& target);
   ~ScriptTask() override;
   void Run() override;
 
  private:
-  CallInfo& source_;
+  ScriptInfo& source_;
   ResultInfo& target_;
 };
 
 class AsyncTask : public v8::Task {
  public:
-  AsyncTask(Scheduler* scheduler) : scheduler_(scheduler) {
-    scheduler_->KeepAlive();
-  }
-  ~AsyncTask() override { scheduler_->WillDie(); }
-
- private:
-  Scheduler* scheduler_;
-};
-
-class ScriptTaskAsync : public AsyncTask {
- public:
-  struct CallInfo {
-    v8::Isolate* isolate;
-    RemoteHandle<v8::Context> context;
-    std::string script;
-    CallInfo(v8::Isolate* isolate,
-             v8::Local<v8::Context> context,
-             const std::string& script)
-        : isolate(isolate),
-          context(isolate, context),
-          script(std::move(script)) {}
-    CallInfo(CallInfo&& call_info) noexcept
-        : isolate(call_info.isolate),
-          context(std::move(call_info.context)),
-          script(std::move(call_info.script)) {}
-  };
-  struct ResultInfo {
+  struct AsyncInfo {
     Scheduler* scheduler;
     v8::Isolate* isolate;
     RemoteHandle<v8::Context> context;
     RemoteHandle<v8::Promise::Resolver> resolver;
-    ResultInfo(Scheduler* scheduler,
-               v8::Isolate* isolate,
-               v8::Local<v8::Context> context,
-               v8::Local<v8::Promise::Resolver> resolver)
+
+    AsyncInfo(Scheduler* scheduler,
+              v8::Isolate* isolate,
+              v8::Local<v8::Context> context,
+              v8::Local<v8::Promise::Resolver> resolver)
         : scheduler(scheduler),
           isolate(isolate),
           context(isolate, context),
           resolver(isolate, resolver) {}
-    ResultInfo(ResultInfo&& result_info) noexcept
-        : scheduler(result_info.scheduler),
-          isolate(result_info.isolate),
-          context(std::move(result_info.context)),
-          resolver(std::move(result_info.resolver)) {}
+    AsyncInfo(AsyncInfo&& async_info) noexcept
+        : scheduler(async_info.scheduler),
+          isolate(async_info.isolate),
+          context(std::move(async_info.context)),
+          resolver(std::move(async_info.resolver)) {}
   };
-  ScriptTaskAsync(CallInfo& call_info, ResultInfo& result_info);
+  explicit AsyncTask(AsyncInfo& async_info)
+      : async_info_{std::move(async_info)} {
+    async_info_.scheduler->KeepAlive();
+  }
+  ~AsyncTask() override { async_info_.scheduler->WillDie(); }
+
+  AsyncInfo& GetAsyncInfo() { return async_info_; }
+
+ private:
+  AsyncInfo async_info_;
+};
+
+class ScriptTaskAsync : public AsyncTask {
+ public:
+  struct ScriptInfo {
+    v8::Isolate* isolate;
+    RemoteHandle<v8::Context> context;
+    std::string script;
+    ScriptInfo(v8::Isolate* isolate,
+               v8::Local<v8::Context> context,
+               const std::string& script)
+        : isolate(isolate),
+          context(isolate, context),
+          script(std::move(script)) {}
+    ScriptInfo(ScriptInfo&& script_info) noexcept
+        : isolate(script_info.isolate),
+          context(std::move(script_info.context)),
+          script(std::move(script_info.script)) {}
+  };
+  class DeserializeTaskAsync : public AsyncTask {
+  public:
+    DeserializeTaskAsync(AsyncInfo& async_info,
+                         std::pair<uint8_t*, size_t>& buff);
+    ~DeserializeTaskAsync() override;
+
+    void Run() override;
+
+  private:
+    std::pair<uint8_t*, size_t> buff_;
+  };
+  ScriptTaskAsync(AsyncInfo& async_info, ScriptInfo& script_info);
   ~ScriptTaskAsync() override;
 
   void Run() override;
 
  private:
-  CallInfo call_info_;
-  ResultInfo result_info_;
+  ScriptInfo script_info_;
+};
+
+class ContextHandle;
+class IsolateHandle;
+
+class CreateContextTaskAsync : public AsyncTask {
+ public:
+  class CallbackTask : public AsyncTask {
+  public:
+    CallbackTask(AsyncInfo& async_info, IsolateHandle* isolate_handle, v8::Local<v8::Context> context);
+    ~CallbackTask() override;
+
+    void Run() override;
+
+  private:
+    cppgc::WeakMember<IsolateHandle> isolate_handle_;
+    RemoteHandle<v8::Context> context_;
+  };
+  explicit CreateContextTaskAsync(AsyncInfo& async_info, IsolateHandle* isolate_handle);
+  ~CreateContextTaskAsync() override;
+
+  void Run() override;
+
+private:
+  cppgc::WeakMember<IsolateHandle> isolate_handle_;
 };
 
 class GcTaskAsync : public v8::Task {
@@ -100,19 +140,6 @@ class GcTaskAsync : public v8::Task {
 
  private:
   v8::Isolate* isolate_;
-};
-
-class DeserializeTaskAsync : public AsyncTask {
-public:
-  DeserializeTaskAsync(ScriptTaskAsync::ResultInfo& result_info,
-                       std::pair<uint8_t*, size_t>& buff);
-  ~DeserializeTaskAsync() override;
-
-  void Run() override;
-
-private:
-  ScriptTaskAsync::ResultInfo result_info_;
-  std::pair<uint8_t*, size_t> buff_;
 };
 
 }  // namespace svm

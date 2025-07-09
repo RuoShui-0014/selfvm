@@ -1,12 +1,14 @@
 #include "task.h"
 
+#include "../module/context_handle.h"
+#include "../module/isolate_handle.h"
 #include "../utils/utils.h"
 #include "external_data.h"
 #include "scheduler.h"
 
 namespace svm {
 
-ScriptTask::ScriptTask(CallInfo& source, ResultInfo& target)
+ScriptTask::ScriptTask(ScriptInfo& source, ResultInfo& target)
     : source_(source), target_(target) {}
 ScriptTask::~ScriptTask() = default;
 void ScriptTask::Run() {
@@ -39,63 +41,106 @@ void ScriptTask::Run() {
   }
 }
 
-ScriptTaskAsync::ScriptTaskAsync(CallInfo& call_info, ResultInfo& result_info)
-    : AsyncTask(result_info.scheduler),
-      call_info_{std::move(call_info)},
-      result_info_{std::move(result_info)} {}
+ScriptTaskAsync::ScriptTaskAsync(AsyncInfo& async_info, ScriptInfo& script_info)
+    : AsyncTask(async_info), script_info_{std::move(script_info)} {}
 ScriptTaskAsync::~ScriptTaskAsync() = default;
 void ScriptTaskAsync::Run() {
-  v8::Isolate* isolate = call_info_.isolate;
+  v8::Isolate* isolate = script_info_.isolate;
   v8::Locker locker(isolate);
 
   v8::Isolate::Scope isolate_scope(isolate);
   v8::HandleScope call_scope(isolate);
-  v8::Local<v8::Context> context = call_info_.context.Get(isolate);
+  v8::Local<v8::Context> context = script_info_.context.Get(isolate);
   v8::Context::Scope context_scope{context};
 
-  v8::TryCatch try_catch(call_info_.isolate);
+  v8::TryCatch try_catch(isolate);
   v8::Local<v8::Script> script;
-  v8::Local<v8::String> code = toString(call_info_.isolate, call_info_.script);
-  v8::ScriptOrigin scriptOrigin =
-      v8::ScriptOrigin(toString(call_info_.isolate, ""));
+  v8::Local<v8::String> code = toString(isolate, script_info_.script);
+  v8::ScriptOrigin scriptOrigin = v8::ScriptOrigin(toString(isolate, ""));
   if (v8::Script::Compile(context, code, &scriptOrigin).ToLocal(&script)) {
     v8::MaybeLocal<v8::Value> maybe_result = script->Run(context);
     if (!maybe_result.IsEmpty()) {
       ExternalData::SourceData source_data = {isolate, context,
                                               maybe_result.ToLocalChecked()};
       std::pair<uint8_t*, size_t> buff = ExternalData::CopyAsync(source_data);
-      result_info_.scheduler->TaskRunner()->PostTask(
-          std::make_unique<DeserializeTaskAsync>(result_info_, buff));
+      GetAsyncInfo().scheduler->TaskRunner()->PostTask(
+          std::make_unique<DeserializeTaskAsync>(GetAsyncInfo(), buff));
       return;
     }
   }
 
   if (try_catch.HasCaught()) {
+    ExternalData::SourceData source_data = {isolate, context,
+                                            try_catch.Exception()};
+    std::pair<uint8_t*, size_t> buff = ExternalData::CopyAsync(source_data);
+    GetAsyncInfo().scheduler->TaskRunner()->PostTask(
+        std::make_unique<DeserializeTaskAsync>(GetAsyncInfo(), buff));
   }
   try_catch.ReThrow();
 }
 
-DeserializeTaskAsync::DeserializeTaskAsync(
-    ScriptTaskAsync::ResultInfo& result_info,
-    std::pair<uint8_t*, size_t>& buff)
-    : AsyncTask(result_info.scheduler),
-      result_info_{std::move(result_info)},
-      buff_(buff) {}
-DeserializeTaskAsync::~DeserializeTaskAsync() = default;
-void DeserializeTaskAsync::Run() {
-  v8::Isolate* isolate = result_info_.isolate;
+CreateContextTaskAsync::CallbackTask::CallbackTask(
+    AsyncInfo& async_info,
+    IsolateHandle* isolate_handle,
+    v8::Local<v8::Context> context)
+    : AsyncTask(async_info),
+      isolate_handle_(isolate_handle),
+      context_{context} {}
+CreateContextTaskAsync::CallbackTask::~CallbackTask() = default;
+void CreateContextTaskAsync::CallbackTask::Run() {
+  AsyncInfo& async_info = GetAsyncInfo();
+  v8::Isolate* isolate = async_info.isolate;
   v8::HandleScope target_scope(isolate);
-  v8::Local<v8::Context> context = result_info_.context.Get(isolate);
+  v8::Local<v8::Context> context = async_info.context.Get(isolate);
+  v8::Context::Scope context_scope{context};
+
+  v8::Local<v8::FunctionTemplate> isolate_handle_template =
+      V8ContextHandle::GetWrapperTypeInfo()
+          ->GetV8ClassTemplate(isolate)
+          .As<v8::FunctionTemplate>();
+  v8::Local<v8::Object> target = isolate_handle_template->InstanceTemplate()
+                                     ->NewInstance(isolate->GetCurrentContext())
+                                     .ToLocalChecked();
+  {
+    v8::Locker locker(context_.GetIsolate());
+    ScriptWrappable::Wrap(target,
+                          MakeCppGcObject<GC::kSpecified, ContextHandle>(
+                              isolate, isolate_handle_.Get(), context_.Get()));
+  }
+  async_info.resolver.Get(isolate)->Resolve(context, target);
+}
+
+CreateContextTaskAsync::CreateContextTaskAsync(AsyncInfo& async_info,
+                                               IsolateHandle* isolate_handle)
+    : AsyncTask(async_info), isolate_handle_(isolate_handle) {}
+CreateContextTaskAsync::~CreateContextTaskAsync() = default;
+void CreateContextTaskAsync::Run() {
+  v8::Local<v8::Context> context =
+      isolate_handle_->GetIsolateHolder()->NewContext();
+  auto task = std::make_unique<CallbackTask>(GetAsyncInfo(),
+                                             isolate_handle_.Get(), context);
+  GetAsyncInfo().scheduler->TaskRunner()->PostTask(std::move(task));
+}
+
+ScriptTaskAsync::DeserializeTaskAsync::DeserializeTaskAsync(
+    AsyncInfo& async_info,
+    std::pair<uint8_t*, size_t>& buff)
+    : AsyncTask(async_info), buff_(std::move(buff)) {}
+ScriptTaskAsync::DeserializeTaskAsync::~DeserializeTaskAsync() = default;
+void ScriptTaskAsync::DeserializeTaskAsync::Run() {
+  AsyncInfo& async_info = GetAsyncInfo();
+  v8::Isolate* isolate = async_info.isolate;
+  v8::HandleScope target_scope(isolate);
+  v8::Local<v8::Context> context = async_info.context.Get(isolate);
   v8::Context::Scope context_scope{context};
 
   v8::ValueDeserializer deserializer(isolate, buff_.first, buff_.second);
   v8::Local<v8::Value> result;
   if (deserializer.ReadValue(context).ToLocal(&result)) {
-    result_info_.resolver.Get(isolate)->Resolve(context, result);
+    async_info.resolver.Get(isolate)->Resolve(context, result);
   } else {
-    result_info_.resolver.Get(isolate)->Reject(
-        context, v8::Exception::Error(
-                     toString(result_info_.isolate, "evalAsync failed.")));
+    async_info.resolver.Get(isolate)->Reject(
+        context, v8::Exception::Error(toString(isolate, "evalAsync failed.")));
   }
 }
 

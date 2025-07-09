@@ -65,18 +65,18 @@ LocalDOMWindow::~LocalDOMWindow() = default;
 void V8Window::InstallInterfaceTemplate(
     v8::Isolate* isolate,
     v8::Local<v8::Template> interface_template) {
-  ConstructItem constructor{"Window", 0, WindowConstructCallback};
-  AttributeItem attrs[]{
+  ConstructConfig constructor{"Window", 0, WindowConstructCallback};
+  AttributeConfig attrs[]{
       {"window", WindowAttributeGetCallback, nullptr,
        v8::PropertyAttribute::ReadOnly, Dependence::kInstance},
   };
-  OperationItem operas[]{
+  OperationConfig operas[]{
       {"atob", 1, AtobOperationCallback, v8::PropertyAttribute::DontDelete,
        Dependence::kInstance},
       {"btoa", 1, BtoaOperationCallback, v8::PropertyAttribute::DontDelete,
        Dependence::kInstance},
   };
-  ExposedConstructItem exposedConstructs[]{
+  ExposedConstructConfig exposedConstructs[]{
       {"Isolate", IsolateExposedConstructCallback, Dependence::kInstance},
       {"Window", WindowExposedConstructCallback, Dependence::kInstance},
   };
@@ -85,8 +85,8 @@ void V8Window::InstallInterfaceTemplate(
 
   v8::Local<v8::Signature> signature =
       v8::Local<v8::Signature>::Cast(interface_template);
-  InstallAttributes(isolate, interface_template, attrs, signature);
-  InstallOperations(isolate, interface_template, operas, signature);
+  InstallAttributes(isolate, interface_template, signature, attrs);
+  InstallOperations(isolate, interface_template, signature, operas);
   InstallExposedConstructs(isolate, interface_template, exposedConstructs);
 }
 

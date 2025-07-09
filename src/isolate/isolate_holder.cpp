@@ -69,6 +69,7 @@ static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
                                               void* /*data*/) {}
 
 v8::Local<v8::Context> IsolateHolder::NewContext() {
+  v8::Locker locker{isolate_self_};
   v8::Isolate::Scope isolate_scope(isolate_self_);
   v8::HandleScope handle_scope(isolate_self_);
 

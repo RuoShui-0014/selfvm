@@ -27,6 +27,8 @@ class IsolateHandle : public ScriptWrappable {
   ContextHandle* GetContextHandle();
 
   /*********************** js interface *************************/
+  ContextHandle* CreateContext();
+  void CreateContextAsync(v8::Local<v8::Promise::Resolver> resolver);
   void Gc() const;
   void Release();
   v8::HeapStatistics GetHeapStatistics() const;

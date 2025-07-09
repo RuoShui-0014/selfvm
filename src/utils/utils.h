@@ -2,6 +2,8 @@
 
 #include <v8.h>
 
+#include <span>
+
 #include "../isolate/script_wrappable.h"
 #include "../isolate/wrapper_type_info.h"
 
@@ -26,12 +28,12 @@ inline v8::Local<v8::String> toString(v8::Isolate* isolate, std::string& str) {
 }
 
 enum class Dependence { kConstruct, kPrototype, kInstance };
-struct ConstructItem {
+struct ConstructConfig {
   const char* name;
   int length = 0;
   v8::FunctionCallback callback = nullptr;
 };
-struct AttributeItem {
+struct AttributeConfig {
   const char* name = "";
   v8::FunctionCallback get_callback = nullptr;
   v8::FunctionCallback set_callback = nullptr;
@@ -39,7 +41,7 @@ struct AttributeItem {
   Dependence dep;
   v8::SideEffectType sideEffectType = v8::SideEffectType::kHasNoSideEffect;
 };
-struct OperationItem {
+struct OperationConfig {
   const char* name = "";
   int length = 0;
   v8::FunctionCallback callback = nullptr;
@@ -47,7 +49,7 @@ struct OperationItem {
   Dependence dep;
   v8::SideEffectType sideEffectType = v8::SideEffectType::kHasNoSideEffect;
 };
-struct ExposedConstructItem {
+struct ExposedConstructConfig {
   const char* name = "";
   v8::AccessorNameGetterCallback callback = nullptr;
   Dependence dep;
@@ -55,7 +57,7 @@ struct ExposedConstructItem {
 
 inline void InstallConstructor(v8::Isolate* isolate,
                                v8::Local<v8::Template> interface_template,
-                               const ConstructItem& constructor) {
+                               const ConstructConfig& constructor) {
   v8::Local<v8::FunctionTemplate> constructor_template =
       interface_template.As<v8::FunctionTemplate>();
 
@@ -68,11 +70,10 @@ inline void InstallConstructor(v8::Isolate* isolate,
       v8::Symbol::GetToStringTag(isolate), toString(isolate, constructor.name));
 }
 
-template <size_t N>
-void InstallAttributes(v8::Isolate* isolate,
-                       v8::Local<v8::Template> interface_template,
-                       const AttributeItem (&attributes)[N],
-                       v8::Local<v8::Signature> signature) {
+inline void InstallAttributes(v8::Isolate* isolate,
+                              v8::Local<v8::Template> interface_template,
+                              v8::Local<v8::Signature> signature,
+                              std::span<const AttributeConfig> attributes) {
   v8::Local<v8::FunctionTemplate> constructor_template =
       interface_template.As<v8::FunctionTemplate>();
   v8::Local<v8::ObjectTemplate> prototype =
@@ -80,38 +81,39 @@ void InstallAttributes(v8::Isolate* isolate,
   v8::Local<v8::ObjectTemplate> instance =
       constructor_template->InstanceTemplate();
 
-  for (const auto& attr : attributes) {
+  for (const auto& config : attributes) {
     v8::Local<v8::FunctionTemplate> get, set;
-    if (attr.get_callback) {
+    if (config.get_callback) {
       get = v8::FunctionTemplate::New(
-          isolate, attr.get_callback, v8::Local<v8::Value>(), signature, 0,
-          v8::ConstructorBehavior::kThrow, attr.sideEffectType);
-      get->SetClassName(toString(std::string{"get "} + std::string{attr.name}));
+          isolate, config.get_callback, v8::Local<v8::Value>(), signature, 0,
+          v8::ConstructorBehavior::kThrow, config.sideEffectType);
+      get->SetClassName(
+          toString(std::string{"get "} + std::string{config.name}));
     }
-    if (attr.set_callback) {
+    if (config.set_callback) {
       set = v8::FunctionTemplate::New(
-          isolate, attr.set_callback, v8::Local<v8::Value>(), signature, 1,
-          v8::ConstructorBehavior::kThrow, attr.sideEffectType);
-      set->SetClassName(toString(std::string{"set "} + std::string{attr.name}));
+          isolate, config.set_callback, v8::Local<v8::Value>(), signature, 1,
+          v8::ConstructorBehavior::kThrow, config.sideEffectType);
+      set->SetClassName(
+          toString(std::string{"set "} + std::string{config.name}));
     }
-    if (attr.dep == Dependence ::kPrototype) {
-      prototype->SetAccessorProperty(toString(attr.name), get, set,
-                                     attr.propertyAttribute);
-    } else if (attr.dep == Dependence ::kInstance) {
-      instance->SetAccessorProperty(toString(attr.name), get, set,
-                                    attr.propertyAttribute);
-    } else if (attr.dep == Dependence ::kConstruct) {
-      constructor_template->SetAccessorProperty(toString(attr.name), get, set,
-                                                attr.propertyAttribute);
+    if (config.dep == Dependence ::kPrototype) {
+      prototype->SetAccessorProperty(toString(config.name), get, set,
+                                     config.propertyAttribute);
+    } else if (config.dep == Dependence ::kInstance) {
+      instance->SetAccessorProperty(toString(config.name), get, set,
+                                    config.propertyAttribute);
+    } else if (config.dep == Dependence ::kConstruct) {
+      constructor_template->SetAccessorProperty(toString(config.name), get, set,
+                                                config.propertyAttribute);
     }
   }
 }
 
-template <size_t N>
-void InstallOperations(v8::Isolate* isolate,
-                       v8::Local<v8::Template> interface_template,
-                       const OperationItem (&operations)[N],
-                       v8::Local<v8::Signature> signature) {
+inline void InstallOperations(v8::Isolate* isolate,
+                              v8::Local<v8::Template> interface_template,
+                              v8::Local<v8::Signature> signature,
+                              std::span<const OperationConfig> operations) {
   v8::Local<v8::FunctionTemplate> constructor_template =
       interface_template.As<v8::FunctionTemplate>();
   v8::Local<v8::ObjectTemplate> prototype =
@@ -119,28 +121,27 @@ void InstallOperations(v8::Isolate* isolate,
   v8::Local<v8::ObjectTemplate> instance =
       constructor_template->InstanceTemplate();
 
-  for (const auto& opera : operations) {
+  for (const auto& config : operations) {
     v8::Local<v8::FunctionTemplate> act = v8::FunctionTemplate::New(
-        isolate, opera.callback, v8::Local<v8::Value>(), signature,
-        opera.length, v8::ConstructorBehavior::kThrow, opera.sideEffectType);
-    act->SetClassName(toString(opera.name));
+        isolate, config.callback, v8::Local<v8::Value>(), signature,
+        config.length, v8::ConstructorBehavior::kThrow, config.sideEffectType);
+    act->SetClassName(toString(config.name));
 
-    if (opera.dep == Dependence ::kPrototype) {
-      prototype->Set(isolate, opera.name, act, opera.propertyAttribute);
-    } else if (opera.dep == Dependence ::kInstance) {
-      instance->Set(isolate, opera.name, act, opera.propertyAttribute);
-    } else if (opera.dep == Dependence ::kConstruct) {
-      interface_template->Set(isolate, opera.name, act,
-                              opera.propertyAttribute);
+    if (config.dep == Dependence ::kPrototype) {
+      prototype->Set(isolate, config.name, act, config.propertyAttribute);
+    } else if (config.dep == Dependence ::kInstance) {
+      instance->Set(isolate, config.name, act, config.propertyAttribute);
+    } else if (config.dep == Dependence ::kConstruct) {
+      interface_template->Set(isolate, config.name, act,
+                              config.propertyAttribute);
     }
   }
 }
 
-template <size_t N>
-void InstallExposedConstructs(
+inline void InstallExposedConstructs(
     v8::Isolate* isolate,
     v8::Local<v8::Template> interface_template,
-    const ExposedConstructItem (&exposedConstructs)[N]) {
+    std::span<const ExposedConstructConfig> exposedConstructs) {
   v8::Local<v8::FunctionTemplate> constructor_template =
       interface_template.As<v8::FunctionTemplate>();
   v8::Local<v8::ObjectTemplate> prototype_template =
@@ -150,11 +151,26 @@ void InstallExposedConstructs(
 
   for (const auto& config : exposedConstructs) {
     v8::Local<v8::String> name = toString(isolate, config.name);
-    instance_template->SetLazyDataProperty(
-        name, config.callback, v8::Local<v8::Value>(), v8::DontEnum,
-        v8::SideEffectType::kHasNoSideEffect);
+
+    if (config.dep == Dependence ::kInstance) {
+      instance_template->SetLazyDataProperty(
+          name, config.callback, v8::Local<v8::Value>(), v8::DontEnum,
+          v8::SideEffectType::kHasNoSideEffect);
+    }
+    if (config.dep == Dependence ::kPrototype) {
+      prototype_template->SetLazyDataProperty(
+          name, config.callback, v8::Local<v8::Value>(), v8::DontEnum,
+          v8::SideEffectType::kHasNoSideEffect);
+    } else if (config.dep == Dependence ::kConstruct) {
+      interface_template->SetLazyDataProperty(
+          name, config.callback, v8::Local<v8::Value>(), v8::DontEnum,
+          v8::SideEffectType::kHasNoSideEffect);
+    }
   }
 }
+
+template <typename T>
+class RemoteHandle;
 
 template <typename T>
 class RemoteHandle {
@@ -180,6 +196,42 @@ class RemoteHandle {
 
  private:
   v8::Global<T> handle_;
+};
+
+template <>
+class RemoteHandle<v8::Context> {
+ public:
+  explicit RemoteHandle(v8::Local<v8::Context> value)
+      : isolate_(value->GetIsolate()), handle_{isolate_, value} {}
+  RemoteHandle(v8::Isolate* isolate, v8::Local<v8::Context> value)
+      : isolate_(value->GetIsolate()), handle_{isolate, value} {}
+  RemoteHandle(RemoteHandle&& other) noexcept
+      : isolate_(other.isolate_), handle_{std::move(other.handle_)} {}
+
+  v8::Local<v8::Context> Get() const {
+    v8::HandleScope scope(isolate_);
+    return handle_.Get(isolate_);
+  }
+  v8::Local<v8::Context> Get(v8::Isolate* isolate) const {
+    return handle_.Get(isolate);
+  }
+
+  v8::Isolate* GetIsolate() const { return isolate_; }
+
+  void Clear() { handle_.Clear(); }
+
+  void Reset() { handle_.Clear(); }
+
+  void Reset(v8::Isolate* isolate, v8::Local<v8::Context> value) {
+    handle_.Clear();
+    handle_.Reset(isolate, value);
+  }
+
+  ~RemoteHandle() { handle_.Clear(); }
+
+ private:
+  v8::Isolate* isolate_;
+  v8::Global<v8::Context> handle_;
 };
 
 class V8CtxScope {
@@ -220,7 +272,7 @@ inline v8::Local<v8::Value> GetExposedInterfaceObject(
 }
 
 template <typename Info, typename T>
-inline void V8SetReturnValue(Info& info, T* value) {
+void V8SetReturnValue(Info& info, T* value) {
   info.GetReturnValue().Set(value->V8Object(info.GetIsolate()));
 }
 

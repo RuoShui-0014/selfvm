@@ -32,6 +32,20 @@ ContextHandle* IsolateHandle::GetContextHandle() {
   }
   return default_context_.Get();
 }
+
+ContextHandle* IsolateHandle::CreateContext() {
+  return ContextHandle::Create(this);
+}
+
+void IsolateHandle::CreateContextAsync(
+    v8::Local<v8::Promise::Resolver> resolver) {
+  AsyncTask::AsyncInfo async_info{
+      isolate_holder_->GetParentScheduler(), v8::Isolate::GetCurrent(),
+      v8::Isolate::GetCurrent()->GetCurrentContext(), resolver};
+  auto task = std::make_unique<CreateContextTaskAsync>(async_info, this);
+  isolate_holder_->GetScheduler()->TaskRunner()->PostTask(std::move(task));
+}
+
 void IsolateHandle::Gc() const {
   isolate_holder_->GetScheduler()->TaskRunner()->PostTask(
       std::make_unique<GcTaskAsync>(isolate_holder_->GetIsolate()));
@@ -73,6 +87,30 @@ void ContextAttributeGetCallback(
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   ContextHandle* context_handle = isolate_handle->GetContextHandle();
   info.GetReturnValue().Set(context_handle->V8Object(info.GetIsolate()));
+}
+
+void CreateContextOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Object> receiver = info.This();
+  IsolateHandle* isolate_handle =
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
+  ContextHandle* context_handle = isolate_handle->CreateContext();
+  info.GetReturnValue().Set(context_handle->V8Object(info.GetIsolate()));
+}
+
+void CreateContextAsyncOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::HandleScope scope(isolate);
+
+  v8::Local<v8::Object> receiver = info.This();
+  IsolateHandle* isolate_handle =
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
+  v8::Local<v8::Promise::Resolver> resolver =
+      v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
+  isolate_handle->CreateContextAsync(resolver);
+
+  info.GetReturnValue().Set(resolver->GetPromise());
 }
 
 void GcOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -127,16 +165,20 @@ void ReleaseOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
 void V8IsolateHandle::InstallInterfaceTemplate(
     v8::Isolate* isolate,
     v8::Local<v8::Template> interface_template) {
-  ConstructItem constructor{"Isolate", 0, ConstructCallback};
-  AttributeItem attrs[]{
+  ConstructConfig constructor{"Isolate", 0, ConstructCallback};
+  AttributeConfig attrs[]{
       {"context", ContextAttributeGetCallback, nullptr,
        v8::PropertyAttribute::ReadOnly, Dependence::kPrototype},
   };
-  OperationItem operas[]{
-      {"gc", 0, GcOperationCallback, v8::PropertyAttribute::DontDelete,
-       Dependence::kPrototype},
+  OperationConfig operas[]{
+      {"createContext", 0, CreateContextOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"createContextAsync", 0, CreateContextAsyncOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"getHeapStatistics", 0, GetHeapStatisticsOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"gc", 0, GcOperationCallback, v8::PropertyAttribute::DontDelete,
+       Dependence::kPrototype},
       {"release", 0, ReleaseOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
@@ -145,8 +187,8 @@ void V8IsolateHandle::InstallInterfaceTemplate(
 
   v8::Local<v8::Signature> signature =
       v8::Local<v8::Signature>::Cast(interface_template);
-  InstallAttributes(isolate, interface_template, attrs, signature);
-  InstallOperations(isolate, interface_template, operas, signature);
+  InstallAttributes(isolate, interface_template, signature, attrs);
+  InstallOperations(isolate, interface_template, signature, operas);
 }
 
 const WrapperTypeInfo V8IsolateHandle::wrapper_type_info_{

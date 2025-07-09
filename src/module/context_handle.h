@@ -20,7 +20,8 @@ class ContextHandle : public ScriptWrappable {
                          v8::Local<v8::Context> context);
   ~ContextHandle() override;
 
-  void EvalSync(std::string script, v8::Local<v8::Value>* result);
+  /*********************** js interface *************************/
+  void Eval(std::string script, v8::Local<v8::Value>* result);
   void EvalAsync(std::string script, v8::Local<v8::Promise::Resolver> result);
   void Release();
 
