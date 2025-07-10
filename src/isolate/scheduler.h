@@ -24,6 +24,7 @@ class Scheduler {
   static void RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop);
   static uv_loop_t* GetIsolateUvLoop(v8::Isolate* isolate);
 
+  virtual void RunLoop() {}
   virtual uv_loop_t* GetUVLoop() const { return nullptr; }
   virtual std::shared_ptr<v8::TaskRunner> TaskRunner() const { return {}; }
   virtual void KeepAlive() {}
@@ -59,6 +60,7 @@ class UVScheduler : public Scheduler {
   explicit UVScheduler(v8::Isolate* isolate);
   ~UVScheduler() override;
 
+  void RunLoop();
   void KeepAlive() override;
   void WillDie() override;
   std::shared_ptr<v8::TaskRunner> TaskRunner() const override;
@@ -67,6 +69,8 @@ class UVScheduler : public Scheduler {
 
  private:
   v8::Isolate* isolate_;
+  node::IsolateData* isolate_data_;
+  node::ArrayBufferAllocator* allocator_;
   uv_loop_t* uv_loop_;
   uv_async_t* keep_alive_;
   std::atomic<int> uv_ref_count{0};
@@ -86,17 +90,6 @@ UVScheduler<Is_Self>::UVScheduler(v8::Isolate* isolate) : isolate_(isolate) {
     keep_alive_ = new uv_async_t;
     uv_async_init(uv_loop_, keep_alive_,
                   [](uv_async_t* handle) { uv_stop(handle->loop); });
-
-    thread_ = std::thread([=]() {
-      uv_run(uv_loop_, UV_RUN_DEFAULT);
-
-      uv_close(reinterpret_cast<uv_handle_t*>(keep_alive_),
-               [](uv_handle_t* handle) {
-                 delete reinterpret_cast<uv_async_t*>(handle);
-               });
-      uv_loop_close(uv_loop_);
-      delete uv_loop_;
-    });
   } else {
     uv_loop_ = Scheduler::GetIsolateUvLoop(isolate_);
     keep_alive_ = new uv_async_t;
@@ -112,11 +105,40 @@ UVScheduler<Is_Self>::~UVScheduler() {
     if (thread_.joinable()) {
       thread_.join();
     }
+    delete uv_loop_;
   } else {
     uv_close(reinterpret_cast<uv_handle_t*>(keep_alive_),
              [](uv_handle_t* handle) {
                delete reinterpret_cast<uv_async_t*>(handle);
              });
+  }
+}
+
+template <bool Is_Self>
+void UVScheduler<Is_Self>::RunLoop() {
+  if constexpr (Is_Self) {
+    thread_ = std::thread([this]() {
+      {
+        v8::Locker locker(isolate_);
+        v8::Isolate::Scope isolate_scope(isolate_);
+        v8::HandleScope handle_scope(isolate_);
+
+        isolate_data_ = node::CreateIsolateData(
+            isolate_, uv_loop_, PlatformDelegate::GetNodePlatform());
+
+        uv_run(uv_loop_, UV_RUN_DEFAULT);
+      }
+
+      uv_close(reinterpret_cast<uv_handle_t*>(keep_alive_),
+               [](uv_handle_t* handle) {
+                 delete reinterpret_cast<uv_async_t*>(handle);
+               });
+      uv_loop_close(uv_loop_);
+
+      node::FreeIsolateData(isolate_data_);
+      PlatformDelegate::UnregisterIsolate(isolate_);
+      isolate_->Dispose();
+    });
   }
 }
 

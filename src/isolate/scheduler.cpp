@@ -18,8 +18,7 @@ void Scheduler::RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop) {
   isolate_map.emplace(isolate, loop);
 }
 uv_loop_t* Scheduler::GetIsolateUvLoop(v8::Isolate* isolate) {
-  auto it = isolate_map.find(isolate);
-  if (it != isolate_map.end()) {
+  if (const auto it = isolate_map.find(isolate); it != isolate_map.end()) {
     return it->second;
   }
   return nullptr;

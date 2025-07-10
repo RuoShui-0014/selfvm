@@ -5,38 +5,43 @@
 #pragma once
 
 #include "../isolate/script_wrappable.h"
+#include "../isolate/task.h"
 #include "../isolate/wrapper_type_info.h"
-#include "../utils/utils.h"
 
 namespace svm {
 
 class IsolateHandle;
+class AsyncInfo;
 
 class ContextHandle : public ScriptWrappable {
  public:
   static ContextHandle* Create(IsolateHandle* isolate_handle);
 
-  explicit ContextHandle(IsolateHandle* isolate_handle,
-                         v8::Local<v8::Context> context);
+  explicit ContextHandle(IsolateHandle* isolate_handle, uint32_t context_id);
   ~ContextHandle() override;
 
   /*********************** js interface *************************/
-  void Eval(std::string script, v8::Local<v8::Value>* result);
-  void EvalAsync(std::string script, v8::Local<v8::Promise::Resolver> result);
+  std::pair<uint8_t*, size_t> Eval(std::string script);
+  void EvalAsync(std::unique_ptr<AsyncInfo> info, std::string script);
   void Release();
+
+  IsolateHandle* GetIsolateHandle() { return isolate_handle_.Get(); };
+  v8::Isolate* GetIsolate() { return isolate_; }
+  uint32_t GetContextId() { return id_; }
+  v8::Local<v8::Context> GetContext();
+  void PostTask(std::unique_ptr<v8::Task> task);
+  void PostTaskToParent(std::unique_ptr<v8::Task> task);
 
   void Trace(cppgc::Visitor* visitor) const override;
 
  private:
-  RemoteHandle<v8::Context> context_;
-
+  v8::Isolate* isolate_;
+  uint32_t id_;
   cppgc::Member<IsolateHandle> isolate_handle_;
 };
 
-
-
 class V8ContextHandle {
-public:
+ public:
   static constexpr const WrapperTypeInfo* GetWrapperTypeInfo() {
     return &wrapper_type_info_;
   }
@@ -45,7 +50,7 @@ public:
       v8::Isolate* isolate,
       v8::Local<v8::Template> interface_template);
 
-private:
+ private:
   friend V8ContextHandle;
   static const WrapperTypeInfo wrapper_type_info_;
 };

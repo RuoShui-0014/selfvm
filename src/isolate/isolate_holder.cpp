@@ -32,35 +32,24 @@ IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
   {
     std::lock_guard lock{isolate_allocator_mutex};
     isolate_self_ = v8::Isolate::Allocate();
-    scheduler_self_ = std::make_shared<UVScheduler<true>>(isolate_self_);
+    scheduler_self_ = std::make_unique<UVScheduler<true>>(isolate_self_);
     PlatformDelegate::RegisterIsolate(isolate_self_,
                                       scheduler_self_->GetUVLoop());
   }
   v8::Isolate::Initialize(isolate_self_, create_params);
+  scheduler_self_->RunLoop();
 
-  scheduler_parent_ = std::make_shared<UVScheduler<false>>(isolate_parent_);
+  scheduler_parent_ = std::make_unique<UVScheduler<false>>(isolate_parent_);
 
   per_isolate_data_ =
       std::move(std::make_unique<PerIsolateData>(isolate_self_));
-
-  isolate_data_ = node::CreateIsolateData(
-      isolate_self_, scheduler_self_->GetUVLoop(),
-      PlatformDelegate::GetNodePlatform(), allocator_.get());
 }
 
 IsolateHolder::~IsolateHolder() {
+  context_map_.clear();
+  per_isolate_data_.reset();
   scheduler_self_.reset();
   scheduler_parent_.reset();
-
-  per_isolate_data_.reset();
-
-  node::FreeIsolateData(isolate_data_);
-  PlatformDelegate::UnregisterIsolate(isolate_self_);
-
-  {
-    std::lock_guard lock{isolate_allocator_mutex};
-    isolate_self_->Dispose();
-  }
 }
 
 static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
@@ -68,8 +57,7 @@ static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
                                               v8::StartupData /*payload*/,
                                               void* /*data*/) {}
 
-v8::Local<v8::Context> IsolateHolder::NewContext() {
-  v8::Locker locker{isolate_self_};
+uint32_t IsolateHolder::NewContext() {
   v8::Isolate::Scope isolate_scope(isolate_self_);
   v8::HandleScope handle_scope(isolate_self_);
 
@@ -87,7 +75,23 @@ v8::Local<v8::Context> IsolateHolder::NewContext() {
       MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_self_));
 
   context->AllowCodeGenerationFromStrings(false);
-  return context;
+
+  uint32_t id = index_++;
+  context_map_.emplace(id, context);
+
+  return id;
+}
+
+void IsolateHolder::ClearContext(uint32_t id) {
+  context_map_.erase(id);
+}
+
+v8::Local<v8::Context> IsolateHolder::GetContext(uint32_t id) {
+  auto it = context_map_.find(id);
+  if (it != context_map_.end()) {
+    return it->second.Get(isolate_self_);
+  }
+  return {};
 }
 
 }  // namespace svm

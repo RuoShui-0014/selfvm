@@ -23,7 +23,7 @@ inline v8::Local<v8::String> toString(const std::string& str) {
       .ToLocalChecked();
 }
 
-inline v8::Local<v8::String> toString(v8::Isolate* isolate, std::string& str) {
+inline v8::Local<v8::String> toString(v8::Isolate* isolate, std::string str) {
   return v8::String::NewFromUtf8(isolate, str.c_str()).ToLocalChecked();
 }
 
@@ -88,24 +88,24 @@ inline void InstallAttributes(v8::Isolate* isolate,
           isolate, config.get_callback, v8::Local<v8::Value>(), signature, 0,
           v8::ConstructorBehavior::kThrow, config.sideEffectType);
       get->SetClassName(
-          toString(std::string{"get "} + std::string{config.name}));
+          toString(isolate, std::string{"get "} + std::string{config.name}));
     }
     if (config.set_callback) {
       set = v8::FunctionTemplate::New(
           isolate, config.set_callback, v8::Local<v8::Value>(), signature, 1,
           v8::ConstructorBehavior::kThrow, config.sideEffectType);
       set->SetClassName(
-          toString(std::string{"set "} + std::string{config.name}));
+          toString(isolate, std::string{"set "} + std::string{config.name}));
     }
     if (config.dep == Dependence ::kPrototype) {
-      prototype->SetAccessorProperty(toString(config.name), get, set,
+      prototype->SetAccessorProperty(toString(isolate, config.name), get, set,
                                      config.propertyAttribute);
     } else if (config.dep == Dependence ::kInstance) {
-      instance->SetAccessorProperty(toString(config.name), get, set,
+      instance->SetAccessorProperty(toString(isolate, config.name), get, set,
                                     config.propertyAttribute);
     } else if (config.dep == Dependence ::kConstruct) {
-      constructor_template->SetAccessorProperty(toString(config.name), get, set,
-                                                config.propertyAttribute);
+      constructor_template->SetAccessorProperty(
+          toString(isolate, config.name), get, set, config.propertyAttribute);
     }
   }
 }
@@ -125,7 +125,7 @@ inline void InstallOperations(v8::Isolate* isolate,
     v8::Local<v8::FunctionTemplate> act = v8::FunctionTemplate::New(
         isolate, config.callback, v8::Local<v8::Value>(), signature,
         config.length, v8::ConstructorBehavior::kThrow, config.sideEffectType);
-    act->SetClassName(toString(config.name));
+    act->SetClassName(toString(isolate, config.name));
 
     if (config.dep == Dependence ::kPrototype) {
       prototype->Set(isolate, config.name, act, config.propertyAttribute);
@@ -176,10 +176,12 @@ template <typename T>
 class RemoteHandle {
  public:
   RemoteHandle(v8::Isolate* isolate, v8::Local<T> value)
-      : handle_{isolate, value} {}
-  explicit RemoteHandle(v8::Global<T>&& value) : handle_{std::move(value)} {}
+      : isolate_(isolate), handle_{isolate, value} {}
+  RemoteHandle(RemoteHandle& other) noexcept
+      : isolate_(other.isolate_), handle_(other.handle_.Pass()) {}
   RemoteHandle(RemoteHandle&& other) noexcept
-      : handle_{std::move(other.handle_)} {}
+      : isolate_(std::move(other.isolate_)),
+        handle_{std::move(other.handle_)} {}
 
   v8::Local<T> Get(v8::Isolate* isolate) { return handle_.Get(isolate); }
 
@@ -195,6 +197,7 @@ class RemoteHandle {
   ~RemoteHandle() { handle_.Clear(); }
 
  private:
+  v8::Isolate* isolate_;
   v8::Global<T> handle_;
 };
 
@@ -204,7 +207,9 @@ class RemoteHandle<v8::Context> {
   explicit RemoteHandle(v8::Local<v8::Context> value)
       : isolate_(value->GetIsolate()), handle_{isolate_, value} {}
   RemoteHandle(v8::Isolate* isolate, v8::Local<v8::Context> value)
-      : isolate_(value->GetIsolate()), handle_{isolate, value} {}
+      : isolate_(isolate), handle_{isolate, value} {}
+  RemoteHandle(RemoteHandle& other) noexcept
+      : isolate_(other.isolate_), handle_(other.handle_.Pass()) {}
   RemoteHandle(RemoteHandle&& other) noexcept
       : isolate_(other.isolate_), handle_{std::move(other.handle_)} {}
 

@@ -4,7 +4,12 @@ project(self-vm)
 
 set(CMAKE_CXX_STANDARD 20)
 
+if (CMAKE_BUILD MATCHES "Debug")
+    add_definitions(-DDEBUG)
+endif ()
+
 if (MSVC)
+    add_compile_options(/MD)
     add_compile_options(/wd4275 /wd4251 /GR-)
     if (CMAKE_BUILD MATCHES "Release")
         add_compile_options(/O2)
@@ -52,7 +57,7 @@ add_library(${PROJECT_NAME} SHARED
         src/web/local_dom_window.cpp
         src/web/local_dom_window.h
 )
-
+target_compile_definitions(${PROJECT_NAME} PRIVATE _UCRT)
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 #target_link_libraries(${PROJECT_NAME} E:/src/node-v22.17.0/Release/lib/v8_base_without_compiler.lib)
 #target_link_libraries(${PROJECT_NAME} E:/src/node-v22.17.0/Release/node.lib)

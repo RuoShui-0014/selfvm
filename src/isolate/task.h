@@ -6,140 +6,167 @@
 
 #include <v8.h>
 
+#include "../module/context_handle.h"
+#include "../module/isolate_handle.h"
 #include "../utils/utils.h"
-#include "isolate_holder.h"
-#include "scheduler.h"
 
 namespace svm {
-
-class Scheduler;
-
-class ScriptTask : public v8::Task {
- public:
-  struct ScriptInfo {
-    v8::Isolate* isolate;
-    v8::Local<v8::Context> context;
-    std::string script;
-  };
-  struct ResultInfo {
-    v8::Isolate* isolate;
-    v8::Local<v8::Context> context;
-    v8::Local<v8::Value>* result;
-  };
-  ScriptTask(ScriptInfo& source, ResultInfo& target);
-  ~ScriptTask() override;
-  void Run() override;
-
- private:
-  ScriptInfo& source_;
-  ResultInfo& target_;
-};
-
-class AsyncTask : public v8::Task {
- public:
-  struct AsyncInfo {
-    Scheduler* scheduler;
-    v8::Isolate* isolate;
-    RemoteHandle<v8::Context> context;
-    RemoteHandle<v8::Promise::Resolver> resolver;
-
-    AsyncInfo(Scheduler* scheduler,
-              v8::Isolate* isolate,
-              v8::Local<v8::Context> context,
-              v8::Local<v8::Promise::Resolver> resolver)
-        : scheduler(scheduler),
-          isolate(isolate),
-          context(isolate, context),
-          resolver(isolate, resolver) {}
-    AsyncInfo(AsyncInfo&& async_info) noexcept
-        : scheduler(async_info.scheduler),
-          isolate(async_info.isolate),
-          context(std::move(async_info.context)),
-          resolver(std::move(async_info.resolver)) {}
-  };
-  explicit AsyncTask(AsyncInfo& async_info)
-      : async_info_{std::move(async_info)} {
-    async_info_.scheduler->KeepAlive();
-  }
-  ~AsyncTask() override { async_info_.scheduler->WillDie(); }
-
-  AsyncInfo& GetAsyncInfo() { return async_info_; }
-
- private:
-  AsyncInfo async_info_;
-};
-
-class ScriptTaskAsync : public AsyncTask {
- public:
-  struct ScriptInfo {
-    v8::Isolate* isolate;
-    RemoteHandle<v8::Context> context;
-    std::string script;
-    ScriptInfo(v8::Isolate* isolate,
-               v8::Local<v8::Context> context,
-               const std::string& script)
-        : isolate(isolate),
-          context(isolate, context),
-          script(std::move(script)) {}
-    ScriptInfo(ScriptInfo&& script_info) noexcept
-        : isolate(script_info.isolate),
-          context(std::move(script_info.context)),
-          script(std::move(script_info.script)) {}
-  };
-  class DeserializeTaskAsync : public AsyncTask {
-  public:
-    DeserializeTaskAsync(AsyncInfo& async_info,
-                         std::pair<uint8_t*, size_t>& buff);
-    ~DeserializeTaskAsync() override;
-
-    void Run() override;
-
-  private:
-    std::pair<uint8_t*, size_t> buff_;
-  };
-  ScriptTaskAsync(AsyncInfo& async_info, ScriptInfo& script_info);
-  ~ScriptTaskAsync() override;
-
-  void Run() override;
-
- private:
-  ScriptInfo script_info_;
-};
 
 class ContextHandle;
 class IsolateHandle;
 
-class CreateContextTaskAsync : public AsyncTask {
+// 同步任务
+template <typename T>
+class SyncTask : public v8::Task {
  public:
-  class CallbackTask : public AsyncTask {
-  public:
-    CallbackTask(AsyncInfo& async_info, IsolateHandle* isolate_handle, v8::Local<v8::Context> context);
-    ~CallbackTask() override;
+  class Waiter {
+   public:
+    Waiter() = default;
+    ~Waiter() = default;
 
-    void Run() override;
+    T& GetResult() {
+      while (true) {
+        if (flag.load()) {
+          return result_;
+        }
+      }
 
-  private:
-    cppgc::WeakMember<IsolateHandle> isolate_handle_;
-    RemoteHandle<v8::Context> context_;
+      // std::unique_lock<std::mutex> lock(mutex_);
+      // condition_.wait(lock, [this] { return flag.load(); });
+      // return result_;
+    }
+    void SetResult(const T& result) {
+      result_ = result;
+      flag.store(true);
+
+      // {
+      //   std::lock_guard<std::mutex> lock(mutex_);
+      //   result_ = result;
+      //   flag.store(true);
+      // }
+      // condition_.notify_one();
+    }
+
+   private:
+    friend class SyncTask;
+    // std::mutex mutex_;
+    // std::condition_variable condition_;
+    std::atomic<bool> flag{false};
+    T result_;
   };
-  explicit CreateContextTaskAsync(AsyncInfo& async_info, IsolateHandle* isolate_handle);
-  ~CreateContextTaskAsync() override;
+
+  explicit SyncTask() = default;
+  ~SyncTask() override { wait_->flag.store(true); }
+
+  std::unique_ptr<Waiter> CreateWaiter() {
+    assert(!wait_);
+
+    auto wait = std::make_unique<Waiter>();
+    wait_ = wait.get();
+    return wait;
+  }
+
+ protected:
+  Waiter* wait_{nullptr};
+};
+
+template <typename T>
+  requires std::is_void_v<T>
+class SyncTask<T> : public v8::Task {
+ public:
+  explicit SyncTask() = default;
+  ~SyncTask() override = default;
+};
+
+class CreateContextTask : public SyncTask<uint32_t> {
+ public:
+  explicit CreateContextTask(IsolateHandle* isolate_handle);
+  ~CreateContextTask() override = default;
 
   void Run() override;
 
-private:
-  cppgc::WeakMember<IsolateHandle> isolate_handle_;
+ private:
+  cppgc::Member<IsolateHandle> isolate_handle_;
 };
 
-class GcTaskAsync : public v8::Task {
+class ScriptTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
  public:
-  explicit GcTaskAsync(v8::Isolate* isolate) : isolate_(isolate) {}
-  ~GcTaskAsync() override = default;
+  ScriptTask(ContextHandle* context_handle, std::string script);
+  ~ScriptTask() override = default;
 
-  void Run() override { isolate_->LowMemoryNotification(); }
+  void Run() override;
+
+ private:
+  cppgc::Member<ContextHandle> context_handle_;
+  std::string script_;
+};
+
+class IsolateGcTask final : public SyncTask<void> {
+ public:
+  explicit IsolateGcTask(v8::Isolate* isolate);
+  ~IsolateGcTask() override = default;
+
+  void Run() override;
 
  private:
   v8::Isolate* isolate_;
+};
+
+class AsyncInfo {
+ public:
+  IsolateHandle* isolate_handle;
+  v8::Isolate* isolate;
+  RemoteHandle<v8::Context> context;
+  RemoteHandle<v8::Promise::Resolver> resolver;
+
+  AsyncInfo(IsolateHandle* isolate_handle,
+            v8::Isolate* isolate,
+            RemoteHandle<v8::Context> context,
+            RemoteHandle<v8::Promise::Resolver> resolver)
+      : isolate_handle(isolate_handle),
+        isolate(isolate),
+        context(context),
+        resolver(resolver) {
+    isolate_handle->GetIsolateHolder()->GetParentScheduler()->KeepAlive();
+  }
+  ~AsyncInfo() {
+    isolate_handle->GetIsolateHolder()->GetParentScheduler()->WillDie();
+  }
+};
+class AsyncTask : public v8::Task {
+ public:
+  explicit AsyncTask(std::unique_ptr<AsyncInfo> info)
+      : info_(std::move(info)) {}
+  ~AsyncTask() override = default;
+
+ protected:
+  std::unique_ptr<AsyncInfo> info_;
+};
+
+class ScriptAsyncTask final : public AsyncTask {
+ public:
+  class Callback : public v8::Task {
+   public:
+    explicit Callback(std::unique_ptr<AsyncInfo> info,
+                      std::pair<uint8_t*, size_t> buff);
+    ~Callback() override = default;
+
+    void Run() override;
+
+   private:
+    std::unique_ptr<AsyncInfo> info_;
+    std::pair<uint8_t*, size_t> buff_;
+  };
+  explicit ScriptAsyncTask(std::unique_ptr<AsyncInfo> info,
+                           ContextHandle* context_handle,
+                           std::string script);
+  ~ScriptAsyncTask() override = default;
+
+  void Run() override;
+
+ private:
+  cppgc::Member<ContextHandle> context_handle_;
+  std::string script_;
 };
 
 }  // namespace svm

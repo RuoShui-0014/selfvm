@@ -21,7 +21,7 @@ class ExternalData {
     v8::Local<v8::Value>* result;
   };
 
-  static bool CopySync(SourceData& source, TargetData& target);
+  static std::pair<uint8_t*, size_t> CopySync(SourceData& source);
   static std::pair<uint8_t*, size_t> CopyAsync(SourceData& source);
 };
 

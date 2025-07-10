@@ -1,7 +1,5 @@
 #include "context_handle.h"
 
-#include <iostream>
-
 #include "../isolate/per_isolate_data.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
@@ -10,12 +8,16 @@
 namespace svm {
 
 ContextHandle* ContextHandle::Create(IsolateHandle* isolate_handle) {
-  v8::Local<v8::Context> context =
-      isolate_handle->GetIsolateHolder()->NewContext();
+  auto task = std::make_unique<CreateContextTask>(isolate_handle);
+  auto waiter = task->CreateWaiter();
+  isolate_handle->PostTask(std::move(task));
+
+  auto id = waiter->GetResult();
+
   v8::Isolate* isolate = isolate_handle->GetParentIsolate();
   ContextHandle* context_handle =
       MakeCppGcObject<GC::kSpecified, ContextHandle>(isolate, isolate_handle,
-                                                     context);
+                                                     id);
   v8::Local<v8::FunctionTemplate> isolate_handle_template =
       V8ContextHandle::GetWrapperTypeInfo()
           ->GetV8ClassTemplate(isolate)
@@ -27,61 +29,41 @@ ContextHandle* ContextHandle::Create(IsolateHandle* isolate_handle) {
   return context_handle;
 }
 
-ContextHandle::ContextHandle(IsolateHandle* isolate_handle,
-                             v8::Local<v8::Context> context)
-    : context_(isolate_handle->GetIsolate(), context),
+ContextHandle::ContextHandle(IsolateHandle* isolate_handle, uint32_t context_id)
+    : isolate_(isolate_handle->GetIsolate()),
+      id_{context_id},
       isolate_handle_(isolate_handle) {}
 
 ContextHandle::~ContextHandle() = default;
 
 // 同步任务
-void ContextHandle::Eval(std::string script, v8::Local<v8::Value>* result) {
-  v8::Isolate* isolate_parent = isolate_handle_->GetParentIsolate();
-  v8::HandleScope result_scope(isolate_parent);
-  ScriptTask::ResultInfo result_info{
-    isolate_parent, isolate_parent->GetCurrentContext(), result};
-
-  {
-    v8::Isolate* isolate = isolate_handle_->GetIsolate();
-    v8::Locker locker(isolate);
-    v8::HandleScope scope(isolate);
-
-    ScriptTask::ScriptInfo script_info{isolate, context_.Get(isolate),
-                                   std::move(script)};
-    ScriptTask task(script_info, result_info);
-    task.Run();
-  }
+std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script) {
+  auto task = std::make_unique<ScriptTask>(this, script);
+  auto waiter = task->CreateWaiter();
+  PostTask(std::move(task));
+  return waiter->GetResult();
 }
 
-void ContextHandle::EvalAsync(std::string script,
-                              v8::Local<v8::Promise::Resolver> resolver) {
-  v8::Isolate* isolate_parent = isolate_handle_->GetParentIsolate();
-  v8::HandleScope scope_parent(isolate_parent);
-
-  Scheduler* scheduler_self =
-      isolate_handle_->GetIsolateHolder()->GetScheduler();
-  Scheduler* scheduler_parent =
-      isolate_handle_->GetIsolateHolder()->GetParentScheduler();
-
-  AsyncTask::AsyncInfo async_info{scheduler_parent, isolate_parent,
-                                  isolate_parent->GetCurrentContext(),
-                                  resolver};
-
-  {
-    v8::Isolate* isolate_self = isolate_handle_->GetIsolate();
-    v8::Locker locker_self(isolate_self);
-    v8::HandleScope scope_self(isolate_self);
-
-    ScriptTaskAsync::ScriptInfo script_info{
-        isolate_self, context_.Get(isolate_self), std::move(script)};
-
-    auto task = std::make_unique<ScriptTaskAsync>(async_info, script_info);
-    scheduler_self->TaskRunner()->PostTask(std::move(task));
-  }
+void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
+                              std::string script) {
+  auto task = std::make_unique<ScriptAsyncTask>(std::move(info), this, script);
+  PostTask(std::move(task));
 }
 
 void ContextHandle::Release() {
-  context_.Clear();
+  isolate_handle_->GetIsolateHolder()->ClearContext(id_);
+}
+
+v8::Local<v8::Context> ContextHandle::GetContext() {
+  return isolate_handle_->GetContext(id_);
+}
+
+void ContextHandle::PostTask(std::unique_ptr<v8::Task> task) {
+  isolate_handle_->PostTask(std::move(task));
+}
+
+void ContextHandle::PostTaskToParent(std::unique_ptr<v8::Task> task) {
+  isolate_handle_->PostTaskToParent(std::move(task));
 }
 
 void ContextHandle::Trace(cppgc::Visitor* visitor) const {
@@ -91,21 +73,39 @@ void ContextHandle::Trace(cppgc::Visitor* visitor) const {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-void EvalSyncOperationCallback(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
+void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1 || !info[0]->IsString()) {
     return;
   }
 
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope scope(isolate);
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Object> receiver = info.This();
   ContextHandle* context_handle =
       ScriptWrappable::Unwrap<ContextHandle>(receiver);
-  v8::Local<v8::Value> result = v8::Undefined(isolate);
-  context_handle->Eval(*v8::String::Utf8Value(isolate, info[0]), &result);
+  auto buff = context_handle->Eval(*v8::String::Utf8Value(isolate, info[0]));
 
-  info.GetReturnValue().Set(result);
+  v8::Local<v8::Value> result, error;
+  {
+    v8::TryCatch try_catch(isolate);
+    v8::ValueDeserializer deserializer(isolate, buff.first, buff.second);
+    deserializer.ReadHeader(context);
+    if (deserializer.ReadValue(context).ToLocal(&result)) {
+      if (result->IsNativeError()) {
+        error = result;
+      }
+    } else {
+      error = try_catch.Exception();
+      try_catch.Reset();
+    }
+  }
+
+  if (error.IsEmpty()) {
+    info.GetReturnValue().Set(result);
+  } else {
+    isolate->ThrowException(error);
+  }
 }
 
 void EvalAsyncOperationCallback(
@@ -121,7 +121,13 @@ void EvalAsyncOperationCallback(
       ScriptWrappable::Unwrap<ContextHandle>(receiver);
   v8::Local<v8::Promise::Resolver> resolver =
       v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
-  context_handle->EvalAsync(*v8::String::Utf8Value(isolate, info[0]), resolver);
+
+  auto async_info = std::make_unique<AsyncInfo>(
+      context_handle->GetIsolateHandle(), isolate,
+      RemoteHandle(isolate, isolate->GetCurrentContext()),
+      RemoteHandle(isolate, resolver));
+  context_handle->EvalAsync(std::move(async_info),
+                            *v8::String::Utf8Value(isolate, info[0]));
 
   info.GetReturnValue().Set(resolver);
 }
@@ -135,8 +141,8 @@ void V8ContextHandle::InstallInterfaceTemplate(
   //      v8::PropertyAttribute::ReadOnly, Dependence::kPrototype},
   // };
   OperationConfig operas[]{
-      {"eval", 2, EvalSyncOperationCallback,
-       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"eval", 2, EvalOperationCallback, v8::PropertyAttribute::DontDelete,
+       Dependence::kPrototype},
       {"evalAsync", 2, EvalAsyncOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };

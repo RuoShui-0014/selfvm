@@ -6,25 +6,32 @@ const isolate = new svm.Isolate();
 const default_ctx = isolate.context
 
 // context可通过eval进行代码的同步运行
+let times = 1000;
+let result;
 console.time("eval")
-let result = default_ctx.eval("this.a = {name: 'Jack', age: 18}")
-result = default_ctx.eval(`
-this.a = "" + btoa("test");
-`)
+for (let i = 0; i < times; i++) {
+    try {
+        // console.time("" + i)
+        result = default_ctx.eval("this.a = {name: 'Jack', age: 18};")
+        // console.timeEnd("" + i)
+        console.log(`eval result = `, result);
+    } catch (e) {
+        console.error(e)
+    }
+}
 console.timeEnd("eval")
-console.log(`eval result = `, result);
 console.log("---------");
+isolate.gc()
 
 // 创建新context
 const ctx = isolate.createContext()
-ctx.eval(`
-this.a = "" + btoa("test");
-`)
+result = ctx.eval(`this.a = "" + btoa("test");`)
 console.log(`ctx --> `, result);
 
+// 异步创建新context
 isolate.createContextAsync().then(ctx => {
     ctx.eval(`this.a = "" + btoa("test");`)
-    console.log(`ctx --> `, result);
+    console.log(`异步创建 ctx --> `, result);
 });
 
 // context可通过evalSync进行代码的异步运行
@@ -46,11 +53,16 @@ async function test() {
 
     } catch (err) {
         console.error('Error:', err);
-    } finally {
-        // 清理资源
     }
 }
 
+default_ctx.eval(`
+isolate = new Isolate();
+result = isolate.context.eval("this.a = {name: 'Jack', age: 18}")
+this.a = {name: 'Jack', age: 18, value: result}
+`)
+
+// test()
 for (let i = 0; i < 10; i++) {
     test()
 }

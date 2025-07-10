@@ -25,20 +25,25 @@ class IsolateHandle : public ScriptWrappable {
     return isolate_holder_->GetParentIsolate();
   }
   ContextHandle* GetContextHandle();
+  v8::Local<v8::Context> GetContext(uint32_t id);
+
+  void PostTask(std::unique_ptr<v8::Task> task);
+  void PostTaskToParent(std::unique_ptr<v8::Task> task);
 
   /*********************** js interface *************************/
   ContextHandle* CreateContext();
-  void CreateContextAsync(v8::Local<v8::Promise::Resolver> resolver);
-  void Gc() const;
+  void CreateContextAsync(v8::Isolate* isolate,
+                          v8::Local<v8::Context> context,
+                          v8::Local<v8::Promise::Resolver> resolver);
+  void IsolateGc();
   void Release();
   v8::HeapStatistics GetHeapStatistics() const;
 
   void Trace(cppgc::Visitor* visitor) const override;
 
  private:
-  std::unique_ptr<IsolateHolder> isolate_holder_;
-
   cppgc::Member<ContextHandle> default_context_;
+  std::unique_ptr<IsolateHolder> isolate_holder_;
 };
 
 class V8IsolateHandle {

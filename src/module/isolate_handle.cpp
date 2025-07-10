@@ -12,19 +12,22 @@
 
 namespace svm {
 
-IsolateHandle* IsolateHandle::Create(v8::Isolate* isolate) {
+IsolateHandle* IsolateHandle::Create(v8::Isolate* isolate_parent) {
   size_t memory_limit = 128;
 
-  auto isolate_holder = std::make_unique<IsolateHolder>(isolate, memory_limit);
+  auto isolate_holder =
+      std::make_unique<IsolateHolder>(isolate_parent, memory_limit);
 
-  return MakeCppGcObject<GC::kSpecified, IsolateHandle>(isolate,
+  return MakeCppGcObject<GC::kSpecified, IsolateHandle>(isolate_parent,
                                                         isolate_holder);
 }
 
 IsolateHandle::IsolateHandle(std::unique_ptr<IsolateHolder>& isolate_holder)
     : isolate_holder_(std::move(isolate_holder)) {}
 
-IsolateHandle::~IsolateHandle() = default;
+IsolateHandle::~IsolateHandle() {
+  default_context_.Clear();
+}
 
 ContextHandle* IsolateHandle::GetContextHandle() {
   if (!default_context_) {
@@ -33,22 +36,33 @@ ContextHandle* IsolateHandle::GetContextHandle() {
   return default_context_.Get();
 }
 
+v8::Local<v8::Context> IsolateHandle::GetContext(uint32_t id) {
+  return isolate_holder_->GetContext(id);
+}
+
+void IsolateHandle::PostTask(std::unique_ptr<v8::Task> task) {
+  isolate_holder_->GetScheduler()->TaskRunner()->PostTask(std::move(task));
+}
+
+void IsolateHandle::PostTaskToParent(std::unique_ptr<v8::Task> task) {
+  isolate_holder_->GetParentScheduler()->TaskRunner()->PostTask(std::move(task));
+}
+
 ContextHandle* IsolateHandle::CreateContext() {
   return ContextHandle::Create(this);
 }
 
 void IsolateHandle::CreateContextAsync(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
     v8::Local<v8::Promise::Resolver> resolver) {
-  AsyncTask::AsyncInfo async_info{
-      isolate_holder_->GetParentScheduler(), v8::Isolate::GetCurrent(),
-      v8::Isolate::GetCurrent()->GetCurrentContext(), resolver};
-  auto task = std::make_unique<CreateContextTaskAsync>(async_info, this);
-  isolate_holder_->GetScheduler()->TaskRunner()->PostTask(std::move(task));
+  // AsyncTask::Info info{isolate, context, resolver};
+  // auto task = std::make_unique<CreateContextTaskAsync>(info, this);
+  // PostTask(std::move(task));
 }
 
-void IsolateHandle::Gc() const {
-  isolate_holder_->GetScheduler()->TaskRunner()->PostTask(
-      std::make_unique<GcTaskAsync>(isolate_holder_->GetIsolate()));
+void IsolateHandle::IsolateGc() {
+  PostTask(std::make_unique<IsolateGcTask>(isolate_holder_->GetIsolate()));
 }
 
 void IsolateHandle::Release() {
@@ -108,7 +122,8 @@ void CreateContextAsyncOperationCallback(
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   v8::Local<v8::Promise::Resolver> resolver =
       v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
-  isolate_handle->CreateContextAsync(resolver);
+  isolate_handle->CreateContextAsync(isolate, isolate->GetCurrentContext(),
+                                     resolver);
 
   info.GetReturnValue().Set(resolver->GetPromise());
 }
@@ -117,7 +132,7 @@ void GcOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
   IsolateHandle* isolate_handle =
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
-  isolate_handle->Gc();
+  isolate_handle->IsolateGc();
 }
 
 void GetHeapStatisticsOperationCallback(
