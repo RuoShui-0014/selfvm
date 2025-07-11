@@ -9,7 +9,6 @@ if (CMAKE_BUILD MATCHES "Debug")
 endif ()
 
 if (MSVC)
-    add_compile_options(/MD)
     add_compile_options(/wd4275 /wd4251 /GR-)
     if (CMAKE_BUILD MATCHES "Release")
         add_compile_options(/O2)
@@ -59,14 +58,12 @@ add_library(${PROJECT_NAME} SHARED
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE _UCRT)
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
-#target_link_libraries(${PROJECT_NAME} E:/src/node-v22.17.0/Release/lib/v8_base_without_compiler.lib)
 #target_link_libraries(${PROJECT_NAME} E:/src/node-v22.17.0/Release/node.lib)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
-set(TARGET_COPY_DIR ${PROJECT_SOURCE_DIR}/out)  # 修改为你想要复制到的目录
+set(TARGET_COPY_DIR ${PROJECT_SOURCE_DIR}/out)
 
-# 添加自定义命令在构建后复制文件
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         $<TARGET_FILE:${PROJECT_NAME}>

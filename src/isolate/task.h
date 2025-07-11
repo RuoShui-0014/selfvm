@@ -127,10 +127,10 @@ class AsyncInfo {
         isolate(isolate),
         context(context),
         resolver(resolver) {
-    isolate_handle->GetIsolateHolder()->GetParentScheduler()->KeepAlive();
+    isolate_handle->GetIsolateHolder()->GetSchedulerPar()->KeepAlive();
   }
   ~AsyncInfo() {
-    isolate_handle->GetIsolateHolder()->GetParentScheduler()->WillDie();
+    isolate_handle->GetIsolateHolder()->GetSchedulerPar()->WillDie();
   }
 };
 class AsyncTask : public v8::Task {
@@ -167,6 +167,24 @@ class ScriptAsyncTask final : public AsyncTask {
  private:
   cppgc::Member<ContextHandle> context_handle_;
   std::string script_;
+};
+
+class CreateContextAsyncTask final : public AsyncTask {
+  public:
+  class Callback : public v8::Task {
+  public:
+    explicit Callback(std::unique_ptr<AsyncInfo> info, uint32_t id);
+    ~Callback() override = default;
+
+    void Run() override;
+
+    std::unique_ptr<AsyncInfo> info_;
+    uint32_t id_;
+  };
+  explicit CreateContextAsyncTask(std::unique_ptr<AsyncInfo> info);
+  ~CreateContextAsyncTask() override = default;
+
+  void Run() override;
 };
 
 }  // namespace svm

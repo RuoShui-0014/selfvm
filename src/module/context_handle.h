@@ -26,11 +26,11 @@ class ContextHandle : public ScriptWrappable {
   void Release();
 
   IsolateHandle* GetIsolateHandle() { return isolate_handle_.Get(); };
-  v8::Isolate* GetIsolate() { return isolate_; }
+  v8::Isolate* GetIsolateSel() { return isolate_; }
   uint32_t GetContextId() { return id_; }
   v8::Local<v8::Context> GetContext();
-  void PostTask(std::unique_ptr<v8::Task> task);
-  void PostTaskToParent(std::unique_ptr<v8::Task> task);
+  void PostTaskToSel(std::unique_ptr<v8::Task> task);
+  void PostTaskToPar(std::unique_ptr<v8::Task> task);
 
   void Trace(cppgc::Visitor* visitor) const override;
 

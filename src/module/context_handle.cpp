@@ -10,11 +10,11 @@ namespace svm {
 ContextHandle* ContextHandle::Create(IsolateHandle* isolate_handle) {
   auto task = std::make_unique<CreateContextTask>(isolate_handle);
   auto waiter = task->CreateWaiter();
-  isolate_handle->PostTask(std::move(task));
+  isolate_handle->PostTaskToSel(std::move(task));
 
   auto id = waiter->GetResult();
 
-  v8::Isolate* isolate = isolate_handle->GetParentIsolate();
+  v8::Isolate* isolate = isolate_handle->GetIsolatePar();
   ContextHandle* context_handle =
       MakeCppGcObject<GC::kSpecified, ContextHandle>(isolate, isolate_handle,
                                                      id);
@@ -30,7 +30,7 @@ ContextHandle* ContextHandle::Create(IsolateHandle* isolate_handle) {
 }
 
 ContextHandle::ContextHandle(IsolateHandle* isolate_handle, uint32_t context_id)
-    : isolate_(isolate_handle->GetIsolate()),
+    : isolate_(isolate_handle->GetIsolateSel()),
       id_{context_id},
       isolate_handle_(isolate_handle) {}
 
@@ -40,14 +40,14 @@ ContextHandle::~ContextHandle() = default;
 std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script) {
   auto task = std::make_unique<ScriptTask>(this, script);
   auto waiter = task->CreateWaiter();
-  PostTask(std::move(task));
+  PostTaskToSel(std::move(task));
   return waiter->GetResult();
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
                               std::string script) {
   auto task = std::make_unique<ScriptAsyncTask>(std::move(info), this, script);
-  PostTask(std::move(task));
+  PostTaskToSel(std::move(task));
 }
 
 void ContextHandle::Release() {
@@ -58,12 +58,12 @@ v8::Local<v8::Context> ContextHandle::GetContext() {
   return isolate_handle_->GetContext(id_);
 }
 
-void ContextHandle::PostTask(std::unique_ptr<v8::Task> task) {
-  isolate_handle_->PostTask(std::move(task));
+void ContextHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
+  isolate_handle_->PostTaskToSel(std::move(task));
 }
 
-void ContextHandle::PostTaskToParent(std::unique_ptr<v8::Task> task) {
-  isolate_handle_->PostTaskToParent(std::move(task));
+void ContextHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) {
+  isolate_handle_->PostTaskToPar(std::move(task));
 }
 
 void ContextHandle::Trace(cppgc::Visitor* visitor) const {

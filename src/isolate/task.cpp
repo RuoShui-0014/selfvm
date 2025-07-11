@@ -17,7 +17,7 @@ void CreateContextTask::Run() {
 ScriptTask::ScriptTask(ContextHandle* context_handle, std::string script)
     : context_handle_(context_handle), script_(std::move(script)) {}
 void ScriptTask::Run() {
-  v8::Isolate* isolate = context_handle_->GetIsolate();
+  v8::Isolate* isolate = context_handle_->GetIsolateSel();
   v8::HandleScope source_scope(isolate);
   v8::Local<v8::Context> context = context_handle_->GetContext();
   v8::Context::Scope context_scope{context};
@@ -86,7 +86,7 @@ ScriptAsyncTask::ScriptAsyncTask(std::unique_ptr<AsyncInfo> info,
       context_handle_(context_handle),
       script_(std::move(script)) {}
 void ScriptAsyncTask::Run() {
-  v8::Isolate* isolate = context_handle_->GetIsolate();
+  v8::Isolate* isolate = context_handle_->GetIsolateSel();
   v8::HandleScope source_scope(isolate);
   v8::Local<v8::Context> context = context_handle_->GetContext();
   v8::Context::Scope context_scope{context};
@@ -101,7 +101,7 @@ void ScriptAsyncTask::Run() {
       ExternalData::SourceData data{isolate, context,
                                     maybe_result.ToLocalChecked()};
       auto buff = ExternalData::CopyAsync(data);
-      context_handle_->PostTaskToParent(
+      context_handle_->PostTaskToPar(
           std::make_unique<ScriptAsyncTask::Callback>(std::move(info_), buff));
       return;
     }
@@ -110,9 +110,38 @@ void ScriptAsyncTask::Run() {
   if (try_catch.HasCaught()) {
     ExternalData::SourceData data{isolate, context, try_catch.Exception()};
     auto buff = ExternalData::CopyAsync(data);
-    context_handle_->PostTaskToParent(
+    context_handle_->PostTaskToPar(
         std::make_unique<ScriptAsyncTask::Callback>(std::move(info_), buff));
     try_catch.Reset();
   }
 }
+CreateContextAsyncTask::Callback::Callback(std::unique_ptr<AsyncInfo> info,
+                                           uint32_t id)
+    : info_(std::move(info)), id_(id) {}
+void CreateContextAsyncTask::Callback::Run() {
+  v8::Isolate* isolate = info_->isolate;
+  v8::Local<v8::Context> context = info_->context.Get(isolate);
+  v8::HandleScope source_scope(isolate);
+
+  ContextHandle* context_handle =
+      MakeCppGcObject<GC::kSpecified, ContextHandle>(
+          isolate, info_->isolate_handle, id_);
+  v8::Local<v8::FunctionTemplate> isolate_handle_template =
+      V8ContextHandle::GetWrapperTypeInfo()
+          ->GetV8ClassTemplate(isolate)
+          .As<v8::FunctionTemplate>();
+  v8::Local<v8::Object> obj = isolate_handle_template->InstanceTemplate()
+                                  ->NewInstance(isolate->GetCurrentContext())
+                                  .ToLocalChecked();
+  ScriptWrappable::Wrap(obj, context_handle);
+  info_->resolver.Get(isolate)->Resolve(context, obj);
+}
+CreateContextAsyncTask::CreateContextAsyncTask(std::unique_ptr<AsyncInfo> info)
+    : AsyncTask(std::move(info)) {}
+void CreateContextAsyncTask::Run() {
+  uint32_t id = info_->isolate_handle->GetIsolateHolder()->NewContext();
+  info_->isolate_handle->PostTaskToPar(
+      std::make_unique<Callback>(std::move(info_), id));
+}
+
 }  // namespace svm

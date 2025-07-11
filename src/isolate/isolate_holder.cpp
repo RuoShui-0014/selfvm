@@ -15,7 +15,7 @@ std::mutex isolate_allocator_mutex{};
 
 IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
                              size_t memory_limit_in_mb)
-    : isolate_parent_{isolate_parent}, isolate_data_{nullptr} {
+    : isolate_par_{isolate_parent} {
   memory_limit = memory_limit_in_mb * 1024 * 1024;
   v8::ResourceConstraints rc;
   size_t young_space_in_kb = static_cast<size_t>(std::pow(
@@ -26,30 +26,30 @@ IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
   rc.set_max_old_generation_size_in_bytes(old_generation_size_in_mb * 1024 *
                                           1024);
 
-  allocator_ = node::ArrayBufferAllocator::Create();
+  auto allocator = node::ArrayBufferAllocator::Create();
   v8::Isolate::CreateParams create_params;
-  create_params.array_buffer_allocator = allocator_.get();
+  create_params.array_buffer_allocator = allocator.get();
   {
     std::lock_guard lock{isolate_allocator_mutex};
-    isolate_self_ = v8::Isolate::Allocate();
-    scheduler_self_ = std::make_unique<UVScheduler<true>>(isolate_self_);
-    PlatformDelegate::RegisterIsolate(isolate_self_,
-                                      scheduler_self_->GetUVLoop());
+    isolate_sel_ = v8::Isolate::Allocate();
+    scheduler_sel_ =
+        std::make_unique<UVSchedulerSel>(isolate_sel_, std::move(allocator));
+    PlatformDelegate::RegisterIsolate(isolate_sel_,
+                                      scheduler_sel_->GetUvLoop());
   }
-  v8::Isolate::Initialize(isolate_self_, create_params);
-  scheduler_self_->RunLoop();
+  v8::Isolate::Initialize(isolate_sel_, create_params);
+  scheduler_sel_->RunLoop();
 
-  scheduler_parent_ = std::make_unique<UVScheduler<false>>(isolate_parent_);
+  scheduler_par_ = std::make_unique<UVSchedulerPar>(isolate_par_);
 
-  per_isolate_data_ =
-      std::move(std::make_unique<PerIsolateData>(isolate_self_));
+  per_isolate_data_ = std::move(std::make_unique<PerIsolateData>(isolate_sel_));
 }
 
 IsolateHolder::~IsolateHolder() {
   context_map_.clear();
   per_isolate_data_.reset();
-  scheduler_self_.reset();
-  scheduler_parent_.reset();
+  scheduler_sel_.reset();
+  scheduler_par_.reset();
 }
 
 static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
@@ -57,22 +57,29 @@ static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
                                               v8::StartupData /*payload*/,
                                               void* /*data*/) {}
 
+void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task) {
+  scheduler_sel_->TaskRunner()->PostTask(std::move(task));
+}
+void IsolateHolder::PostTaskToPar(std::unique_ptr<v8::Task> task) {
+  scheduler_par_->TaskRunner()->PostTask(std::move(task));
+}
+
 uint32_t IsolateHolder::NewContext() {
-  v8::Isolate::Scope isolate_scope(isolate_self_);
-  v8::HandleScope handle_scope(isolate_self_);
+  v8::Isolate::Scope isolate_scope(isolate_sel_);
+  v8::HandleScope handle_scope(isolate_sel_);
 
   v8::Local<v8::ObjectTemplate> object_template =
       V8Window::GetWrapperTypeInfo()
-          ->GetV8ClassTemplate(isolate_self_)
+          ->GetV8ClassTemplate(isolate_sel_)
           .As<v8::FunctionTemplate>()
           ->InstanceTemplate();
 
   v8::Local<v8::Context> context =
-      v8::Context::New(isolate_self_, nullptr, object_template, {},
+      v8::Context::New(isolate_sel_, nullptr, object_template, {},
                        &DeserializeInternalFieldsCallback);
   ScriptWrappable::Wrap(
       context->Global(),
-      MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_self_));
+      MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_sel_));
 
   context->AllowCodeGenerationFromStrings(false);
 
@@ -89,7 +96,7 @@ void IsolateHolder::ClearContext(uint32_t id) {
 v8::Local<v8::Context> IsolateHolder::GetContext(uint32_t id) {
   auto it = context_map_.find(id);
   if (it != context_map_.end()) {
-    return it->second.Get(isolate_self_);
+    return it->second.Get(isolate_sel_);
   }
   return {};
 }

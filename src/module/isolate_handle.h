@@ -16,19 +16,21 @@ class IsolateHandle : public ScriptWrappable {
  public:
   static IsolateHandle* Create(v8::Isolate* isolate);
 
-  explicit IsolateHandle(std::unique_ptr<IsolateHolder>&);
+  explicit IsolateHandle(std::unique_ptr<IsolateHolder>);
   ~IsolateHandle() override;
 
   IsolateHolder* GetIsolateHolder() const { return isolate_holder_.get(); }
-  v8::Isolate* GetIsolate() const { return isolate_holder_->GetIsolate(); }
-  v8::Isolate* GetParentIsolate() const {
-    return isolate_holder_->GetParentIsolate();
+  v8::Isolate* GetIsolateSel() const {
+    return isolate_holder_->GetIsolateSel();
+  }
+  v8::Isolate* GetIsolatePar() const {
+    return isolate_holder_->GetIsolatePar();
   }
   ContextHandle* GetContextHandle();
   v8::Local<v8::Context> GetContext(uint32_t id);
 
-  void PostTask(std::unique_ptr<v8::Task> task);
-  void PostTaskToParent(std::unique_ptr<v8::Task> task);
+  void PostTaskToSel(std::unique_ptr<v8::Task> task);
+  void PostTaskToPar(std::unique_ptr<v8::Task> task);
 
   /*********************** js interface *************************/
   ContextHandle* CreateContext();

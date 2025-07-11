@@ -18,11 +18,11 @@ IsolateHandle* IsolateHandle::Create(v8::Isolate* isolate_parent) {
   auto isolate_holder =
       std::make_unique<IsolateHolder>(isolate_parent, memory_limit);
 
-  return MakeCppGcObject<GC::kSpecified, IsolateHandle>(isolate_parent,
-                                                        isolate_holder);
+  return MakeCppGcObject<GC::kSpecified, IsolateHandle>(
+      isolate_parent, std::move(isolate_holder));
 }
 
-IsolateHandle::IsolateHandle(std::unique_ptr<IsolateHolder>& isolate_holder)
+IsolateHandle::IsolateHandle(std::unique_ptr<IsolateHolder> isolate_holder)
     : isolate_holder_(std::move(isolate_holder)) {}
 
 IsolateHandle::~IsolateHandle() {
@@ -40,12 +40,12 @@ v8::Local<v8::Context> IsolateHandle::GetContext(uint32_t id) {
   return isolate_holder_->GetContext(id);
 }
 
-void IsolateHandle::PostTask(std::unique_ptr<v8::Task> task) {
-  isolate_holder_->GetScheduler()->TaskRunner()->PostTask(std::move(task));
+void IsolateHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
+  isolate_holder_->PostTaskToSel(std::move(task));
 }
 
-void IsolateHandle::PostTaskToParent(std::unique_ptr<v8::Task> task) {
-  isolate_holder_->GetParentScheduler()->TaskRunner()->PostTask(std::move(task));
+void IsolateHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) {
+  isolate_holder_->PostTaskToPar(std::move(task));
 }
 
 ContextHandle* IsolateHandle::CreateContext() {
@@ -56,13 +56,16 @@ void IsolateHandle::CreateContextAsync(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     v8::Local<v8::Promise::Resolver> resolver) {
-  // AsyncTask::Info info{isolate, context, resolver};
-  // auto task = std::make_unique<CreateContextTaskAsync>(info, this);
-  // PostTask(std::move(task));
+  auto async_info =
+      std::make_unique<AsyncInfo>(this, isolate, RemoteHandle(isolate, context),
+                                  RemoteHandle(isolate, resolver));
+  auto task = std::make_unique<CreateContextAsyncTask>(std::move(async_info));
+  PostTaskToSel(std::move(task));
 }
 
 void IsolateHandle::IsolateGc() {
-  PostTask(std::make_unique<IsolateGcTask>(isolate_holder_->GetIsolate()));
+  PostTaskToSel(
+      std::make_unique<IsolateGcTask>(isolate_holder_->GetIsolateSel()));
 }
 
 void IsolateHandle::Release() {
@@ -70,7 +73,7 @@ void IsolateHandle::Release() {
 }
 
 v8::HeapStatistics IsolateHandle::GetHeapStatistics() const {
-  v8::Isolate* isolate = isolate_holder_->GetIsolate();
+  v8::Isolate* isolate = isolate_holder_->GetIsolateSel();
   v8::HeapStatistics heap_statistics;
   isolate->GetHeapStatistics(&heap_statistics);
   return heap_statistics;
