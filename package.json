@@ -1,7 +1,13 @@
 {
   "name": "self-vm",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "self-vm.js",
+  "types": "self-vm.d.ts",
+  "files": [
+    "bin/",
+    "self-vm.js",
+    "self-vm.d.ts"
+  ],
   "scripts": {
     "install": "cmake-js compile",
     "build": "cmake-js compile",

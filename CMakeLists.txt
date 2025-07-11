@@ -9,9 +9,9 @@ if (CMAKE_BUILD MATCHES "Debug")
 endif ()
 
 if (MSVC)
-    add_compile_options(/wd4275 /wd4251 /GR-)
+    add_compile_options(/wd4275 /wd4251 /GR- /EHsc-)
     if (CMAKE_BUILD MATCHES "Release")
-        add_compile_options(/O2)
+        add_compile_options(/Ox)
     endif ()
     add_compile_definitions(NOMINMAX)
 endif ()
@@ -62,7 +62,7 @@ target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
-set(TARGET_COPY_DIR ${PROJECT_SOURCE_DIR}/out)
+set(TARGET_COPY_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy

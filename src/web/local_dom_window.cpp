@@ -59,9 +59,7 @@ void WindowExposedConstructCallback(
 }
 
 LocalDOMWindow::LocalDOMWindow() = default;
-LocalDOMWindow::~LocalDOMWindow() {
-
-}
+LocalDOMWindow::~LocalDOMWindow() = default;
 
 ////////////////////////////////////////////////////////////////////////////////////////
 void V8Window::InstallInterfaceTemplate(

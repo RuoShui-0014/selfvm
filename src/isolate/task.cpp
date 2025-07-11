@@ -14,8 +14,12 @@ void CreateContextTask::Run() {
   this->wait_->SetResult(id);
 }
 
-ScriptTask::ScriptTask(ContextHandle* context_handle, std::string script)
-    : context_handle_(context_handle), script_(std::move(script)) {}
+ScriptTask::ScriptTask(ContextHandle* context_handle,
+                       std::string script,
+                       std::string filename)
+    : context_handle_(context_handle),
+      script_(std::move(script)),
+      filename_(std::move(filename)) {}
 void ScriptTask::Run() {
   v8::Isolate* isolate = context_handle_->GetIsolateSel();
   v8::HandleScope source_scope(isolate);
@@ -25,7 +29,8 @@ void ScriptTask::Run() {
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Script> script;
   v8::Local<v8::String> code = toString(isolate, script_);
-  v8::ScriptOrigin scriptOrigin = v8::ScriptOrigin(toString(isolate, ""));
+  v8::ScriptOrigin scriptOrigin =
+      v8::ScriptOrigin(toString(isolate, filename_));
   if (v8::Script::Compile(context, code, &scriptOrigin).ToLocal(&script)) {
     v8::MaybeLocal<v8::Value> maybe_result = script->Run(context);
     if (!maybe_result.IsEmpty()) {
@@ -81,10 +86,12 @@ void ScriptAsyncTask::Callback::Run() {
 
 ScriptAsyncTask::ScriptAsyncTask(std::unique_ptr<AsyncInfo> info,
                                  ContextHandle* context_handle,
-                                 std::string script)
+                                 std::string script,
+                                 std::string filename)
     : AsyncTask(std::move(info)),
       context_handle_(context_handle),
-      script_(std::move(script)) {}
+      script_(std::move(script)),
+      filename_(std::move(filename)) {}
 void ScriptAsyncTask::Run() {
   v8::Isolate* isolate = context_handle_->GetIsolateSel();
   v8::HandleScope source_scope(isolate);
@@ -94,7 +101,8 @@ void ScriptAsyncTask::Run() {
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Script> script;
   v8::Local<v8::String> code = toString(isolate, script_);
-  v8::ScriptOrigin scriptOrigin = v8::ScriptOrigin(toString(isolate, ""));
+  v8::ScriptOrigin scriptOrigin =
+      v8::ScriptOrigin(toString(isolate, filename_));
   if (v8::Script::Compile(context, code, &scriptOrigin).ToLocal(&script)) {
     v8::MaybeLocal<v8::Value> maybe_result = script->Run(context);
     if (!maybe_result.IsEmpty()) {

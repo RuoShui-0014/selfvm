@@ -57,15 +57,16 @@ void UVSchedulerSel::RunLoop() {
       uv_run(uv_loop_, UV_RUN_DEFAULT);
     }
 
-    node::FreeIsolateData(isolate_data_);
-    PlatformDelegate::UnregisterIsolate(isolate_);
-    isolate_->Dispose();
-
     uv_close(reinterpret_cast<uv_handle_t*>(keep_alive_),
              [](uv_handle_t* handle) {
                delete reinterpret_cast<uv_async_t*>(handle);
              });
     uv_loop_close(uv_loop_);
+
+    node::FreeIsolateData(isolate_data_);
+    PlatformDelegate::UnregisterIsolate(isolate_);
+    isolate_->Dispose();
+
     delete uv_loop_;
   });
 }

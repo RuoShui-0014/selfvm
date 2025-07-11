@@ -19,10 +19,16 @@ class IsolateHolder {
 
   v8::Isolate* GetIsolateSel() const { return isolate_sel_; }
   v8::Isolate* GetIsolatePar() const { return isolate_par_; }
+
   Scheduler* GetSchedulerSel() const { return scheduler_sel_.get(); }
   Scheduler* GetSchedulerPar() const { return scheduler_par_.get(); }
+
   void PostTaskToSel(std::unique_ptr<v8::Task> task);
   void PostTaskToPar(std::unique_ptr<v8::Task> task);
+  void PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
+                            double delay_in_seconds);
+  void PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
+                            double delay_in_seconds);
 
   uint32_t NewContext();
   void ClearContext(uint32_t id);
@@ -39,7 +45,6 @@ class IsolateHolder {
   std::map<uint32_t, RemoteHandle<v8::Context>> context_map_;
 
   std::unique_ptr<PerIsolateData> per_isolate_data_;
-
 
   size_t memory_limit = 128;
 };

@@ -1,6 +1,5 @@
 #include "context_handle.h"
 
-#include "../isolate/per_isolate_data.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
 #include "isolate_handle.h"
@@ -37,16 +36,20 @@ ContextHandle::ContextHandle(IsolateHandle* isolate_handle, uint32_t context_id)
 ContextHandle::~ContextHandle() = default;
 
 // 同步任务
-std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script) {
-  auto task = std::make_unique<ScriptTask>(this, script);
+std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script,
+                                                std::string filename) {
+  auto task = std::make_unique<ScriptTask>(this, std::move(script),
+                                           std::move(filename));
   auto waiter = task->CreateWaiter();
   PostTaskToSel(std::move(task));
   return waiter->GetResult();
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
-                              std::string script) {
-  auto task = std::make_unique<ScriptAsyncTask>(std::move(info), this, script);
+                              std::string script,
+                              std::string filename) {
+  auto task = std::make_unique<ScriptAsyncTask>(
+      std::move(info), this, std::move(script), std::move(filename));
   PostTaskToSel(std::move(task));
 }
 
@@ -84,7 +87,12 @@ void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
   ContextHandle* context_handle =
       ScriptWrappable::Unwrap<ContextHandle>(receiver);
-  auto buff = context_handle->Eval(*v8::String::Utf8Value(isolate, info[0]));
+  std::string script = *v8::String::Utf8Value(isolate, info[0]);
+  std::string filename{""};
+  if (info.Length() > 1) {
+    filename = *v8::String::Utf8Value(isolate, info[1]);
+  }
+  auto buff = context_handle->Eval(std::move(script), std::move(filename));
 
   v8::Local<v8::Value> result, error;
   {
@@ -126,8 +134,13 @@ void EvalAsyncOperationCallback(
       context_handle->GetIsolateHandle(), isolate,
       RemoteHandle(isolate, isolate->GetCurrentContext()),
       RemoteHandle(isolate, resolver));
-  context_handle->EvalAsync(std::move(async_info),
-                            *v8::String::Utf8Value(isolate, info[0]));
+  std::string script = *v8::String::Utf8Value(isolate, info[0]);
+  std::string filename{""};
+  if (info.Length() > 1) {
+    filename = *v8::String::Utf8Value(isolate, info[1]);
+  }
+  context_handle->EvalAsync(std::move(async_info), std::move(script),
+                            std::move(filename));
 
   info.GetReturnValue().Set(resolver);
 }
@@ -141,9 +154,9 @@ void V8ContextHandle::InstallInterfaceTemplate(
   //      v8::PropertyAttribute::ReadOnly, Dependence::kPrototype},
   // };
   OperationConfig operas[]{
-      {"eval", 2, EvalOperationCallback, v8::PropertyAttribute::DontDelete,
+      {"eval", 1, EvalOperationCallback, v8::PropertyAttribute::DontDelete,
        Dependence::kPrototype},
-      {"evalAsync", 2, EvalAsyncOperationCallback,
+      {"evalAsync", 1, EvalAsyncOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
 

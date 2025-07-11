@@ -91,7 +91,7 @@ class CreateContextTask : public SyncTask<uint32_t> {
 
 class ScriptTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
  public:
-  ScriptTask(ContextHandle* context_handle, std::string script);
+  ScriptTask(ContextHandle* context_handle, std::string script, std::string filename);
   ~ScriptTask() override = default;
 
   void Run() override;
@@ -99,6 +99,7 @@ class ScriptTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
  private:
   cppgc::Member<ContextHandle> context_handle_;
   std::string script_;
+  std::string filename_;
 };
 
 class IsolateGcTask final : public SyncTask<void> {
@@ -159,7 +160,7 @@ class ScriptAsyncTask final : public AsyncTask {
   };
   explicit ScriptAsyncTask(std::unique_ptr<AsyncInfo> info,
                            ContextHandle* context_handle,
-                           std::string script);
+                           std::string script, std::string filename);
   ~ScriptAsyncTask() override = default;
 
   void Run() override;
@@ -167,6 +168,7 @@ class ScriptAsyncTask final : public AsyncTask {
  private:
   cppgc::Member<ContextHandle> context_handle_;
   std::string script_;
+  std::string filename_;
 };
 
 class CreateContextAsyncTask final : public AsyncTask {

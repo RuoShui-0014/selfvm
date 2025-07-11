@@ -21,14 +21,17 @@ class ContextHandle : public ScriptWrappable {
   ~ContextHandle() override;
 
   /*********************** js interface *************************/
-  std::pair<uint8_t*, size_t> Eval(std::string script);
-  void EvalAsync(std::unique_ptr<AsyncInfo> info, std::string script);
+  std::pair<uint8_t*, size_t> Eval(std::string script, std::string filename);
+  void EvalAsync(std::unique_ptr<AsyncInfo> info,
+                 std::string script,
+                 std::string filename);
   void Release();
 
   IsolateHandle* GetIsolateHandle() { return isolate_handle_.Get(); };
   v8::Isolate* GetIsolateSel() { return isolate_; }
   uint32_t GetContextId() { return id_; }
   v8::Local<v8::Context> GetContext();
+
   void PostTaskToSel(std::unique_ptr<v8::Task> task);
   void PostTaskToPar(std::unique_ptr<v8::Task> task);
 

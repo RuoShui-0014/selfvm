@@ -7,6 +7,7 @@
 #include <node.h>
 #include <uv.h>
 #include <v8-platform.h>
+
 #include <mutex>
 
 namespace svm {
@@ -48,7 +49,9 @@ class UVSchedulerSel : public Scheduler {
   uv_loop_t* uv_loop_;
   uv_async_t* keep_alive_;
   std::atomic<int> uv_ref_count{0};
+
   std::thread thread_;
+  std::atomic<bool> running{false};
 };
 
 class UVSchedulerPar : public Scheduler {

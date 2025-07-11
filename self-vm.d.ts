@@ -1,0 +1,59 @@
+declare module SelfVm {
+    export function gc(): void;
+
+    export class Isolate {
+        /**
+         * 创建一个新的 Isolate 实例
+         */
+        constructor();
+
+        /**
+         * 创建Isolate时默认创建的context
+         */
+        readonly context: Context;
+
+        /**
+         * 低内存通知垃圾回收
+         */
+        gc(): void;
+
+
+        /**
+         * 获取isolate静态堆内存数据
+         */
+        getHeapStatistics(): {
+            total_heap_size: number;
+            total_heap_size_executable: number;
+            total_physical_size: number;
+            total_available_size: number;
+            used_heap_size: number;
+            heap_size_limit: number;
+            malloced_memory: number;
+            peak_malloced_memory: number;
+            does_zap_garbage: number;
+        };
+
+        /**
+         * 创建Context同步获取结果
+         */
+        createContext(): Context;
+
+        /**
+         * 创建Context异步获取结果
+         */
+        createContextAsync(): Promise<Context>;
+    }
+
+    export class Context {
+        /**
+         * 运行代码同步获取结果
+         */
+        eval(code: string, filename?: string): any;
+
+        /**
+         * 运行代码异步获取结果
+         */
+        evalAsync(code: string, filename?: string): Promise<any>;
+    }
+}
+export = SelfVm;
