@@ -11,6 +11,7 @@
 namespace svm {
 
 class ContextHandle;
+class SessionHandle;
 
 class IsolateHandle : public ScriptWrappable {
  public:
@@ -37,6 +38,8 @@ class IsolateHandle : public ScriptWrappable {
   void CreateContextAsync(v8::Isolate* isolate,
                           v8::Local<v8::Context> context,
                           v8::Local<v8::Promise::Resolver> resolver);
+
+  SessionHandle* CreateInspectorSession();
   void IsolateGc();
   void Release();
   v8::HeapStatistics GetHeapStatistics() const;

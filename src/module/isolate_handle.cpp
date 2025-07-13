@@ -2,9 +2,11 @@
 
 #include <cppgc/member.h>
 #include <cppgc/visitor.h>
+
 #include "../isolate/task.h"
 #include "../utils/utils.h"
 #include "context_handle.h"
+#include "session_handle.h"
 
 namespace svm {
 
@@ -57,6 +59,10 @@ void IsolateHandle::CreateContextAsync(
                                   RemoteHandle(isolate, resolver));
   auto task = std::make_unique<CreateContextAsyncTask>(std::move(async_info));
   PostTaskToSel(std::move(task));
+}
+
+SessionHandle* IsolateHandle::CreateInspectorSession() {
+  return MakeCppGcObject<GC::kCurrent, SessionHandle>(this);
 }
 
 void IsolateHandle::IsolateGc() {
@@ -127,6 +133,25 @@ void CreateContextAsyncOperationCallback(
   info.GetReturnValue().Set(resolver->GetPromise());
 }
 
+void CreateInspectorSessionOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Object> receiver = info.This();
+  IsolateHandle* isolate_handle =
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
+  SessionHandle* session_handle = isolate_handle->CreateInspectorSession();
+
+  v8::Local<v8::FunctionTemplate> session_handle_template =
+      V8SessionHandle::GetWrapperTypeInfo()
+          ->GetV8ClassTemplate(info.GetIsolate())
+          .As<v8::FunctionTemplate>();
+  v8::Local<v8::Object> obj =
+      session_handle_template->InstanceTemplate()
+          ->NewInstance(info.GetIsolate()->GetCurrentContext())
+          .ToLocalChecked();
+  ScriptWrappable::Wrap(obj, session_handle);
+  info.GetReturnValue().Set(obj);
+}
+
 void GcOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
   IsolateHandle* isolate_handle =
@@ -144,28 +169,33 @@ void GetHeapStatisticsOperationCallback(
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   v8::HeapStatistics heap_info = isolate_handle->GetHeapStatistics();
   v8::Local<v8::Object> heap_statistics = v8::Object::New(isolate);
-  heap_statistics->Set(context, toString("total_heap_size"),
-                       v8::Number::New(isolate, heap_info.total_heap_size()));
   heap_statistics->Set(
-      context, toString("total_heap_size_executable"),
-      v8::Number::New(isolate, heap_info.total_heap_size_executable()));
+      context, toString("total_heap_size"),
+      v8::Integer::NewFromUnsigned(isolate, heap_info.total_heap_size()));
+  heap_statistics->Set(context, toString("total_heap_size_executable"),
+                       v8::Integer::NewFromUnsigned(
+                           isolate, heap_info.total_heap_size_executable()));
   heap_statistics->Set(
       context, toString("total_physical_size"),
-      v8::Number::New(isolate, heap_info.total_physical_size()));
+      v8::Integer::NewFromUnsigned(isolate, heap_info.total_physical_size()));
   heap_statistics->Set(
       context, toString("total_available_size"),
-      v8::Number::New(isolate, heap_info.total_available_size()));
-  heap_statistics->Set(context, toString("used_heap_size"),
-                       v8::Number::New(isolate, heap_info.used_heap_size()));
-  heap_statistics->Set(context, toString("heap_size_limit"),
-                       v8::Number::New(isolate, heap_info.heap_size_limit()));
-  heap_statistics->Set(context, toString("malloced_memory"),
-                       v8::Number::New(isolate, heap_info.malloced_memory()));
+      v8::Integer::NewFromUnsigned(isolate, heap_info.total_available_size()));
+  heap_statistics->Set(
+      context, toString("used_heap_size"),
+      v8::Integer::NewFromUnsigned(isolate, heap_info.used_heap_size()));
+  heap_statistics->Set(
+      context, toString("heap_size_limit"),
+      v8::Integer::NewFromUnsigned(isolate, heap_info.heap_size_limit()));
+  heap_statistics->Set(
+      context, toString("malloced_memory"),
+      v8::Integer::NewFromUnsigned(isolate, heap_info.malloced_memory()));
   heap_statistics->Set(
       context, toString("peak_malloced_memory"),
-      v8::Number::New(isolate, heap_info.peak_malloced_memory()));
-  heap_statistics->Set(context, toString("does_zap_garbage"),
-                       v8::Number::New(isolate, heap_info.does_zap_garbage()));
+      v8::Integer::NewFromUnsigned(isolate, heap_info.peak_malloced_memory()));
+  heap_statistics->Set(
+      context, toString("does_zap_garbage"),
+      v8::Integer::NewFromUnsigned(isolate, heap_info.does_zap_garbage()));
   info.GetReturnValue().Set(heap_statistics);
 }
 
@@ -188,6 +218,8 @@ void V8IsolateHandle::InstallInterfaceTemplate(
       {"createContext", 0, CreateContextOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"createContextAsync", 0, CreateContextAsyncOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"createInspectorSession", 0, CreateInspectorSessionOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"getHeapStatistics", 0, GetHeapStatisticsOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
