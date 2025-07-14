@@ -1,5 +1,6 @@
 #include "context_handle.h"
 
+#include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
 #include "isolate_handle.h"

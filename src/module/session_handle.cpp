@@ -1,7 +1,6 @@
 #include "session_handle.h"
 
-#include <iostream>
-
+#include "../isolate/isolate_holder.h"
 #include "../isolate/platform_delegate.h"
 #include "context_handle.h"
 #include "isolate_handle.h"
@@ -55,22 +54,28 @@ void InspectorAgent::dispatchMessage(std::string message) {
   session_handle_->isolate_handle_->PostInspectorTask(std::move(task));
 }
 void InspectorAgent::dispose() {
-  waiting_for_resume_.store(false);
   waiting_for_frontend_.store(false);
+  waiting_for_resume_.store(false);
   running_nested_loop_.store(false);
 }
 
 void InspectorAgent::runMessageLoopOnPause(int contextGroupId) {
-  waiting_for_resume_ = true;
+  if (running_nested_loop_.load()) {
+    return;
+  }
+  running_nested_loop_.store(true);
+  waiting_for_resume_.store(true);
 
-  while (waiting_for_resume_ && waiting_for_frontend_) {
+  while (waiting_for_frontend_ && waiting_for_resume_) {
     Scheduler* scheduler = session_handle_->isolate_handle_->GetSchedulerSel();
     UVSchedulerSel::RunInspectorTasks(
         reinterpret_cast<UVSchedulerSel*>(scheduler));
   }
+
+  running_nested_loop_.store(false);
 }
 void InspectorAgent::quitMessageLoopOnPause() {
-  waiting_for_resume_ = false;
+  waiting_for_resume_.store(false);
 }
 void InspectorAgent::runIfWaitingForDebugger(int context_group_id) {
   waiting_for_frontend_.store(true);

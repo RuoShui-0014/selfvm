@@ -3,6 +3,7 @@
 #include <cppgc/member.h>
 #include <cppgc/visitor.h>
 
+#include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
 #include "context_handle.h"
@@ -27,6 +28,14 @@ IsolateHandle::~IsolateHandle() {
   default_context_.Clear();
 }
 
+v8::Isolate* IsolateHandle::GetIsolateSel() const {
+  return isolate_holder_->GetIsolateSel();
+}
+
+v8::Isolate* IsolateHandle::GetIsolatePar() const {
+  return isolate_holder_->GetIsolatePar();
+}
+
 ContextHandle* IsolateHandle::GetContextHandle() {
   if (!default_context_) {
     default_context_ = ContextHandle::Create(this);
@@ -37,8 +46,13 @@ ContextHandle* IsolateHandle::GetContextHandle() {
 v8::Local<v8::Context> IsolateHandle::GetContext(uint32_t id) {
   return isolate_holder_->GetContext(id);
 }
+
 Scheduler* IsolateHandle::GetSchedulerSel() {
   return isolate_holder_->GetSchedulerSel();
+}
+
+Scheduler* IsolateHandle::GetSchedulerPar() {
+  return isolate_holder_->GetSchedulerPar();
 }
 
 void IsolateHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {

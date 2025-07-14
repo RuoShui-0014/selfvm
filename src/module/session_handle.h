@@ -4,21 +4,17 @@
 
 #pragma once
 
-#include <mutex>
-#include <queue>
-
 #include "../isolate/script_wrappable.h"
 #include "../node_ex/v8-inspector.h"
 #include "../utils/utils.h"
 
 namespace svm {
-class Scheduler;
 
+class Scheduler;
 class IsolateHandle;
 class ContextHandle;
 class SessionHandle;
 class InspectorChannel;
-
 
 class InspectorAgent : public v8_inspector::V8InspectorClient {
  public:
@@ -39,8 +35,8 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
   cppgc::WeakMember<SessionHandle> session_handle_;
   v8::Isolate* isolate_;
 
-  std::atomic_bool waiting_for_resume_{false};
   std::atomic_bool waiting_for_frontend_{false};
+  std::atomic_bool waiting_for_resume_{false};
   std::atomic_bool running_nested_loop_{false};
 
   std::unique_ptr<v8_inspector::V8Inspector> inspector_;
@@ -87,7 +83,7 @@ class SessionHandle : public ScriptWrappable {
 };
 
 class V8SessionHandle {
-public:
+ public:
   static constexpr const WrapperTypeInfo* GetWrapperTypeInfo() {
     return &wrapper_type_info_;
   }
@@ -96,7 +92,7 @@ public:
       v8::Isolate* isolate,
       v8::Local<v8::Template> interface_template);
 
-private:
+ private:
   friend SessionHandle;
   static const WrapperTypeInfo wrapper_type_info_;
 };

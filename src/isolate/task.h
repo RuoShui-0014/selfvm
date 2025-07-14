@@ -30,27 +30,14 @@ class SyncTask : public v8::Task {
           return result_;
         }
       }
-
-      // std::unique_lock<std::mutex> lock(mutex_);
-      // condition_.wait(lock, [this] { return flag.load(); });
-      // return result_;
     }
     void SetResult(const T& result) {
       result_ = result;
       flag.store(true);
-
-      // {
-      //   std::lock_guard<std::mutex> lock(mutex_);
-      //   result_ = result;
-      //   flag.store(true);
-      // }
-      // condition_.notify_one();
     }
 
    private:
     friend class SyncTask;
-    // std::mutex mutex_;
-    // std::condition_variable condition_;
     std::atomic<bool> flag{false};
     T result_;
   };
@@ -91,7 +78,9 @@ class CreateContextTask : public SyncTask<uint32_t> {
 
 class ScriptTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
  public:
-  ScriptTask(ContextHandle* context_handle, std::string script, std::string filename);
+  ScriptTask(ContextHandle* context_handle,
+             std::string script,
+             std::string filename);
   ~ScriptTask() override = default;
 
   void Run() override;
@@ -123,16 +112,8 @@ class AsyncInfo {
   AsyncInfo(IsolateHandle* isolate_handle,
             v8::Isolate* isolate,
             RemoteHandle<v8::Context> context,
-            RemoteHandle<v8::Promise::Resolver> resolver)
-      : isolate_handle(isolate_handle),
-        isolate(isolate),
-        context(context),
-        resolver(resolver) {
-    isolate_handle->GetIsolateHolder()->GetSchedulerPar()->KeepAlive();
-  }
-  ~AsyncInfo() {
-    isolate_handle->GetIsolateHolder()->GetSchedulerPar()->WillDie();
-  }
+            RemoteHandle<v8::Promise::Resolver> resolver);
+  ~AsyncInfo();
 };
 class AsyncTask : public v8::Task {
  public:
@@ -160,7 +141,8 @@ class ScriptAsyncTask final : public AsyncTask {
   };
   explicit ScriptAsyncTask(std::unique_ptr<AsyncInfo> info,
                            ContextHandle* context_handle,
-                           std::string script, std::string filename);
+                           std::string script,
+                           std::string filename);
   ~ScriptAsyncTask() override = default;
 
   void Run() override;
@@ -172,9 +154,9 @@ class ScriptAsyncTask final : public AsyncTask {
 };
 
 class CreateContextAsyncTask final : public AsyncTask {
-  public:
+ public:
   class Callback : public v8::Task {
-  public:
+   public:
     explicit Callback(std::unique_ptr<AsyncInfo> info, uint32_t id);
     ~Callback() override = default;
 
