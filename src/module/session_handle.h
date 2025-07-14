@@ -10,13 +10,15 @@
 #include "../isolate/script_wrappable.h"
 #include "../node_ex/v8-inspector.h"
 #include "../utils/utils.h"
-#include "context_handle.h"
 
 namespace svm {
+class Scheduler;
 
 class IsolateHandle;
+class ContextHandle;
 class SessionHandle;
 class InspectorChannel;
+
 
 class InspectorAgent : public v8_inspector::V8InspectorClient {
  public:
@@ -26,16 +28,20 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
   void connectInspector();
   void addContext(v8::Local<v8::Context> context);
   void dispatchMessage(std::string message);
+  void dispose();
 
   /* v8_inspector::V8InspectorClient override */
   void runMessageLoopOnPause(int contextGroupId) override;
   void quitMessageLoopOnPause() override;
+  void runIfWaitingForDebugger(int context_group_id) override;
 
  private:
   std::mutex mutex_;
   std::condition_variable cv_;
   std::queue<std::unique_ptr<v8::Task>> tasks_;
-  bool paused_{false};
+  std::atomic_bool waiting_for_resume_{false};
+  std::atomic_bool waiting_for_frontend_{false};
+  std::atomic_bool running_nested_loop_{false};
 
   cppgc::WeakMember<SessionHandle> session_handle_;
   v8::Isolate* isolate_;
@@ -68,10 +74,14 @@ class SessionHandle : public ScriptWrappable {
 
   void PostTaskToPar(std::unique_ptr<v8::Task> task);
   void PostTaskToSel(std::unique_ptr<v8::Task> task);
+  void PostInspectorTask(std::unique_ptr<v8::Task> task);
+
+  Scheduler* GetSchedulerSel();
 
   /* js interface */
   void DispatchInspectorMessage(std::string message);
   void AddContext(ContextHandle* context_handle);
+  void Dispose();
 
   std::optional<RemoteHandle<v8::Function>> on_response_;
   std::optional<RemoteHandle<v8::Function>> on_notification_;

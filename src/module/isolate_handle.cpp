@@ -37,6 +37,9 @@ ContextHandle* IsolateHandle::GetContextHandle() {
 v8::Local<v8::Context> IsolateHandle::GetContext(uint32_t id) {
   return isolate_holder_->GetContext(id);
 }
+Scheduler* IsolateHandle::GetSchedulerSel() {
+  return isolate_holder_->GetSchedulerSel();
+}
 
 void IsolateHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
   isolate_holder_->PostTaskToSel(std::move(task));
@@ -44,6 +47,9 @@ void IsolateHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
 
 void IsolateHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) {
   isolate_holder_->PostTaskToPar(std::move(task));
+}
+void IsolateHandle::PostInspectorTask(std::unique_ptr<v8::Task> task) {
+  isolate_holder_->PostInspectorTask(std::move(task));
 }
 
 ContextHandle* IsolateHandle::CreateContext() {

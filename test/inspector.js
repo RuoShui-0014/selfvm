@@ -4,7 +4,10 @@ const WebSocket = require('ws');
 const isolate = new svm.Isolate();
 
 const ctx = isolate.context
+const ctx2 = isolate.createContext()
 const channel = isolate.createInspectorSession()
+channel.addContext(ctx);
+channel.addContext(ctx2);
 
 // Create an inspector channel on port 10000
 let wss = new WebSocket.Server({port: 10000});
@@ -24,7 +27,6 @@ wss.on('connection', function (ws) {
         try {
             channel.dispatchMessage(String(message));
         } catch (err) {
-            // This happens if inspector session was closed unexpectedly
             ws.close();
         }
     });
@@ -38,15 +40,19 @@ wss.on('connection', function (ws) {
         }
     }
 
-    channel.onResponse = (callId, message) => send(message);
+    channel.onResponse = (message) => send(message);
     channel.onNotification = send;
 });
 console.log('Inspector: devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:10000');
 
-// context可通过eval进行代码的同步运行
-try {
-    const result = ctx.eval(`debugger;this.a = {name: 'Jack', age: 18}`);
-    console.log(`eval result = `, result)
-} catch (e) {
-    console.error(e)
+async function test() {
+    try {
+        await channel.dispatchMessage('{"id":1,"method":"Debugger.enable"}');
+        const result = await ctx.evalAsync(`debugger;this.a = {name: 'Jack', age: 18}`);
+        console.log(`调试 eval result = `, result)
+    } catch (e) {
+        console.error(e)
+    }
 }
+
+setInterval(test, 5000);

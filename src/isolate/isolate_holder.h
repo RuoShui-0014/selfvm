@@ -30,6 +30,8 @@ class IsolateHolder {
   void PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                             double delay_in_seconds);
 
+  void PostInspectorTask(std::unique_ptr<v8::Task> task);
+
   uint32_t NewContext();
   void ClearContext(uint32_t id);
   v8::Local<v8::Context> GetContext(uint32_t id);

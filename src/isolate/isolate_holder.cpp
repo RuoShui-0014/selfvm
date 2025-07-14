@@ -73,6 +73,9 @@ void IsolateHolder::PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
   scheduler_par_->TaskRunner()->PostDelayedTask(std::move(task),
                                                 delay_in_seconds);
 }
+void IsolateHolder::PostInspectorTask(std::unique_ptr<v8::Task> task) {
+  scheduler_sel_->PostInspectorTask(std::move(task));
+}
 
 uint32_t IsolateHolder::NewContext() {
   v8::Isolate::Scope isolate_scope(isolate_sel_);

@@ -30,8 +30,11 @@ class IsolateHandle : public ScriptWrappable {
   ContextHandle* GetContextHandle();
   v8::Local<v8::Context> GetContext(uint32_t id);
 
+  Scheduler* GetSchedulerSel();
+
   void PostTaskToSel(std::unique_ptr<v8::Task> task);
   void PostTaskToPar(std::unique_ptr<v8::Task> task);
+  void PostInspectorTask(std::unique_ptr<v8::Task> task);
 
   /*********************** js interface *************************/
   ContextHandle* CreateContext();

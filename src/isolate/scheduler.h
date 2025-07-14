@@ -9,6 +9,7 @@
 #include <v8-platform.h>
 
 #include <mutex>
+#include <queue>
 
 namespace svm {
 
@@ -23,6 +24,7 @@ class Scheduler {
   virtual void RunLoop() {}
   virtual uv_loop_t* GetUvLoop() const { return nullptr; }
   virtual std::shared_ptr<v8::TaskRunner> TaskRunner() const { return {}; }
+  virtual void PostInspectorTask(std::unique_ptr<v8::Task> task) {}
   virtual void KeepAlive() {}
   virtual void WillDie() {}
 };
@@ -41,7 +43,14 @@ class UVSchedulerSel : public Scheduler {
   uv_loop_t* GetUvLoop() const override { return uv_loop_; }
   void Stop() { uv_async_send(keep_alive_); }
 
+  static void InspectorLoop(UVSchedulerSel* scheduler);
+  void PostInspectorTask(std::unique_ptr<v8::Task> task) override;
+
  private:
+  std::mutex mutex_;
+  std::condition_variable cv_;
+  std::queue<std::unique_ptr<v8::Task>> tasks_;
+
   v8::Isolate* isolate_;
   node::IsolateData* isolate_data_;
   std::unique_ptr<node::ArrayBufferAllocator> allocator_;

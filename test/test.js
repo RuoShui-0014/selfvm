@@ -44,9 +44,9 @@ channel.addContext(ctx);
 
 // Create an inspector channel on port 10000
 let wss = new WebSocket.Server({port: 10000});
+
 async function test() {
     try {
-        console.log('test');
         await channel.dispatchMessage('{"id":1,"method":"Debugger.enable"}');
         const result = await ctx.evalAsync(`debugger;this.a = {name: 'Jack', age: 18}`);
         console.log(`调试 eval result = `, result)
@@ -54,10 +54,11 @@ async function test() {
         console.error(e)
     }
 }
+
 wss.on('connection', function (ws) {
     function dispose() {
         try {
-            // channel.dispose();
+            channel.dispose();
         } catch (err) {
         }
     }
@@ -85,10 +86,8 @@ wss.on('connection', function (ws) {
 
     channel.onResponse = message => send(message);
     channel.onNotification = send;
-
-    test();
 });
 console.log('Inspector: devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:10000');
 
 
-// setInterval(test, 5000);
+setInterval(test, 5000);

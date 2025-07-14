@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../isolate/platform_delegate.h"
+#include "context_handle.h"
 #include "isolate_handle.h"
 
 namespace svm {
@@ -30,7 +32,6 @@ void InspectorAgent::addContext(v8::Local<v8::Context> context) {
       v8_inspector::V8ContextInfo(context, 1, contextName));
 }
 
-int index = 0;
 void InspectorAgent::dispatchMessage(std::string message) {
   class DispatchMessageTask : public v8::Task {
    public:
@@ -49,43 +50,31 @@ void InspectorAgent::dispatchMessage(std::string message) {
     std::string message_;
     std::shared_ptr<v8_inspector::V8InspectorSession> session_;
   };
-  if (index++ != 0) {
-    auto task = std::make_unique<DispatchMessageTask>(session_, message);
-    {
-      std::lock_guard lock(mutex_);
-      tasks_.push(std::move(task));
-    }
-    cv_.notify_one();
-  } else {
-    auto task1 =
-        std::make_unique<DispatchMessageTask>(session_, std::move(message));
-    session_handle_->PostTaskToSel(std::move(task1));
-  }
+
+  auto task = std::make_unique<DispatchMessageTask>(session_, message);
+  session_handle_->PostInspectorTask(std::move(task));
 }
-[[noreturn]] void InspectorAgent::runMessageLoopOnPause(int contextGroupId) {
-  paused_ = true;
+void InspectorAgent::dispose() {
+  waiting_for_resume_.store(false);
+  waiting_for_frontend_.store(false);
+  running_nested_loop_.store(false);
+  cv_.notify_one();
+}
 
-  while (paused_) {
-    {
-      std::unique_lock lock(mutex_);
-      cv_.wait(lock, [&] { return !tasks_.empty(); });
-    }
+void InspectorAgent::runMessageLoopOnPause(int contextGroupId) {
+  waiting_for_resume_ = true;
 
-    std::queue<std::unique_ptr<v8::Task>> tasks;
-    {
-      std::lock_guard lock(mutex_);
-      tasks = std::exchange(tasks_, {});
-    }
-
-    while (!tasks.empty()) {
-      tasks.front()->Run();
-      tasks.pop();
-    }
+  while (waiting_for_resume_ && waiting_for_frontend_) {
+    Scheduler* scheduler = session_handle_->GetSchedulerSel();
+    UVSchedulerSel::InspectorLoop(reinterpret_cast<UVSchedulerSel*>(scheduler));
   }
 }
 void InspectorAgent::quitMessageLoopOnPause() {
-  paused_ = false;
+  waiting_for_resume_ = false;
   cv_.notify_one();
+}
+void InspectorAgent::runIfWaitingForDebugger(int context_group_id) {
+  waiting_for_frontend_.store(true);
 }
 
 InspectorChannel::InspectorChannel(SessionHandle* session_handle)
@@ -189,6 +178,12 @@ void SessionHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) {
 void SessionHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
   isolate_handle_->PostTaskToSel(std::move(task));
 }
+void SessionHandle::PostInspectorTask(std::unique_ptr<v8::Task> task) {
+  isolate_handle_->PostInspectorTask(std::move(task));
+}
+Scheduler* SessionHandle::GetSchedulerSel() {
+  return isolate_handle_->GetSchedulerSel();
+}
 void SessionHandle::AddContext(ContextHandle* context_handle) {
   class AddContextTask : public v8::Task {
    public:
@@ -217,7 +212,13 @@ void SessionHandle::AddContext(ContextHandle* context_handle) {
       isolate_handle_->GetIsolateHolder(), inspector_agent_.get(),
       context_handle->GetContextId()));
 }
+void SessionHandle::Dispose() {
+  on_notification_.reset();
+  on_response_.reset();
+  inspector_agent_->dispose();
+}
 
+/////////////////////////////////////////////////////////////////////////////////
 void OnResponseAttributeGetCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
@@ -235,7 +236,6 @@ void OnResponseAttributeSetCallback(
       ScriptWrappable::Unwrap<SessionHandle>(receiver);
   session_handle->on_response_.emplace(info.GetIsolate(),
                                        info[0].As<v8::Function>());
-  std::cout << "OnResponse set" << std::endl;
 }
 void OnNotificationAttributeGetCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -254,7 +254,6 @@ void OnNotificationAttributeSetCallback(
       ScriptWrappable::Unwrap<SessionHandle>(receiver);
   session_handle->on_notification_.emplace(info.GetIsolate(),
                                            info[0].As<v8::Function>());
-  std::cout << "OnNotification set" << std::endl;
 }
 void DispatchMessageOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -273,6 +272,12 @@ void AddContextOperationCallback(
       ScriptWrappable::Unwrap<ContextHandle>(info[0].As<v8::Object>());
   session_handle->AddContext(context_handle);
 }
+void DisposeOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Local<v8::Object> receiver = info.This();
+  SessionHandle* session_handle =
+      ScriptWrappable::Unwrap<SessionHandle>(receiver);
+  session_handle->Dispose();
+}
 
 void V8SessionHandle::InstallInterfaceTemplate(
     v8::Isolate* isolate,
@@ -290,6 +295,8 @@ void V8SessionHandle::InstallInterfaceTemplate(
       {"dispatchMessage", 0, DispatchMessageOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"addContext", 0, AddContextOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"dispose", 0, DisposeOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
 
