@@ -52,26 +52,25 @@ void InspectorAgent::dispatchMessage(std::string message) {
   };
 
   auto task = std::make_unique<DispatchMessageTask>(session_, message);
-  session_handle_->PostInspectorTask(std::move(task));
+  session_handle_->isolate_handle_->PostInspectorTask(std::move(task));
 }
 void InspectorAgent::dispose() {
   waiting_for_resume_.store(false);
   waiting_for_frontend_.store(false);
   running_nested_loop_.store(false);
-  cv_.notify_one();
 }
 
 void InspectorAgent::runMessageLoopOnPause(int contextGroupId) {
   waiting_for_resume_ = true;
 
   while (waiting_for_resume_ && waiting_for_frontend_) {
-    Scheduler* scheduler = session_handle_->GetSchedulerSel();
-    UVSchedulerSel::InspectorLoop(reinterpret_cast<UVSchedulerSel*>(scheduler));
+    Scheduler* scheduler = session_handle_->isolate_handle_->GetSchedulerSel();
+    UVSchedulerSel::RunInspectorTasks(
+        reinterpret_cast<UVSchedulerSel*>(scheduler));
   }
 }
 void InspectorAgent::quitMessageLoopOnPause() {
   waiting_for_resume_ = false;
-  cv_.notify_one();
 }
 void InspectorAgent::runIfWaitingForDebugger(int context_group_id) {
   waiting_for_frontend_.store(true);
@@ -118,7 +117,8 @@ void InspectorChannel::sendResponse(
     std::unique_ptr<v8_inspector::StringBuffer> message_;
     cppgc::Member<SessionHandle> session_handle_;
   };
-  session_handle_->PostTaskToPar(
+
+  session_handle_->isolate_handle_->PostTaskToPar(
       std::make_unique<SendResponseTask>(session_handle_, std::move(message)));
 }
 void InspectorChannel::sendNotification(
@@ -158,8 +158,9 @@ void InspectorChannel::sendNotification(
     std::unique_ptr<v8_inspector::StringBuffer> message_;
     cppgc::Member<SessionHandle> session_handle_;
   };
-  session_handle_->PostTaskToPar(std::make_unique<SendNotificationTask>(
-      session_handle_, std::move(message)));
+  session_handle_->isolate_handle_->PostTaskToPar(
+      std::make_unique<SendNotificationTask>(session_handle_,
+                                             std::move(message)));
 }
 void InspectorChannel::flushProtocolNotifications() {}
 
@@ -171,18 +172,6 @@ SessionHandle::SessionHandle(IsolateHandle* isolate_handle)
 SessionHandle::~SessionHandle() = default;
 void SessionHandle::DispatchInspectorMessage(std::string message) {
   inspector_agent_->dispatchMessage(std::move(message));
-}
-void SessionHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) {
-  isolate_handle_->PostTaskToPar(std::move(task));
-}
-void SessionHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
-  isolate_handle_->PostTaskToSel(std::move(task));
-}
-void SessionHandle::PostInspectorTask(std::unique_ptr<v8::Task> task) {
-  isolate_handle_->PostInspectorTask(std::move(task));
-}
-Scheduler* SessionHandle::GetSchedulerSel() {
-  return isolate_handle_->GetSchedulerSel();
 }
 void SessionHandle::AddContext(ContextHandle* context_handle) {
   class AddContextTask : public v8::Task {

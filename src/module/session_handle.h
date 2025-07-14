@@ -36,15 +36,13 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
   void runIfWaitingForDebugger(int context_group_id) override;
 
  private:
-  std::mutex mutex_;
-  std::condition_variable cv_;
-  std::queue<std::unique_ptr<v8::Task>> tasks_;
+  cppgc::WeakMember<SessionHandle> session_handle_;
+  v8::Isolate* isolate_;
+
   std::atomic_bool waiting_for_resume_{false};
   std::atomic_bool waiting_for_frontend_{false};
   std::atomic_bool running_nested_loop_{false};
 
-  cppgc::WeakMember<SessionHandle> session_handle_;
-  v8::Isolate* isolate_;
   std::unique_ptr<v8_inspector::V8Inspector> inspector_;
   std::unique_ptr<InspectorChannel> channel_;
   std::shared_ptr<v8_inspector::V8InspectorSession> session_;
@@ -72,12 +70,6 @@ class SessionHandle : public ScriptWrappable {
   explicit SessionHandle(IsolateHandle* isolate_handle);
   ~SessionHandle() override;
 
-  void PostTaskToPar(std::unique_ptr<v8::Task> task);
-  void PostTaskToSel(std::unique_ptr<v8::Task> task);
-  void PostInspectorTask(std::unique_ptr<v8::Task> task);
-
-  Scheduler* GetSchedulerSel();
-
   /* js interface */
   void DispatchInspectorMessage(std::string message);
   void AddContext(ContextHandle* context_handle);
@@ -87,6 +79,9 @@ class SessionHandle : public ScriptWrappable {
   std::optional<RemoteHandle<v8::Function>> on_notification_;
 
  private:
+  friend class InspectorAgent;
+  friend class InspectorChannel;
+
   cppgc::Member<IsolateHandle> isolate_handle_;
   std::unique_ptr<InspectorAgent> inspector_agent_;
 };

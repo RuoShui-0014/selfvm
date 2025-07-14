@@ -10,49 +10,57 @@
 namespace svm {
 namespace {
 std::mutex mutex;
-std::map<v8::Isolate*, uv_loop_t*> isolate_map;
+std::map<const v8::Isolate*, uv_loop_t*> isolate_loop_map;
 }  // namespace
 
 void Scheduler::RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop) {
   std::lock_guard lock(mutex);
-  isolate_map.emplace(isolate, loop);
+  isolate_loop_map.emplace(isolate, loop);
 }
-uv_loop_t* Scheduler::GetIsolateUvLoop(v8::Isolate* isolate) {
-  if (const auto it = isolate_map.find(isolate); it != isolate_map.end()) {
+uv_loop_t* Scheduler::GetIsolateUvLoop(const v8::Isolate* isolate) {
+  const auto it = isolate_loop_map.find(isolate);
+  if (it != isolate_loop_map.end()) {
     return it->second;
   }
   return nullptr;
+}
+std::shared_ptr<v8::TaskRunner> Scheduler::TaskRunner() const {
+  if (isolate_) {
+    return PlatformDelegate::GetNodePlatform()->GetForegroundTaskRunner(
+        isolate_);
+  }
+  return {};
 }
 
 UVSchedulerSel::UVSchedulerSel(
     v8::Isolate* isolate,
     std::unique_ptr<node::ArrayBufferAllocator> allocator)
-    : isolate_(isolate), allocator_(std::move(allocator)) {
+    : Scheduler(isolate), allocator_(std::move(allocator)) {
   uv_loop_ = new uv_loop_t;
   uv_loop_init(uv_loop_);
 
   Scheduler::RegisterIsolate(isolate_, uv_loop_);
 
-  keep_alive_ = new uv_async_t;
-  uv_async_init(uv_loop_, keep_alive_, [](uv_async_t* handle) {
+  auxiliary_ = new uv_async_t;
+  uv_async_init(uv_loop_, auxiliary_, [](uv_async_t* handle) {
     UVSchedulerSel* scheduler = static_cast<UVSchedulerSel*>(handle->data);
     if (!scheduler->running.load()) {
       uv_stop(handle->loop);
       return;
     }
 
-    InspectorLoop(scheduler);
+    RunInspectorTasks(scheduler);
   });
-  keep_alive_->data = this;
+  auxiliary_->data = this;
 }
 UVSchedulerSel::~UVSchedulerSel() {
   running.store(false);
-  uv_async_send(keep_alive_);
+  uv_async_send(auxiliary_);
   if (thread_.joinable()) {
     thread_.join();
   }
 }
-void UVSchedulerSel::RunLoop() {
+void UVSchedulerSel::RunTaskLoop() {
   thread_ = std::thread([this]() {
     {
       v8::Locker locker(isolate_);
@@ -67,38 +75,20 @@ void UVSchedulerSel::RunLoop() {
       uv_run(uv_loop_, UV_RUN_DEFAULT);
     }
 
-    uv_close(reinterpret_cast<uv_handle_t*>(keep_alive_),
-             [](uv_handle_t* handle) {
-               delete reinterpret_cast<uv_async_t*>(handle);
-             });
-    uv_loop_close(uv_loop_);
-
     node::FreeIsolateData(isolate_data_);
     PlatformDelegate::UnregisterIsolate(isolate_);
     isolate_->Dispose();
 
+    uv_close(reinterpret_cast<uv_handle_t*>(auxiliary_),
+             [](uv_handle_t* handle) {
+               delete reinterpret_cast<uv_async_t*>(handle);
+             });
+    uv_loop_close(uv_loop_);
     delete uv_loop_;
   });
 }
-void UVSchedulerSel::KeepAlive() {
-  if (++uv_ref_count == 1) {
-    uv_ref(reinterpret_cast<uv_handle_t*>(keep_alive_));
-  }
-}
-void UVSchedulerSel::WillDie() {
-  if (--uv_ref_count == 0) {
-    uv_unref(reinterpret_cast<uv_handle_t*>(keep_alive_));
-  }
-}
-std::shared_ptr<v8::TaskRunner> UVSchedulerSel::TaskRunner() const {
-  if (isolate_) {
-    return PlatformDelegate::GetNodePlatform()->GetForegroundTaskRunner(
-        isolate_);
-  }
-  return {};
-}
 
-void UVSchedulerSel::InspectorLoop(UVSchedulerSel* scheduler) {
+void UVSchedulerSel::RunInspectorTasks(UVSchedulerSel* scheduler) {
   std::queue<std::unique_ptr<v8::Task>> tasks;
   {
     std::lock_guard lock(scheduler->mutex_);
@@ -116,37 +106,19 @@ void UVSchedulerSel::PostInspectorTask(std::unique_ptr<v8::Task> task) {
     std::lock_guard lock(mutex_);
     tasks_.push(std::move(task));
   }
-  uv_async_send(keep_alive_);
+  uv_async_send(auxiliary_);
 }
 
-UVSchedulerPar::UVSchedulerPar(v8::Isolate* isolate) : isolate_(isolate) {
+UVSchedulerPar::UVSchedulerPar(v8::Isolate* isolate) : Scheduler(isolate) {
   uv_loop_ = Scheduler::GetIsolateUvLoop(isolate_);
-  keep_alive_ = new uv_async_t;
-  uv_async_init(uv_loop_, keep_alive_, [](uv_async_t*) {});
-  uv_unref(reinterpret_cast<uv_handle_t*>(keep_alive_));
+  auxiliary_ = new uv_async_t;
+  uv_async_init(uv_loop_, auxiliary_, [](uv_async_t*) {});
+  uv_unref(reinterpret_cast<uv_handle_t*>(auxiliary_));
 }
 UVSchedulerPar::~UVSchedulerPar() {
-  uv_close(reinterpret_cast<uv_handle_t*>(keep_alive_),
-           [](uv_handle_t* handle) {
-             delete reinterpret_cast<uv_async_t*>(handle);
-           });
-}
-void UVSchedulerPar::KeepAlive() {
-  if (++uv_ref_count == 1) {
-    uv_ref(reinterpret_cast<uv_handle_t*>(keep_alive_));
-  }
-}
-void UVSchedulerPar::WillDie() {
-  if (--uv_ref_count == 0) {
-    uv_unref(reinterpret_cast<uv_handle_t*>(keep_alive_));
-  }
-}
-std::shared_ptr<v8::TaskRunner> UVSchedulerPar::TaskRunner() const {
-  if (isolate_) {
-    return PlatformDelegate::GetNodePlatform()->GetForegroundTaskRunner(
-        isolate_);
-  }
-  return {};
+  uv_close(reinterpret_cast<uv_handle_t*>(auxiliary_), [](uv_handle_t* handle) {
+    delete reinterpret_cast<uv_async_t*>(handle);
+  });
 }
 
 }  // namespace svm

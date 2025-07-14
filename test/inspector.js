@@ -4,17 +4,18 @@ const WebSocket = require('ws');
 const isolate = new svm.Isolate();
 
 const ctx = isolate.context
-const ctx2 = isolate.createContext()
+
+// 创建调试会话
 const channel = isolate.createInspectorSession()
+// 将需要调试的context加入会话
 channel.addContext(ctx);
-channel.addContext(ctx2);
 
 // Create an inspector channel on port 10000
 let wss = new WebSocket.Server({port: 10000});
 wss.on('connection', function (ws) {
     function dispose() {
         try {
-            // channel.dispose();
+            channel.dispose();
         } catch (err) {
         }
     }
@@ -40,19 +41,20 @@ wss.on('connection', function (ws) {
         }
     }
 
-    channel.onResponse = (message) => send(message);
+    channel.onResponse = message => send(message);
     channel.onNotification = send;
 });
 console.log('Inspector: devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:10000');
 
+// 调试运行时必须使用异步函数，否则会导致主线程nodejs卡住
 async function test() {
     try {
         await channel.dispatchMessage('{"id":1,"method":"Debugger.enable"}');
         const result = await ctx.evalAsync(`debugger;this.a = {name: 'Jack', age: 18}`);
-        console.log(`调试 eval result = `, result)
+        console.log(`调试中... result = `, result)
     } catch (e) {
         console.error(e)
     }
 }
-
+test()
 setInterval(test, 5000);

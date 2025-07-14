@@ -38,7 +38,7 @@ IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
                                       scheduler_sel_->GetUvLoop());
   }
   v8::Isolate::Initialize(isolate_sel_, create_params);
-  scheduler_sel_->RunLoop();
+  reinterpret_cast<UVSchedulerSel*>(scheduler_sel_.get())->RunTaskLoop();
 
   scheduler_par_ = std::make_unique<UVSchedulerPar>(isolate_par_);
 
