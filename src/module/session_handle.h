@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <queue>
+
 #include "../isolate/script_wrappable.h"
 #include "../node_ex/v8-inspector.h"
 #include "../utils/utils.h"
@@ -27,7 +29,7 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
   void dispose();
 
   /* v8_inspector::V8InspectorClient override */
-  void runMessageLoopOnPause(int contextGroupId) override;
+  void runMessageLoopOnPause(int context_group_id) override;
   void quitMessageLoopOnPause() override;
   void runIfWaitingForDebugger(int context_group_id) override;
 

@@ -21,7 +21,7 @@ void InspectorAgent::connectInspector() {
   session_ = inspector_->connect(
       1, channel_.get(), v8_inspector::StringView(),
       v8_inspector::V8Inspector::ClientTrustLevel::kFullyTrusted,
-      v8_inspector::V8Inspector::SessionPauseState::kNotWaitingForDebugger);
+      v8_inspector::V8Inspector::SessionPauseState::kWaitingForDebugger);
 }
 
 void InspectorAgent::addContext(v8::Local<v8::Context> context) {
@@ -59,7 +59,7 @@ void InspectorAgent::dispose() {
   running_nested_loop_.store(false);
 }
 
-void InspectorAgent::runMessageLoopOnPause(int contextGroupId) {
+void InspectorAgent::runMessageLoopOnPause(int context_group_id) {
   if (running_nested_loop_.load()) {
     return;
   }

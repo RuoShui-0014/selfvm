@@ -42,6 +42,11 @@ declare module SelfVm {
          * 创建Context异步获取结果
          */
         createContextAsync(): Promise<Context>;
+
+        /**
+         * 创建Session同步获取结果
+         */
+        createInspectorSession(): Session;
     }
 
     export class Context {
@@ -54,6 +59,33 @@ declare module SelfVm {
          * 运行代码异步获取结果
          */
         evalAsync(code: string, filename?: string): Promise<any>;
+    }
+
+    export class Session {
+        /**
+         * 添加需要调试的context
+         */
+        addContext(context: Context): void;
+
+        /**
+         * 分发从客户端接收到的协议数据
+         */
+        dispatchMessage(msg: string): void;
+
+        /**
+         * 发送协议数据到客户端的回调
+         */
+        onResponse: (msg: string) => {};
+
+        /**
+         * 发送协议数据到客户端的回调
+         */
+        onNotification: (msg: string) => {};
+
+        /**
+         * 运行代码异步获取结果
+         */
+        dispose(): void;
     }
 }
 export = SelfVm;

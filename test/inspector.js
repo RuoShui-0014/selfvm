@@ -10,7 +10,6 @@ const channel = isolate.createInspectorSession()
 // 将需要调试的context加入会话
 channel.addContext(ctx);
 
-// Create an inspector channel on port 10000
 let wss = new WebSocket.Server({port: 10000});
 wss.on('connection', function (ws) {
     function dispose() {
@@ -24,7 +23,7 @@ wss.on('connection', function (ws) {
     ws.on('close', dispose);
 
     ws.on('message', function (message) {
-        console.log('<', message.toString())
+        console.log('onMessage<', message.toString())
         try {
             channel.dispatchMessage(String(message));
         } catch (err) {
@@ -32,29 +31,31 @@ wss.on('connection', function (ws) {
         }
     });
 
-    function send(message) {
-        console.log('>', message.toString())
+    channel.onResponse = (msg) => {
+        console.log('onResponse>', msg.toString())
         try {
-            ws.send(message);
+            ws.send(msg);
         } catch (err) {
             dispose();
         }
-    }
-
-    channel.onResponse = message => send(message);
-    channel.onNotification = send;
+    };
+    channel.onNotification = (msg) => {
+        console.log('onNotification>', msg.toString())
+        try {
+            ws.send(msg);
+        } catch (err) {
+            dispose();
+        }
+    };
 });
-console.log('Inspector: devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:10000');
+console.log('devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:10000');
 
-// 调试运行时必须使用异步函数，否则会导致主线程nodejs卡住
-async function test() {
+setInterval(async () => {
     try {
         await channel.dispatchMessage('{"id":1,"method":"Debugger.enable"}');
         const result = await ctx.evalAsync(`debugger;this.a = {name: 'Jack', age: 18}`);
-        console.log(`调试中... result = `, result)
+        console.log(`调试 eval result = `, result)
     } catch (e) {
         console.error(e)
     }
-}
-test()
-setInterval(test, 5000);
+}, 5000);

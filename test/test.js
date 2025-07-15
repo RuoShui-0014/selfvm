@@ -44,17 +44,6 @@ channel.addContext(ctx);
 
 // Create an inspector channel on port 10000
 let wss = new WebSocket.Server({port: 10000});
-
-async function test() {
-    try {
-        await channel.dispatchMessage('{"id":1,"method":"Debugger.enable"}');
-        const result = await ctx.evalAsync(`debugger;this.a = {name: 'Jack', age: 18}`);
-        console.log(`调试 eval result = `, result)
-    } catch (e) {
-        console.error(e)
-    }
-}
-
 wss.on('connection', function (ws) {
     function dispose() {
         try {
@@ -62,12 +51,11 @@ wss.on('connection', function (ws) {
         } catch (err) {
         }
     }
-
     ws.on('error', dispose);
     ws.on('close', dispose);
 
     ws.on('message', function (message) {
-        console.log('<', message.toString())
+        console.log('onMessage<', message.toString())
         try {
             channel.dispatchMessage(String(message));
         } catch (err) {
@@ -75,18 +63,31 @@ wss.on('connection', function (ws) {
         }
     });
 
-    function send(message) {
-        console.log('>', message.toString())
+    channel.onResponse = (msg) => {
+        console.log('onResponse>', msg.toString())
         try {
-            ws.send(message);
+            ws.send(msg);
         } catch (err) {
             dispose();
         }
-    }
-
-    channel.onResponse = message => send(message);
-    channel.onNotification = send;
+    };
+    channel.onNotification = (msg) => {
+        console.log('onNotification>', msg.toString())
+        try {
+            ws.send(msg);
+        } catch (err) {
+            dispose();
+        }
+    };
 });
-console.log('Inspector: devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:10000');
+console.log('devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:10000');
 
-setInterval(test, 5000);
+setInterval(async () => {
+    try {
+        await channel.dispatchMessage('{"id":1,"method":"Debugger.enable"}');
+        const result = await ctx.evalAsync(`debugger;this.a = {name: 'Jack', age: 18}`);
+        console.log(`调试 eval result = `, result)
+    } catch (e) {
+        console.error(e)
+    }
+}, 5000);
