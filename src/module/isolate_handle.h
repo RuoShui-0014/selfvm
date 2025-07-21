@@ -12,12 +12,18 @@ namespace svm {
 class IsolateHolder;
 class Scheduler;
 class ContextHandle;
+class ScriptHandle;
 class SessionHandle;
+struct IsolateParams;
 
 class IsolateHandle : public ScriptWrappable {
  public:
-  static IsolateHandle* Create(v8::Isolate* isolate);
-  explicit IsolateHandle(std::unique_ptr<IsolateHolder>);
+  using ContextId = v8::Context*;
+  using ScriptId = v8::UnboundScript*;
+
+  static IsolateHandle* Create(IsolateParams& params);
+
+  explicit IsolateHandle(IsolateParams& params);
   ~IsolateHandle() override;
 
   IsolateHolder* GetIsolateHolder() const { return isolate_holder_.get(); }
@@ -27,7 +33,8 @@ class IsolateHandle : public ScriptWrappable {
   Scheduler* GetSchedulerSel();
   Scheduler* GetSchedulerPar();
 
-  v8::Local<v8::Context> GetContext(uint32_t id);
+  v8::Local<v8::Context> GetContext(ContextId address);
+  v8::Local<v8::UnboundScript> GetScript(ScriptId address);
 
   void PostTaskToSel(std::unique_ptr<v8::Task> task);
   void PostTaskToPar(std::unique_ptr<v8::Task> task);
@@ -39,6 +46,7 @@ class IsolateHandle : public ScriptWrappable {
   void CreateContextAsync(v8::Isolate* isolate,
                           v8::Local<v8::Context> context,
                           v8::Local<v8::Promise::Resolver> resolver);
+  ScriptHandle* CreateScript(std::string script, std::string filename);
   SessionHandle* CreateInspectorSession();
   void IsolateGc();
   void Release();

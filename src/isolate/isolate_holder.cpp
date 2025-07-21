@@ -1,27 +1,21 @@
 #include "isolate_holder.h"
 
 #include <iostream>
-#include <mutex>
 
-#include "../lib/thread_pool.h"
-#include "../module/isolate_handle.h"
+#include "../module/context_handle.h"
 #include "../utils/utils.h"
 #include "../web/local_dom_window.h"
 #include "platform_delegate.h"
 
 namespace svm {
 
-std::mutex isolate_allocator_mutex{};
-
-IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
-                             size_t memory_limit_in_mb)
-    : isolate_par_{isolate_parent} {
-  memory_limit = memory_limit_in_mb * 1024 * 1024;
+IsolateHolder::IsolateHolder(IsolateParams& params)
+    : isolate_par_{params.isolate_par}, isolate_params_(params) {
   v8::ResourceConstraints rc;
   size_t young_space_in_kb = static_cast<size_t>(std::pow(
-      2, std::min(sizeof(void*) >= 8 ? 4.0 : 3.0, memory_limit_in_mb / 128.0) +
+      2, std::min(sizeof(void*) >= 8 ? 4.0 : 3.0, params.memory_limit / 128.0) +
              10));
-  size_t old_generation_size_in_mb = memory_limit_in_mb;
+  size_t old_generation_size_in_mb = params.memory_limit;
   rc.set_max_young_generation_size_in_bytes(young_space_in_kb * 1024);
   rc.set_max_old_generation_size_in_bytes(old_generation_size_in_mb * 1024 *
                                           1024);
@@ -30,7 +24,6 @@ IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = allocator.get();
   {
-    std::lock_guard lock{isolate_allocator_mutex};
     isolate_sel_ = v8::Isolate::Allocate();
     scheduler_sel_ =
         std::make_unique<UVSchedulerSel>(isolate_sel_, std::move(allocator));
@@ -38,7 +31,7 @@ IsolateHolder::IsolateHolder(v8::Isolate* isolate_parent,
                                       scheduler_sel_->GetUvLoop());
   }
   v8::Isolate::Initialize(isolate_sel_, create_params);
-  reinterpret_cast<UVSchedulerSel*>(scheduler_sel_.get())->RunTaskLoop();
+  static_cast<UVSchedulerSel*>(scheduler_sel_.get())->RunTaskLoop();
 
   scheduler_par_ = std::make_unique<UVSchedulerPar>(isolate_par_);
 
@@ -77,7 +70,7 @@ void IsolateHolder::PostInspectorTask(std::unique_ptr<v8::Task> task) {
   scheduler_sel_->PostInspectorTask(std::move(task));
 }
 
-uint32_t IsolateHolder::NewContext() {
+ContextId IsolateHolder::CreateContext() {
   v8::Isolate::Scope isolate_scope(isolate_sel_);
   v8::HandleScope handle_scope(isolate_sel_);
 
@@ -96,19 +89,31 @@ uint32_t IsolateHolder::NewContext() {
 
   context->AllowCodeGenerationFromStrings(false);
 
-  uint32_t id = index_++;
-  context_map_.emplace(id, context);
+  context_map_.emplace(*context, context);
 
-  return id;
+  return *context;
 }
 
-void IsolateHolder::ClearContext(uint32_t id) {
-  context_map_.erase(id);
+void IsolateHolder::ClearContext(v8::Context* address) {
+  context_map_.erase(address);
 }
 
-v8::Local<v8::Context> IsolateHolder::GetContext(uint32_t id) {
-  auto it = context_map_.find(id);
+v8::Local<v8::Context> IsolateHolder::GetContext(v8::Context* address) {
+  auto it = context_map_.find(address);
   if (it != context_map_.end()) {
+    return it->second.Get(isolate_sel_);
+  }
+  return {};
+}
+void IsolateHolder::CreateUnboundScript(
+    v8::Local<v8::UnboundScript> unbound_script) {
+  unbound_script_map_.emplace(*unbound_script,
+                              RemoteHandle{isolate_sel_, unbound_script});
+}
+v8::Local<v8::UnboundScript> IsolateHolder::GetUnboundScript(
+    v8::UnboundScript* address) {
+  auto it = unbound_script_map_.find(address);
+  if (it != unbound_script_map_.end()) {
     return it->second.Get(isolate_sel_);
   }
   return {};

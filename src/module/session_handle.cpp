@@ -183,24 +183,24 @@ void SessionHandle::AddContext(ContextHandle* context_handle) {
    public:
     AddContextTask(IsolateHolder* isolate_holder,
                    InspectorAgent* inspector_agent,
-                   uint32_t id)
+                   v8::Context* const address)
         : isolate_holder_(isolate_holder),
           inspector_agent_(inspector_agent),
-          context_id_(id) {}
+          address_(address) {}
     ~AddContextTask() override = default;
 
     void Run() override {
       v8::Isolate* isolate = v8::Isolate::GetCurrent();
       v8::HandleScope handle_scope(isolate);
 
-      v8::Local<v8::Context> context = isolate_holder_->GetContext(context_id_);
+      v8::Local<v8::Context> context = isolate_holder_->GetContext(address_);
       inspector_agent_->addContext(context);
     }
 
    private:
     IsolateHolder* isolate_holder_;
     InspectorAgent* inspector_agent_;
-    uint32_t context_id_;
+    v8::Context* const address_{};
   };
   isolate_handle_->PostTaskToSel(std::make_unique<AddContextTask>(
       isolate_handle_->GetIsolateHolder(), inspector_agent_.get(),

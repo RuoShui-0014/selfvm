@@ -30,7 +30,7 @@ void Initialize(v8::Local<v8::Object> exports) {
   exports->Set(context, toString("gc"),
                tpl1->GetFunction(context).ToLocalChecked());
 
-  // IsolateHandle ins
+  // IsolateHandle instance
   v8::Local<v8::FunctionTemplate> isolate_handle_template =
       V8IsolateHandle::GetWrapperTypeInfo()
           ->GetV8ClassTemplate(isolate)

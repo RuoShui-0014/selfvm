@@ -281,4 +281,51 @@ void V8SetReturnValue(Info& info, T* value) {
   info.GetReturnValue().Set(value->V8Object(info.GetIsolate()));
 }
 
+template <typename T, typename Property>
+T ReadOption(v8::Local<v8::Object> option, Property property, T default_value) {
+  T value = default_value;
+  v8::Isolate* isolate = option->GetIsolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::Value> result =
+      option->Get(context, toString(isolate, property)).ToLocalChecked();
+  if constexpr (std::is_same<T, bool>::value) {
+    value = result->BooleanValue(isolate);
+  } else if constexpr (std::is_same<T, int>::value) {
+    value = result->Int32Value(context).ToChecked();
+  } else if constexpr (std::is_same<T, unsigned>::value) {
+    value = result->Uint32Value(context).ToChecked();
+  } else if constexpr (std::is_same<T, long long>::value) {
+    value = result->IntegerValue(context).ToChecked();
+  }
+  return value;
+}
+template <typename T, typename Property>
+T ReadOption(v8::Local<v8::Value> option, Property property, T default_value) {
+  T value = default_value;
+  if (!option->IsObject()) {
+    return value;
+  }
+
+  v8::Isolate* isolate = option.As<v8::Object>()->GetIsolate();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::Value> result = option.As<v8::Object>()
+                                    ->Get(context, toString(isolate, property))
+                                    .ToLocalChecked();
+  if constexpr (std::is_same<T, bool>::value) {
+    value = result->BooleanValue(isolate);
+  } else if constexpr (std::is_same<T, int>::value) {
+    value = result->Int32Value(context).ToChecked();
+  } else if constexpr (std::is_same<T, unsigned>::value) {
+    value = result->Uint32Value(context).ToChecked();
+  } else if constexpr (std::is_same<T, long long>::value) {
+    value = result->IntegerValue(context).ToChecked();
+  }
+  return value;
+}
+
+template <typename T, T default_value, typename Option, typename Property>
+T ReadOption(Option option, Property property, T value = default_value) {
+  return ReadOption(option, property, value);
+}
+
 }  // namespace svm

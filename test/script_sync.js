@@ -6,15 +6,16 @@ const ctx = isolate.context
 
 // context可通过eval进行代码的同步运行
 let times = 1000;
-console.time("eval sync")
+console.time("script sync")
 for (let i = 0; i < times; i++) {
     try {
         console.time("eval " + i)
-        const result = ctx.eval(`this.a = {name: 'Jack', age: 18}`, "filename.js");
+        const script = isolate.createScript("this.a = {name: 'Jack', age: 18};", "filename.js");
+        const result = script.run(ctx)
         console.timeEnd("eval " + i)
         // console.log(`eval result = `, result)
     } catch (e) {
         console.error(e)
     }
 }
-console.timeEnd("eval sync")
+console.timeEnd("script sync")

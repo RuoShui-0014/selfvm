@@ -27,11 +27,6 @@ add_library(${PROJECT_NAME} SHARED
         src/utils/utils.h
         src/utils/utils.h
 
-        src/lib/thread_pool.cpp
-        src/lib/thread_pool.h
-        #        src/lib/logger.cpp
-        #        src/lib/logger.h
-
         src/isolate/platform_delegate.cpp
         src/isolate/platform_delegate.h
         src/isolate/isolate_holder.cpp
@@ -49,14 +44,18 @@ add_library(${PROJECT_NAME} SHARED
         src/isolate/task.cpp
         src/isolate/task.h
 
+        src/module/string.h
         src/module/isolate_handle.cpp
         src/module/isolate_handle.h
         src/module/context_handle.cpp
         src/module/context_handle.h
-        src/web/local_dom_window.cpp
-        src/web/local_dom_window.h
         src/module/session_handle.cpp
         src/module/session_handle.h
+        src/module/script_handle.cpp
+        src/module/script_handle.h
+
+        src/web/local_dom_window.cpp
+        src/web/local_dom_window.h
 )
 target_compile_definitions(${PROJECT_NAME} PRIVATE _UCRT)
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})

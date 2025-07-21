@@ -11,10 +11,15 @@
 
 namespace svm {
 
+struct IsolateParams {
+  v8::Isolate* isolate_par;
+  size_t memory_limit;
+};
+
+using ContextId = v8::Context*;
 class IsolateHolder {
  public:
-  explicit IsolateHolder(v8::Isolate* isolate_parent,
-                         size_t memory_limit = 128);
+  explicit IsolateHolder(IsolateParams& params);
   ~IsolateHolder();
 
   v8::Isolate* GetIsolateSel() const { return isolate_sel_; }
@@ -32,23 +37,27 @@ class IsolateHolder {
 
   void PostInspectorTask(std::unique_ptr<v8::Task> task);
 
-  uint32_t NewContext();
-  void ClearContext(uint32_t id);
-  v8::Local<v8::Context> GetContext(uint32_t id);
+  ContextId CreateContext();
+  void ClearContext(v8::Context* address);
+  v8::Local<v8::Context> GetContext(v8::Context* address);
+
+  void CreateUnboundScript(v8::Local<v8::UnboundScript> unbound_script);
+  v8::Local<v8::UnboundScript> GetUnboundScript(v8::UnboundScript* address);
 
  private:
+  IsolateParams isolate_params_;
+
   v8::Isolate* isolate_par_{nullptr};
   v8::Isolate* isolate_sel_{nullptr};
 
   std::unique_ptr<Scheduler> scheduler_sel_;
   std::unique_ptr<Scheduler> scheduler_par_;
 
-  uint32_t index_{0};
-  std::map<uint32_t, RemoteHandle<v8::Context>> context_map_;
-
   std::unique_ptr<PerIsolateData> per_isolate_data_;
 
-  size_t memory_limit = 128;
+  std::map<v8::Context* const, RemoteHandle<v8::Context>> context_map_;
+  std::map<v8::UnboundScript* const, RemoteHandle<v8::UnboundScript>>
+      unbound_script_map_;
 };
 
 }  // namespace svm

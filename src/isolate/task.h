@@ -6,6 +6,8 @@
 
 #include <v8.h>
 
+#include <future>
+
 #include "../module/context_handle.h"
 #include "../module/isolate_handle.h"
 #include "../utils/utils.h"
@@ -19,42 +21,14 @@ class IsolateHandle;
 template <typename T>
 class SyncTask : public v8::Task {
  public:
-  class Waiter {
-   public:
-    Waiter() = default;
-    ~Waiter() = default;
-
-    T& GetResult() {
-      while (true) {
-        if (flag.load()) {
-          return result_;
-        }
-      }
-    }
-    void SetResult(const T& result) {
-      result_ = result;
-      flag.store(true);
-    }
-
-   private:
-    friend class SyncTask;
-    std::atomic<bool> flag{false};
-    T result_;
-  };
-
   explicit SyncTask() = default;
-  ~SyncTask() override { wait_->flag.store(true); }
+  ~SyncTask() override = default;
 
-  std::unique_ptr<Waiter> CreateWaiter() {
-    assert(!wait_);
-
-    auto wait = std::make_unique<Waiter>();
-    wait_ = wait.get();
-    return wait;
-  }
+  std::future<T> GetFuture() { return promise_.get_future(); }
+  void SetResult(const T& _Val) { promise_.set_value(_Val); }
 
  protected:
-  Waiter* wait_{nullptr};
+  std::promise<T> promise_;
 };
 
 template <typename T>
@@ -65,7 +39,7 @@ class SyncTask<T> : public v8::Task {
   ~SyncTask() override = default;
 };
 
-class CreateContextTask : public SyncTask<uint32_t> {
+class CreateContextTask : public SyncTask<v8::Context*> {
  public:
   explicit CreateContextTask(IsolateHandle* isolate_handle);
   ~CreateContextTask() override = default;
@@ -157,13 +131,13 @@ class CreateContextAsyncTask final : public AsyncTask {
  public:
   class Callback : public v8::Task {
    public:
-    explicit Callback(std::unique_ptr<AsyncInfo> info, uint32_t id);
+    explicit Callback(std::unique_ptr<AsyncInfo> info, v8::Context* address);
     ~Callback() override = default;
 
     void Run() override;
 
     std::unique_ptr<AsyncInfo> info_;
-    uint32_t id_;
+    v8::Context* const address_;
   };
   explicit CreateContextAsyncTask(std::unique_ptr<AsyncInfo> info);
   ~CreateContextAsyncTask() override = default;

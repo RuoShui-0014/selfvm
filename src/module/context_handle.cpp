@@ -1,5 +1,6 @@
 #include "context_handle.h"
 
+#include "../isolate/external_data.h"
 #include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
@@ -9,30 +10,23 @@ namespace svm {
 
 ContextHandle* ContextHandle::Create(IsolateHandle* isolate_handle) {
   auto task = std::make_unique<CreateContextTask>(isolate_handle);
-  auto waiter = task->CreateWaiter();
+  auto future = task->GetFuture();
   isolate_handle->PostTaskToSel(std::move(task));
 
-  auto id = waiter->GetResult();
+  auto id = future.get();
 
   v8::Isolate* isolate = isolate_handle->GetIsolatePar();
   ContextHandle* context_handle =
       MakeCppGcObject<GC::kSpecified, ContextHandle>(isolate, isolate_handle,
                                                      id);
-  v8::Local<v8::FunctionTemplate> isolate_handle_template =
-      V8ContextHandle::GetWrapperTypeInfo()
-          ->GetV8ClassTemplate(isolate)
-          .As<v8::FunctionTemplate>();
-  v8::Local<v8::Object> obj = isolate_handle_template->InstanceTemplate()
-                                  ->NewInstance(isolate->GetCurrentContext())
-                                  .ToLocalChecked();
-  ScriptWrappable::Wrap(obj, context_handle);
+  NewInstance<V8ContextHandle>(isolate, isolate->GetCurrentContext(),
+                               context_handle);
   return context_handle;
 }
 
-ContextHandle::ContextHandle(IsolateHandle* isolate_handle, uint32_t context_id)
-    : isolate_(isolate_handle->GetIsolateSel()),
-      id_{context_id},
-      isolate_handle_(isolate_handle) {}
+ContextHandle::ContextHandle(IsolateHandle* isolate_handle,
+                             v8::Context* address)
+    : address_{address}, isolate_handle_(isolate_handle) {}
 
 ContextHandle::~ContextHandle() = default;
 
@@ -41,9 +35,9 @@ std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script,
                                                 std::string filename) {
   auto task = std::make_unique<ScriptTask>(this, std::move(script),
                                            std::move(filename));
-  auto waiter = task->CreateWaiter();
+  auto future = task->GetFuture();
   PostTaskToSel(std::move(task));
-  return waiter->GetResult();
+  return future.get();
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
@@ -55,11 +49,17 @@ void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
 }
 
 void ContextHandle::Release() {
-  isolate_handle_->GetIsolateHolder()->ClearContext(id_);
+  isolate_handle_->GetIsolateHolder()->ClearContext(address_);
+}
+v8::Isolate* ContextHandle::GetIsolateSel() {
+  return isolate_handle_->GetIsolateSel();
+}
+v8::Isolate* ContextHandle::GetIsolatePar() {
+  return isolate_handle_->GetIsolatePar();
 }
 
 v8::Local<v8::Context> ContextHandle::GetContext() {
-  return isolate_handle_->GetContext(id_);
+  return isolate_handle_->GetContext(address_);
 }
 
 void ContextHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
@@ -88,6 +88,7 @@ void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
   ContextHandle* context_handle =
       ScriptWrappable::Unwrap<ContextHandle>(receiver);
+
   std::string script = *v8::String::Utf8Value(isolate, info[0]);
   std::string filename{""};
   if (info.Length() > 1) {
@@ -95,25 +96,12 @@ void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
   auto buff = context_handle->Eval(std::move(script), std::move(filename));
 
-  v8::Local<v8::Value> result, error;
-  {
-    v8::TryCatch try_catch(isolate);
-    v8::ValueDeserializer deserializer(isolate, buff.first, buff.second);
-    deserializer.ReadHeader(context);
-    if (deserializer.ReadValue(context).ToLocal(&result)) {
-      if (result->IsNativeError()) {
-        error = result;
-      }
-    } else {
-      error = try_catch.Exception();
-      try_catch.Reset();
-    }
-  }
-
-  if (error.IsEmpty()) {
+  v8::Local<v8::Value> result =
+      ExternalData::DeserializerSync(isolate, context, buff);
+  if (!result->IsNativeError()) {
     info.GetReturnValue().Set(result);
   } else {
-    isolate->ThrowException(error);
+    isolate->ThrowException(result);
   }
 }
 

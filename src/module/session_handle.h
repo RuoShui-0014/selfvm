@@ -35,7 +35,7 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
 
  private:
   cppgc::WeakMember<SessionHandle> session_handle_;
-  v8::Isolate* isolate_;
+  v8::Isolate* isolate_{};
 
   std::atomic_bool waiting_for_frontend_{false};
   std::atomic_bool waiting_for_resume_{false};

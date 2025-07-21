@@ -13,11 +13,13 @@ namespace svm {
 class IsolateHandle;
 class AsyncInfo;
 
+using ContextId = v8::Context*;
+
 class ContextHandle : public ScriptWrappable {
  public:
   static ContextHandle* Create(IsolateHandle* isolate_handle);
 
-  explicit ContextHandle(IsolateHandle* isolate_handle, uint32_t context_id);
+  explicit ContextHandle(IsolateHandle* isolate_handle, ContextId const address);
   ~ContextHandle() override;
 
   /*********************** js interface *************************/
@@ -27,10 +29,12 @@ class ContextHandle : public ScriptWrappable {
                  std::string filename);
   void Release();
 
-  IsolateHandle* GetIsolateHandle() { return isolate_handle_.Get(); };
-  v8::Isolate* GetIsolateSel() { return isolate_; }
-  uint32_t GetContextId() { return id_; }
+  IsolateHandle* GetIsolateHandle() const { return isolate_handle_.Get(); };
+  ContextId GetContextId() const { return address_; }
   v8::Local<v8::Context> GetContext();
+
+  v8::Isolate* GetIsolateSel();
+  v8::Isolate* GetIsolatePar();
 
   void PostTaskToSel(std::unique_ptr<v8::Task> task);
   void PostTaskToPar(std::unique_ptr<v8::Task> task);
@@ -38,9 +42,8 @@ class ContextHandle : public ScriptWrappable {
   void Trace(cppgc::Visitor* visitor) const override;
 
  private:
-  v8::Isolate* isolate_;
-  uint32_t id_;
   cppgc::Member<IsolateHandle> isolate_handle_;
+  ContextId const address_;
 };
 
 class V8ContextHandle {

@@ -21,8 +21,17 @@ class ExternalData {
     v8::Local<v8::Value>* result;
   };
 
-  static std::pair<uint8_t*, size_t> CopySync(SourceData& source);
-  static std::pair<uint8_t*, size_t> CopyAsync(SourceData& source);
+  static std::pair<uint8_t*, size_t> SerializerSync(SourceData& source);
+  static std::pair<uint8_t*, size_t> SerializerAsync(SourceData& source);
+
+  static v8::Local<v8::Value> DeserializerSync(
+      v8::Isolate* isolate,
+      v8::Local<v8::Context> context,
+      std::pair<uint8_t*, size_t>& buff);
+  static v8::Local<v8::Value> DeserializerAsync(
+      v8::Isolate* isolate,
+      v8::Local<v8::Context> context,
+      std::pair<uint8_t*, size_t>& buff);
 };
 
 }  // namespace svm

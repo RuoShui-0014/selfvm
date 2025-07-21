@@ -7,22 +7,19 @@
 #include "../isolate/task.h"
 #include "../utils/utils.h"
 #include "context_handle.h"
+#include "script_handle.h"
 #include "session_handle.h"
+#include "string.h"
 
 namespace svm {
 
-IsolateHandle* IsolateHandle::Create(v8::Isolate* isolate_parent) {
-  size_t memory_limit = 128;
-
-  auto isolate_holder =
-      std::make_unique<IsolateHolder>(isolate_parent, memory_limit);
-
-  return MakeCppGcObject<GC::kSpecified, IsolateHandle>(
-      isolate_parent, std::move(isolate_holder));
+IsolateHandle* IsolateHandle::Create(IsolateParams& params) {
+  return MakeCppGcObject<GC::kSpecified, IsolateHandle>(params.isolate_par,
+                                                        params);
 }
 
-IsolateHandle::IsolateHandle(std::unique_ptr<IsolateHolder> isolate_holder)
-    : isolate_holder_(std::move(isolate_holder)) {}
+IsolateHandle::IsolateHandle(IsolateParams& params)
+    : isolate_holder_(std::make_unique<IsolateHolder>(params)) {}
 
 IsolateHandle::~IsolateHandle() {
   default_context_.Clear();
@@ -43,8 +40,11 @@ ContextHandle* IsolateHandle::GetContextHandle() {
   return default_context_.Get();
 }
 
-v8::Local<v8::Context> IsolateHandle::GetContext(uint32_t id) {
-  return isolate_holder_->GetContext(id);
+v8::Local<v8::Context> IsolateHandle::GetContext(v8::Context* const address) {
+  return isolate_holder_->GetContext(address);
+}
+v8::Local<v8::UnboundScript> IsolateHandle::GetScript(ScriptId const address) {
+  return isolate_holder_->GetUnboundScript(address);
 }
 
 Scheduler* IsolateHandle::GetSchedulerSel() {
@@ -80,6 +80,10 @@ void IsolateHandle::CreateContextAsync(
   auto task = std::make_unique<CreateContextAsyncTask>(std::move(async_info));
   PostTaskToSel(std::move(task));
 }
+ScriptHandle* IsolateHandle::CreateScript(std::string script,
+                                          std::string filename) {
+  return ScriptHandle::Create(this, std::move(script), std::move(filename));
+}
 
 SessionHandle* IsolateHandle::CreateInspectorSession() {
   return MakeCppGcObject<GC::kCurrent, SessionHandle>(this);
@@ -107,16 +111,27 @@ void IsolateHandle::Trace(cppgc::Visitor* visitor) const {
 }
 
 /*************************************************************************************************/
-
 void ConstructCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  if (info.IsConstructCall()) {
-    ScriptWrappable::Wrap(info.This(),
-                          IsolateHandle::Create(info.GetIsolate()));
+  struct ConstructStringTable {
+    const char* memory_limit{"memoryLimit"};
+  };
+
+  if (!info.IsConstructCall()) {
+    info.GetIsolate()->ThrowException(v8::Exception::TypeError(
+        toString(info.GetIsolate(), "Illegal constructor")));
     return;
   }
 
-  info.GetIsolate()->ThrowException(v8::Exception::TypeError(
-      toString(info.GetIsolate(), "Illegal constructor")));
+  v8::Isolate* isolate = info.GetIsolate();
+  size_t memory_limit{128};
+  if (info.Length() > 0 && info[0]->IsObject()) {
+    memory_limit = ReadOption<size_t, 128>(
+        info[0], StringTable<ConstructStringTable>::Get().memory_limit);
+  }
+
+  IsolateParams params{isolate, memory_limit};
+  IsolateHandle* isolate_handle = IsolateHandle::Create(params);
+  ScriptWrappable::Wrap(info.This(), isolate_handle);
 }
 
 void ContextAttributeGetCallback(
@@ -153,6 +168,41 @@ void CreateContextAsyncOperationCallback(
   info.GetReturnValue().Set(resolver->GetPromise());
 }
 
+void CreateScriptOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1) {
+    return;
+  }
+
+  v8::Isolate* isolate = info.GetIsolate();
+
+  std::string script, filename;
+  if (info[0]->IsString()) {
+    script = *v8::String::Utf8Value(isolate, info[0]);
+    if (script == "") {
+      isolate->ThrowException(v8::Exception::TypeError(
+          toString(isolate, "The script must be a string and not is empty")));
+      return;
+    }
+  }
+
+  if (info.Length() > 1 && info[1]->IsString()) {
+    filename = *v8::String::Utf8Value(isolate, info[1]);
+  }
+
+  v8::Local<v8::Object> receiver = info.This();
+  IsolateHandle* isolate_handle =
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
+  ScriptHandle* script_handle =
+      isolate_handle->CreateScript(std::move(script), std::move(filename));
+  if (script_handle) {
+    info.GetReturnValue().Set(script_handle->V8Object(info.GetIsolate()));
+  } else {
+    isolate->ThrowException(v8::Exception::TypeError(
+        toString(isolate, "Failed to compile the script.")));
+  }
+}
+
 void CreateInspectorSessionOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
@@ -160,16 +210,10 @@ void CreateInspectorSessionOperationCallback(
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   SessionHandle* session_handle = isolate_handle->CreateInspectorSession();
 
-  v8::Local<v8::FunctionTemplate> session_handle_template =
-      V8SessionHandle::GetWrapperTypeInfo()
-          ->GetV8ClassTemplate(info.GetIsolate())
-          .As<v8::FunctionTemplate>();
-  v8::Local<v8::Object> obj =
-      session_handle_template->InstanceTemplate()
-          ->NewInstance(info.GetIsolate()->GetCurrentContext())
-          .ToLocalChecked();
-  ScriptWrappable::Wrap(obj, session_handle);
-  info.GetReturnValue().Set(obj);
+  v8::Isolate* isolate = info.GetIsolate();
+  v8::Local<v8::Object> target = NewInstance<V8SessionHandle>(
+      isolate, isolate->GetCurrentContext(), session_handle);
+  info.GetReturnValue().Set(target);
 }
 
 void GcOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -191,31 +235,31 @@ void GetHeapStatisticsOperationCallback(
   v8::Local<v8::Object> heap_statistics = v8::Object::New(isolate);
   heap_statistics->Set(
       context, toString("total_heap_size"),
-      v8::Integer::NewFromUnsigned(isolate, heap_info.total_heap_size()));
+      v8::BigInt::NewFromUnsigned(isolate, heap_info.total_heap_size()));
   heap_statistics->Set(context, toString("total_heap_size_executable"),
-                       v8::Integer::NewFromUnsigned(
+                       v8::BigInt::NewFromUnsigned(
                            isolate, heap_info.total_heap_size_executable()));
   heap_statistics->Set(
       context, toString("total_physical_size"),
-      v8::Integer::NewFromUnsigned(isolate, heap_info.total_physical_size()));
+      v8::BigInt::NewFromUnsigned(isolate, heap_info.total_physical_size()));
   heap_statistics->Set(
       context, toString("total_available_size"),
-      v8::Integer::NewFromUnsigned(isolate, heap_info.total_available_size()));
+      v8::BigInt::NewFromUnsigned(isolate, heap_info.total_available_size()));
   heap_statistics->Set(
       context, toString("used_heap_size"),
-      v8::Integer::NewFromUnsigned(isolate, heap_info.used_heap_size()));
+      v8::BigInt::NewFromUnsigned(isolate, heap_info.used_heap_size()));
   heap_statistics->Set(
       context, toString("heap_size_limit"),
-      v8::Integer::NewFromUnsigned(isolate, heap_info.heap_size_limit()));
+      v8::BigInt::NewFromUnsigned(isolate, heap_info.heap_size_limit()));
   heap_statistics->Set(
       context, toString("malloced_memory"),
-      v8::Integer::NewFromUnsigned(isolate, heap_info.malloced_memory()));
+      v8::BigInt::NewFromUnsigned(isolate, heap_info.malloced_memory()));
   heap_statistics->Set(
       context, toString("peak_malloced_memory"),
-      v8::Integer::NewFromUnsigned(isolate, heap_info.peak_malloced_memory()));
+      v8::BigInt::NewFromUnsigned(isolate, heap_info.peak_malloced_memory()));
   heap_statistics->Set(
       context, toString("does_zap_garbage"),
-      v8::Integer::NewFromUnsigned(isolate, heap_info.does_zap_garbage()));
+      v8::BigInt::NewFromUnsigned(isolate, heap_info.does_zap_garbage()));
   info.GetReturnValue().Set(heap_statistics);
 }
 
@@ -239,8 +283,13 @@ void V8IsolateHandle::InstallInterfaceTemplate(
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"createContextAsync", 0, CreateContextAsyncOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+
+      {"createScript", 0, CreateScriptOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+
       {"createInspectorSession", 0, CreateInspectorSessionOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+
       {"getHeapStatistics", 0, GetHeapStatisticsOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"gc", 0, GcOperationCallback, v8::PropertyAttribute::DontDelete,

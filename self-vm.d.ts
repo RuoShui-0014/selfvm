@@ -44,6 +44,11 @@ declare module SelfVm {
         createContextAsync(): Promise<Context>;
 
         /**
+         * 创建Script同步获取结果
+         */
+        createScript(code: string, filename?: string): Script;
+
+        /**
          * 创建Session同步获取结果
          */
         createInspectorSession(): Session;
@@ -59,6 +64,18 @@ declare module SelfVm {
          * 运行代码异步获取结果
          */
         evalAsync(code: string, filename?: string): Promise<any>;
+    }
+
+    export class Script {
+        /**
+         * 运行代码同步获取结果
+         */
+        run(context: Context): any;
+
+        /**
+         * 运行代码异步获取结果
+         */
+        runAsync(context: Context): any;
     }
 
     export class Session {

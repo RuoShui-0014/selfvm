@@ -33,7 +33,7 @@ class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
     return static_cast<T*>(ptr);
   }
 
-  inline v8::Local<v8::Object> V8Object(v8::Isolate* isolate) {
+  v8::Local<v8::Object> V8Object(v8::Isolate* isolate) {
     return v8::Local<v8::Object>::New(isolate, wrapper_);
   }
 
