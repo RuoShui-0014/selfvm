@@ -13,6 +13,74 @@
 
 namespace svm {
 
+class CreateContextTask : public SyncTask<v8::Context*> {
+ public:
+  explicit CreateContextTask(IsolateHandle* isolate_handle)
+      : isolate_handle_(isolate_handle) {}
+  ~CreateContextTask() override = default;
+
+  void Run() override {
+    v8::Context* address = isolate_handle_->GetIsolateHolder()->CreateContext();
+    SetResult(address);
+  }
+
+ private:
+  cppgc::Member<IsolateHandle> isolate_handle_;
+};
+class CreateContextAsyncTask final : public AsyncTask {
+ public:
+  class Callback : public v8::Task {
+   public:
+    explicit Callback(std::unique_ptr<AsyncInfo> info, v8::Context* address)
+        : info_(std::move(info)), address_(address) {}
+    ~Callback() override = default;
+
+    void Run() override {
+      v8::Isolate* isolate = info_->isolate;
+      v8::Local<v8::Context> context = info_->context.Get(isolate);
+      v8::HandleScope source_scope(isolate);
+
+      ContextHandle* context_handle =
+          MakeCppGcObject<GC::kSpecified, ContextHandle>(
+              isolate, info_->isolate_handle, address_);
+      v8::Local<v8::FunctionTemplate> isolate_handle_template =
+          V8ContextHandle::GetWrapperTypeInfo()
+              ->GetV8ClassTemplate(isolate)
+              .As<v8::FunctionTemplate>();
+      v8::Local<v8::Object> obj =
+          isolate_handle_template->InstanceTemplate()
+              ->NewInstance(isolate->GetCurrentContext())
+              .ToLocalChecked();
+      ScriptWrappable::Wrap(obj, context_handle);
+      info_->resolver.Get(isolate)->Resolve(context, obj);
+    }
+
+    std::unique_ptr<AsyncInfo> info_;
+    v8::Context* const address_;
+  };
+  explicit CreateContextAsyncTask(std::unique_ptr<AsyncInfo> info)
+      : AsyncTask(std::move(info)) {}
+  ~CreateContextAsyncTask() override = default;
+
+  void Run() override {
+    v8::Context* const address =
+        info_->isolate_handle->GetIsolateHolder()->CreateContext();
+    info_->isolate_handle->PostTaskToPar(
+        std::make_unique<Callback>(std::move(info_), address));
+  }
+};
+
+class IsolateGcTask final : public SyncTask<void> {
+ public:
+  explicit IsolateGcTask(v8::Isolate* isolate) : isolate_{isolate} {}
+  ~IsolateGcTask() override = default;
+
+  void Run() override { isolate_->LowMemoryNotification(); }
+
+ private:
+  v8::Isolate* isolate_;
+};
+
 IsolateHandle* IsolateHandle::Create(IsolateParams& params) {
   return MakeCppGcObject<GC::kSpecified, IsolateHandle>(params.isolate_par,
                                                         params);
@@ -35,7 +103,7 @@ v8::Isolate* IsolateHandle::GetIsolatePar() const {
 
 ContextHandle* IsolateHandle::GetContextHandle() {
   if (!default_context_) {
-    default_context_ = ContextHandle::Create(this);
+    default_context_ = CreateContext();
   }
   return default_context_.Get();
 }
@@ -67,7 +135,17 @@ void IsolateHandle::PostInspectorTask(std::unique_ptr<v8::Task> task) {
 }
 
 ContextHandle* IsolateHandle::CreateContext() {
-  return ContextHandle::Create(this);
+  auto task = std::make_unique<CreateContextTask>(this);
+  auto future = task->GetFuture();
+  PostTaskToSel(std::move(task));
+  auto id = future.get();
+
+  v8::Isolate* isolate = GetIsolatePar();
+  ContextHandle* context_handle =
+      MakeCppGcObject<GC::kSpecified, ContextHandle>(isolate, this, id);
+  NewInstance<V8ContextHandle>(isolate, isolate->GetCurrentContext(),
+                               context_handle);
+  return context_handle;
 }
 
 void IsolateHandle::CreateContextAsync(
@@ -112,7 +190,7 @@ void IsolateHandle::Trace(cppgc::Visitor* visitor) const {
 
 /*************************************************************************************************/
 void ConstructCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  struct ConstructStringTable {
+  struct Table {
     const char* memory_limit{"memoryLimit"};
   };
 
@@ -126,7 +204,7 @@ void ConstructCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   size_t memory_limit{128};
   if (info.Length() > 0 && info[0]->IsObject()) {
     memory_limit = ReadOption<size_t, 128>(
-        info[0], StringTable<ConstructStringTable>::Get().memory_limit);
+        info[0], StringTable<Table>::Get().memory_limit);
   }
 
   IsolateParams params{isolate, memory_limit};

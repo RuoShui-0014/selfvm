@@ -14,7 +14,10 @@ class StringTable {
   static constexpr T Get() { return table_; }
 
  private:
-  static constexpr T table_;
+  static T table_;
 };
+
+template <class T>
+T StringTable<T>::table_{};
 
 }  // namespace svm

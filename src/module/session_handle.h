@@ -7,8 +7,8 @@
 #include <queue>
 
 #include "../isolate/script_wrappable.h"
-#include "../node_ex/v8-inspector.h"
 #include "../utils/utils.h"
+#include "../vendor/v8-inspector.h"
 
 namespace svm {
 

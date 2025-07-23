@@ -24,6 +24,18 @@ struct WrapperTypeInfo final {
   v8::Local<v8::Template> GetV8ClassTemplate(v8::Isolate* isolate) const;
 };
 
+template <typename T>
+v8::Local<v8::Function> NewFunction(v8::Isolate* isolate,
+                                  v8::Local<v8::Context> context) {
+  v8::Local<v8::FunctionTemplate> handle_template =
+      T::GetWrapperTypeInfo()
+          ->GetV8ClassTemplate(isolate)
+          .template As<v8::FunctionTemplate>();
+  v8::Local<v8::Function> target =
+      handle_template->GetFunction(context).ToLocalChecked();
+  return target;
+}
+
 template <typename T, typename Wrappable>
 v8::Local<v8::Object> NewInstance(v8::Isolate* isolate,
                                   v8::Local<v8::Context> context,

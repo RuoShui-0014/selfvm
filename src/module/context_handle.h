@@ -17,9 +17,7 @@ using ContextId = v8::Context*;
 
 class ContextHandle : public ScriptWrappable {
  public:
-  static ContextHandle* Create(IsolateHandle* isolate_handle);
-
-  explicit ContextHandle(IsolateHandle* isolate_handle, ContextId const address);
+  explicit ContextHandle(IsolateHandle* isolate_handle, ContextId address);
   ~ContextHandle() override;
 
   /*********************** js interface *************************/
@@ -57,7 +55,7 @@ class V8ContextHandle {
       v8::Local<v8::Template> interface_template);
 
  private:
-  friend V8ContextHandle;
+  friend ContextHandle;
   static const WrapperTypeInfo wrapper_type_info_;
 };
 

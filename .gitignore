@@ -1,4 +1,6 @@
-/build/
-/cmake-build-debug/
+/.idea/
 /node_modules/
+/cmake-build-debug/
 /cmake-build-release/
+/cmake-build-debug-clang-cl/
+/cmake-build-release-clang-cl/

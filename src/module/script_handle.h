@@ -43,7 +43,7 @@ class V8ScriptHandle {
       v8::Local<v8::Template> interface_template);
 
  private:
-  friend V8ScriptHandle;
+  friend ScriptHandle;
   static const WrapperTypeInfo wrapper_type_info_;
 };
 
