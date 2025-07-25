@@ -4,17 +4,28 @@
 
 #pragma once
 
+#include "../base/raw_ptr.h"
 #include "../isolate/script_wrappable.h"
 #include "../isolate/wrapper_type_info.h"
 
 namespace svm {
 
+class IsolateHolder;
+
 class LocalDOMWindow : public ScriptWrappable {
  public:
-  LocalDOMWindow();
+  explicit LocalDOMWindow(IsolateHolder* isolate_holder);
   ~LocalDOMWindow() override;
 
+  void PostTaskToSel(std::unique_ptr<v8::Task> task) const;
+  void PostTaskToPar(std::unique_ptr<v8::Task> task) const;
+  void PostDelayTaskToSel(std::unique_ptr<v8::Task> task, double delay) const;
+  void PostDelayTaskToPar(std::unique_ptr<v8::Task> task, double delay) const;
+
   LocalDOMWindow* window() { return this; }
+
+ private:
+  raw_ptr<IsolateHolder> isolate_holder_;
 };
 
 class V8Window {

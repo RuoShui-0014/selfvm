@@ -108,30 +108,35 @@ ContextHandle* IsolateHandle::GetContextHandle() {
   return default_context_.Get();
 }
 
-v8::Local<v8::Context> IsolateHandle::GetContext(v8::Context* const address) {
+v8::Local<v8::Context> IsolateHandle::GetContext(
+    v8::Context* const address) const {
   return isolate_holder_->GetContext(address);
 }
-v8::Local<v8::UnboundScript> IsolateHandle::GetScript(ScriptId const address) {
+v8::Local<v8::UnboundScript> IsolateHandle::GetScript(
+    ScriptId const address) const {
   return isolate_holder_->GetUnboundScript(address);
 }
 
-Scheduler* IsolateHandle::GetSchedulerSel() {
+Scheduler* IsolateHandle::GetSchedulerSel() const {
   return isolate_holder_->GetSchedulerSel();
 }
 
-Scheduler* IsolateHandle::GetSchedulerPar() {
+Scheduler* IsolateHandle::GetSchedulerPar() const {
   return isolate_holder_->GetSchedulerPar();
 }
 
-void IsolateHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
+void IsolateHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) const {
   isolate_holder_->PostTaskToSel(std::move(task));
 }
 
-void IsolateHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) {
+void IsolateHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
   isolate_holder_->PostTaskToPar(std::move(task));
 }
-void IsolateHandle::PostInspectorTask(std::unique_ptr<v8::Task> task) {
+void IsolateHandle::PostInspectorTask(std::unique_ptr<v8::Task> task) const {
   isolate_holder_->PostInspectorTask(std::move(task));
+}
+void IsolateHandle::AddDebugContext(ContextHandle* context) const {
+  session_handle_->AddContext(context);
 }
 
 ContextHandle* IsolateHandle::CreateContext() {
@@ -163,8 +168,14 @@ ScriptHandle* IsolateHandle::CreateScript(std::string script,
   return ScriptHandle::Create(this, std::move(script), std::move(filename));
 }
 
-SessionHandle* IsolateHandle::CreateInspectorSession() {
-  return MakeCppGcObject<GC::kCurrent, SessionHandle>(this);
+SessionHandle* IsolateHandle::GetInspectorSession() {
+  if (!session_handle_) {
+    session_handle_ = MakeCppGcObject<GC::kCurrent, SessionHandle>(this);
+    v8::Isolate* isolate = GetIsolatePar();
+    NewInstance<V8SessionHandle>(isolate, isolate->GetCurrentContext(),
+                                 session_handle_.Get());
+  }
+  return session_handle_.Get();
 }
 
 void IsolateHandle::IsolateGc() {
@@ -185,6 +196,7 @@ v8::HeapStatistics IsolateHandle::GetHeapStatistics() const {
 
 void IsolateHandle::Trace(cppgc::Visitor* visitor) const {
   visitor->Trace(default_context_);
+  visitor->Trace(session_handle_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -253,7 +265,6 @@ void CreateScriptOperationCallback(
   }
 
   v8::Isolate* isolate = info.GetIsolate();
-
   std::string script, filename;
   if (info[0]->IsString()) {
     script = *v8::String::Utf8Value(isolate, info[0]);
@@ -281,17 +292,13 @@ void CreateScriptOperationCallback(
   }
 }
 
-void CreateInspectorSessionOperationCallback(
+void GetInspectorSessionOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Local<v8::Object> receiver = info.This();
   IsolateHandle* isolate_handle =
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
-  SessionHandle* session_handle = isolate_handle->CreateInspectorSession();
-
-  v8::Isolate* isolate = info.GetIsolate();
-  v8::Local<v8::Object> target = NewInstance<V8SessionHandle>(
-      isolate, isolate->GetCurrentContext(), session_handle);
-  info.GetReturnValue().Set(target);
+  SessionHandle* session_handle = isolate_handle->GetInspectorSession();
+  info.GetReturnValue().Set(session_handle->V8Object(info.GetIsolate()));
 }
 
 void GcOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
@@ -355,6 +362,8 @@ void V8IsolateHandle::InstallInterfaceTemplate(
   AttributeConfig attrs[]{
       {"context", ContextAttributeGetCallback, nullptr,
        v8::PropertyAttribute::ReadOnly, Dependence::kPrototype},
+      {"session", GetInspectorSessionOperationCallback, nullptr,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
   OperationConfig operas[]{
       {"createContext", 0, CreateContextOperationCallback,
@@ -363,9 +372,6 @@ void V8IsolateHandle::InstallInterfaceTemplate(
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
 
       {"createScript", 0, CreateScriptOperationCallback,
-       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
-
-      {"createInspectorSession", 0, CreateInspectorSessionOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
 
       {"getHeapStatistics", 0, GetHeapStatisticsOperationCallback,

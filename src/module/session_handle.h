@@ -68,6 +68,9 @@ class SessionHandle : public ScriptWrappable {
   explicit SessionHandle(IsolateHandle* isolate_handle);
   ~SessionHandle() override;
 
+  IsolateHandle* GetIsolateHandle() const;
+  void AddContext(v8::Local<v8::Context> context) const;
+
   /* js interface */
   void DispatchInspectorMessage(std::string message);
   void AddContext(ContextHandle* context_handle);

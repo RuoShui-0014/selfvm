@@ -17,6 +17,9 @@ namespace svm {
 class ContextHandle;
 class IsolateHandle;
 
+template <typename T>
+class SyncTask;
+
 // 同步任务
 template <typename T>
 class SyncTask : public v8::Task {

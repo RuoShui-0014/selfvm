@@ -175,36 +175,43 @@ SessionHandle::SessionHandle(IsolateHandle* isolate_handle)
           this,
           isolate_handle->GetIsolateHolder()->GetIsolateSel())) {}
 SessionHandle::~SessionHandle() = default;
+
+IsolateHandle* SessionHandle::GetIsolateHandle() const {
+  return isolate_handle_.Get();
+}
+
+void SessionHandle::AddContext(v8::Local<v8::Context> context) const {
+  inspector_agent_->addContext(context);
+}
 void SessionHandle::DispatchInspectorMessage(std::string message) {
   inspector_agent_->dispatchMessage(std::move(message));
 }
 void SessionHandle::AddContext(ContextHandle* context_handle) {
-  class AddContextTask : public v8::Task {
+  class AddContextTask : public SyncTask<bool> {
    public:
-    AddContextTask(IsolateHolder* isolate_holder,
-                   InspectorAgent* inspector_agent,
-                   v8::Context* const address)
-        : isolate_holder_(isolate_holder),
-          inspector_agent_(inspector_agent),
-          address_(address) {}
+    AddContextTask(SessionHandle* session_handle, v8::Context* const address)
+        : session_handle_(session_handle), address_(address) {}
     ~AddContextTask() override = default;
 
     void Run() override {
       v8::Isolate* isolate = v8::Isolate::GetCurrent();
       v8::HandleScope handle_scope(isolate);
 
-      v8::Local<v8::Context> context = isolate_holder_->GetContext(address_);
-      inspector_agent_->addContext(context);
+      v8::Local<v8::Context> context =
+          session_handle_->GetIsolateHandle()->GetContext(address_);
+      session_handle_->AddContext(context);
+      SetResult(true);
     }
 
    private:
-    IsolateHolder* isolate_holder_;
-    InspectorAgent* inspector_agent_;
+    cppgc::WeakMember<SessionHandle> session_handle_;
     v8::Context* const address_{};
   };
-  isolate_handle_->PostTaskToSel(std::make_unique<AddContextTask>(
-      isolate_handle_->GetIsolateHolder(), inspector_agent_.get(),
-      context_handle->GetContextId()));
+  auto task =
+      std::make_unique<AddContextTask>(this, context_handle->GetContextId());
+  std::future<bool> future = task->GetFuture();
+  isolate_handle_->PostTaskToSel(std::move(task));
+  future.get();
 }
 void SessionHandle::Dispose() {
   on_notification_.reset();

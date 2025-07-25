@@ -1,5 +1,3 @@
-#include <node.h>
-
 #include "isolate/per_isolate_data.h"
 #include "isolate/platform_delegate.h"
 #include "isolate/scheduler.h"
@@ -19,20 +17,21 @@ void Initialize(v8::Local<v8::Object> exports) {
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
   // init nodejs env
+  PlatformDelegate::InitializeDelegate();
   Scheduler::RegisterIsolate(isolate, node::GetCurrentEventLoop(isolate));
   g_per_isolate_data = new PerIsolateData(isolate);
 
   // can release nodejs isolate memory
-  v8::Local<v8::FunctionTemplate> tpl1 =
-      v8::FunctionTemplate::New(isolate, NodeGcOperationCallback);
-  exports->Set(context, toString("gc"),
-               tpl1->GetFunction(context).ToLocalChecked());
+  v8::Local<v8::String> str = toString(isolate, "gc");
+  v8::Local<v8::FunctionTemplate> tmpl =
+      v8::FunctionTemplate::New(isolate, NodeGcOperationCallback, {}, {}, 0,
+                                v8::ConstructorBehavior::kThrow);
+  tmpl->SetClassName(str);
+  exports->Set(context, str, tmpl->GetFunction(context).ToLocalChecked());
 
-  // IsolateHandle instance
-  exports->Set(context, toString("Isolate"),
+  // IsolateHandle construct
+  exports->Set(context, toString(isolate, "Isolate"),
                NewFunction<V8IsolateHandle>(isolate, context));
-
-  PlatformDelegate::InitializeDelegate();
 
   node::AddEnvironmentCleanupHook(
       isolate, [](void* arg) { delete static_cast<PerIsolateData*>(arg); },

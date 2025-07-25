@@ -30,15 +30,17 @@ class IsolateHandle : public ScriptWrappable {
   v8::Isolate* GetIsolateSel() const;
   v8::Isolate* GetIsolatePar() const;
 
-  Scheduler* GetSchedulerSel();
-  Scheduler* GetSchedulerPar();
+  Scheduler* GetSchedulerSel() const;
+  Scheduler* GetSchedulerPar() const;
 
-  v8::Local<v8::Context> GetContext(ContextId address);
-  v8::Local<v8::UnboundScript> GetScript(ScriptId address);
+  v8::Local<v8::Context> GetContext(ContextId address) const;
+  v8::Local<v8::UnboundScript> GetScript(ScriptId address) const;
 
-  void PostTaskToSel(std::unique_ptr<v8::Task> task);
-  void PostTaskToPar(std::unique_ptr<v8::Task> task);
-  void PostInspectorTask(std::unique_ptr<v8::Task> task);
+  void PostTaskToSel(std::unique_ptr<v8::Task> task) const;
+  void PostTaskToPar(std::unique_ptr<v8::Task> task) const;
+  void PostInspectorTask(std::unique_ptr<v8::Task> task) const;
+
+  void AddDebugContext(ContextHandle* context) const;
 
   /*********************** js interface *************************/
   ContextHandle* GetContextHandle();
@@ -47,7 +49,7 @@ class IsolateHandle : public ScriptWrappable {
                           v8::Local<v8::Context> context,
                           v8::Local<v8::Promise::Resolver> resolver);
   ScriptHandle* CreateScript(std::string script, std::string filename);
-  SessionHandle* CreateInspectorSession();
+  SessionHandle* GetInspectorSession();
   void IsolateGc();
   void Release();
   v8::HeapStatistics GetHeapStatistics() const;
@@ -56,6 +58,7 @@ class IsolateHandle : public ScriptWrappable {
 
  private:
   cppgc::Member<ContextHandle> default_context_;
+  cppgc::Member<SessionHandle> session_handle_;
   std::unique_ptr<IsolateHolder> isolate_holder_;
 };
 

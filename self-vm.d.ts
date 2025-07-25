@@ -8,7 +8,7 @@ declare module SelfVm {
         constructor();
 
         /**
-         * 创建Isolate时默认创建的context
+         * 获取默认创建的context
          */
         readonly context: Context;
 
@@ -49,9 +49,9 @@ declare module SelfVm {
         createScript(code: string, filename?: string): Script;
 
         /**
-         * 创建Session同步获取结果
+         * 获取Session
          */
-        createInspectorSession(): Session;
+        readonly session : Session;
     }
 
     export class Context {

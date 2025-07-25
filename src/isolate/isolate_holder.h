@@ -16,9 +16,11 @@ struct IsolateParams {
   size_t memory_limit;
 };
 
-using ContextId = v8::Context*;
 class IsolateHolder {
  public:
+  using ContextId = v8::Context*;
+  using ScriptId = v8::UnboundScript*;
+
   explicit IsolateHolder(IsolateParams& params);
   ~IsolateHolder();
 
@@ -28,21 +30,21 @@ class IsolateHolder {
   Scheduler* GetSchedulerSel() const { return scheduler_sel_.get(); }
   Scheduler* GetSchedulerPar() const { return scheduler_par_.get(); }
 
-  void PostTaskToSel(std::unique_ptr<v8::Task> task);
-  void PostTaskToPar(std::unique_ptr<v8::Task> task);
+  void PostTaskToSel(std::unique_ptr<v8::Task> task) const;
+  void PostTaskToPar(std::unique_ptr<v8::Task> task) const;
   void PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
-                            double delay_in_seconds);
+                            double delay_in_seconds) const;
   void PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
-                            double delay_in_seconds);
+                            double delay_in_seconds) const;
 
-  void PostInspectorTask(std::unique_ptr<v8::Task> task);
+  void PostInspectorTask(std::unique_ptr<v8::Task> task) const;
 
   ContextId CreateContext();
   void ClearContext(v8::Context* address);
-  v8::Local<v8::Context> GetContext(v8::Context* address);
+  v8::Local<v8::Context> GetContext(ContextId address);
 
   void CreateUnboundScript(v8::Local<v8::UnboundScript> unbound_script);
-  v8::Local<v8::UnboundScript> GetUnboundScript(v8::UnboundScript* address);
+  v8::Local<v8::UnboundScript> GetUnboundScript(ScriptId address);
 
  private:
   IsolateParams isolate_params_;
@@ -55,9 +57,8 @@ class IsolateHolder {
 
   std::unique_ptr<PerIsolateData> per_isolate_data_;
 
-  std::map<v8::Context* const, RemoteHandle<v8::Context>> context_map_;
-  std::map<v8::UnboundScript* const, RemoteHandle<v8::UnboundScript>>
-      unbound_script_map_;
+  std::map<ContextId const, RemoteHandle<v8::Context>> context_map_;
+  std::map<ScriptId const, RemoteHandle<v8::UnboundScript>> unbound_script_map_;
 };
 
 }  // namespace svm

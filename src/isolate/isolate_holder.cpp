@@ -45,31 +45,30 @@ IsolateHolder::~IsolateHolder() {
   scheduler_par_.reset();
 }
 
-static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
-                                              int /*index*/,
-                                              v8::StartupData /*payload*/,
-                                              void* /*data*/) {}
-
-void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task) {
+void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task) const {
   scheduler_sel_->TaskRunner()->PostTask(std::move(task));
 }
-void IsolateHolder::PostTaskToPar(std::unique_ptr<v8::Task> task) {
+void IsolateHolder::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
   scheduler_par_->TaskRunner()->PostTask(std::move(task));
 }
 void IsolateHolder::PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
-                                         double delay_in_seconds) {
+                                         double delay_in_seconds) const {
   scheduler_sel_->TaskRunner()->PostDelayedTask(std::move(task),
                                                 delay_in_seconds);
 }
 void IsolateHolder::PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
-                                         double delay_in_seconds) {
+                                         double delay_in_seconds) const {
   scheduler_par_->TaskRunner()->PostDelayedTask(std::move(task),
                                                 delay_in_seconds);
 }
-void IsolateHolder::PostInspectorTask(std::unique_ptr<v8::Task> task) {
+void IsolateHolder::PostInspectorTask(std::unique_ptr<v8::Task> task) const {
   scheduler_sel_->PostInspectorTask(std::move(task));
 }
 
+static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
+                                              int /*index*/,
+                                              v8::StartupData /*payload*/,
+                                              void* /*data*/) {}
 ContextId IsolateHolder::CreateContext() {
   v8::Isolate::Scope isolate_scope(isolate_sel_);
   v8::HandleScope handle_scope(isolate_sel_);
@@ -85,7 +84,7 @@ ContextId IsolateHolder::CreateContext() {
                        &DeserializeInternalFieldsCallback);
   ScriptWrappable::Wrap(
       context->Global(),
-      MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_sel_));
+      MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_sel_, this));
 
   context->AllowCodeGenerationFromStrings(false);
 
@@ -98,7 +97,7 @@ void IsolateHolder::ClearContext(v8::Context* address) {
   context_map_.erase(address);
 }
 
-v8::Local<v8::Context> IsolateHolder::GetContext(v8::Context* address) {
+v8::Local<v8::Context> IsolateHolder::GetContext(ContextId address) {
   auto it = context_map_.find(address);
   if (it != context_map_.end()) {
     return it->second.Get(isolate_sel_);
@@ -110,8 +109,7 @@ void IsolateHolder::CreateUnboundScript(
   unbound_script_map_.emplace(*unbound_script,
                               RemoteHandle{isolate_sel_, unbound_script});
 }
-v8::Local<v8::UnboundScript> IsolateHolder::GetUnboundScript(
-    v8::UnboundScript* address) {
+v8::Local<v8::UnboundScript> IsolateHolder::GetUnboundScript(ScriptId address) {
   auto it = unbound_script_map_.find(address);
   if (it != unbound_script_map_.end()) {
     return it->second.Get(isolate_sel_);

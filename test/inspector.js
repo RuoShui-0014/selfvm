@@ -6,15 +6,14 @@ const isolate = new svm.Isolate();
 const ctx = isolate.context
 
 // 创建调试会话
-const channel = isolate.createInspectorSession()
+const session = isolate.session
 // 将需要调试的context加入会话
-channel.addContext(ctx);
-
-let wss = new WebSocket.Server({port: 10000});
+session.addContext(ctx);
+const wss = new WebSocket.Server({port: 10000});
 wss.on('connection', function (ws) {
     function dispose() {
         try {
-            channel.dispose();
+            session.dispose();
         } catch (err) {
         }
     }
@@ -25,13 +24,13 @@ wss.on('connection', function (ws) {
     ws.on('message', function (message) {
         console.log('onMessage<', message.toString())
         try {
-            channel.dispatchMessage(String(message));
+            session.dispatchMessage(String(message));
         } catch (err) {
             ws.close();
         }
     });
 
-    channel.onResponse = (msg) => {
+    session.onResponse = (msg) => {
         console.log('onResponse>', msg.toString())
         try {
             ws.send(msg);
@@ -39,7 +38,7 @@ wss.on('connection', function (ws) {
             dispose();
         }
     };
-    channel.onNotification = (msg) => {
+    session.onNotification = (msg) => {
         console.log('onNotification>', msg.toString())
         try {
             ws.send(msg);
@@ -52,7 +51,7 @@ console.log('devtools://devtools/bundled/inspector.html?experiments=true&v8only=
 
 setInterval(async () => {
     try {
-        await channel.dispatchMessage('{"id":1,"method":"Debugger.enable"}');
+        await session.dispatchMessage('{"id":1,"method":"Debugger.enable"}');
         const result = await ctx.evalAsync(`debugger;this.a = {name: 'Jack', age: 18}`);
         console.log(`调试 eval result = `, result)
     } catch (e) {

@@ -4,7 +4,8 @@ set(PROJECT_NAME self-vm)
 project(${PROJECT_NAME} VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} SHARED)
+add_library(${PROJECT_NAME} SHARED
+    src/base/raw_ptr.h)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${PROJECT_NAME} PRIVATE
