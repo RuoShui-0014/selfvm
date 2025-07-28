@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <cppgc/member.h>
+
 #include "../isolate/script_wrappable.h"
 #include "../isolate/task.h"
 #include "../isolate/wrapper_type_info.h"

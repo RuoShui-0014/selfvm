@@ -8,8 +8,6 @@
 
 #include <future>
 
-#include "../module/context_handle.h"
-#include "../module/isolate_handle.h"
 #include "../utils/utils.h"
 
 namespace svm {
@@ -21,6 +19,48 @@ template <typename T>
 class SyncTask;
 
 // 同步任务
+template <typename T>
+class future {
+ public:
+  T& get() {
+    while (!finished_.load()) {
+    }
+    return value_;
+  }
+  void set_value(const T& value) {
+    value_ = value;
+    finished_.store(true);
+  }
+  void set_value(T&& value) {
+    value_ = std::move(value);
+    finished_.store(true);
+  }
+
+ private:
+  std::atomic_bool finished_{false};
+  T value_;
+};
+template <typename T>
+class SyncFastTask : public v8::Task {
+ public:
+  explicit SyncFastTask() = default;
+  ~SyncFastTask() override = default;
+
+  std::unique_ptr<future<T>> GetFuture() {
+    auto fut = std::make_unique<future<T>>();
+    future_ = fut.get();
+    return fut;
+  }
+  void SetResult(const T& _Val) {
+    if (future_) {
+      future_->set_value(_Val);
+    }
+  }
+
+ protected:
+  future<T>* future_{};
+};
+
 template <typename T>
 class SyncTask : public v8::Task {
  public:

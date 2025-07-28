@@ -1,5 +1,9 @@
 #include "context_handle.h"
 
+#include <cppgc/visitor.h>
+
+#include <iostream>
+
 #include "../isolate/external_data.h"
 #include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
@@ -8,7 +12,7 @@
 
 namespace svm {
 
-class ScriptTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
+class ScriptTask final : public SyncFastTask<std::pair<uint8_t*, size_t>> {
  public:
   ScriptTask(ContextHandle* context_handle,
              std::string script,
@@ -119,7 +123,8 @@ class ScriptAsyncTask final : public AsyncTask {
         ExternalData::SourceData data{isolate, context,
                                       maybe_result.ToLocalChecked()};
         auto buff = ExternalData::SerializerAsync(data);
-        context_handle_->PostTaskToPar(
+        IsolateHandle* isolate_handle = context_handle_->GetIsolateHandle();
+        isolate_handle->PostHandleTaskToPar(
             std::make_unique<ScriptAsyncTask::Callback>(std::move(info_),
                                                         buff));
         return;
@@ -129,7 +134,8 @@ class ScriptAsyncTask final : public AsyncTask {
     if (try_catch.HasCaught()) {
       ExternalData::SourceData data{isolate, context, try_catch.Exception()};
       auto buff = ExternalData::SerializerAsync(data);
-      context_handle_->PostTaskToPar(
+      IsolateHandle* isolate_handle = context_handle_->GetIsolateHandle();
+      isolate_handle->PostHandleTaskToPar(
           std::make_unique<ScriptAsyncTask::Callback>(std::move(info_), buff));
       try_catch.Reset();
     }
@@ -143,9 +149,14 @@ class ScriptAsyncTask final : public AsyncTask {
 
 ContextHandle::ContextHandle(IsolateHandle* isolate_handle,
                              v8::Context* address)
-    : address_{address}, isolate_handle_(isolate_handle) {}
+    : isolate_handle_(isolate_handle), address_{address} {}
 
-ContextHandle::~ContextHandle() = default;
+ContextHandle::~ContextHandle() {
+  Release();
+#ifdef DEBUG
+  std::cout << "~ContextHandle()" << std::endl;
+#endif
+}
 
 // 同步任务
 std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script,
@@ -154,7 +165,7 @@ std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script,
                                            std::move(filename));
   auto future = task->GetFuture();
   PostTaskToSel(std::move(task));
-  return future.get();
+  return future->get();
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,

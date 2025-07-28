@@ -5,7 +5,7 @@ declare module SelfVm {
         /**
          * 创建一个新的 Isolate 实例
          */
-        constructor();
+        constructor(params?: { memoryLimit: 128 });
 
         /**
          * 获取默认创建的context
@@ -51,7 +51,7 @@ declare module SelfVm {
         /**
          * 获取Session
          */
-        readonly session : Session;
+        readonly session: Session;
     }
 
     export class Context {

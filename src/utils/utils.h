@@ -4,7 +4,6 @@
 
 #include <span>
 
-#include "../isolate/script_wrappable.h"
 #include "../isolate/wrapper_type_info.h"
 
 namespace svm {

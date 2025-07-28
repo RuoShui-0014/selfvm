@@ -26,6 +26,9 @@ class ScriptHandle : public ScriptWrappable {
 
   /*********************** js interface *************************/
   std::pair<uint8_t*, size_t> Run(ContextHandle* context_handle);
+  void Release();
+
+  void Trace(cppgc::Visitor* visitor) const override;
 
  private:
   cppgc::Member<IsolateHandle> isolate_handle_;

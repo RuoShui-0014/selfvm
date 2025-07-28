@@ -1,9 +1,12 @@
 #include "script_handle.h"
 
+#include <iostream>
+
 #include "../isolate/external_data.h"
 #include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
+#include "context_handle.h"
 #include "isolate_handle.h"
 
 namespace svm {
@@ -145,7 +148,11 @@ ScriptHandle* ScriptHandle::Create(IsolateHandle* isolate_handle,
 
 ScriptHandle::ScriptHandle(IsolateHandle* isolate_handle, ScriptId address)
     : isolate_handle_(isolate_handle), address_(address) {}
-ScriptHandle::~ScriptHandle() = default;
+ScriptHandle::~ScriptHandle() {
+#ifdef DEBUG
+  std::cout << "~ScriptHandle()" << std::endl;
+#endif
+}
 
 v8::Local<v8::UnboundScript> ScriptHandle::GetUnboundScript() const {
   return isolate_handle_->GetScript(address_);
@@ -156,6 +163,14 @@ std::pair<uint8_t*, size_t> ScriptHandle::Run(ContextHandle* context_handle) {
   auto future = task->GetFuture();
   isolate_handle_->PostTaskToSel(std::move(task));
   return future.get();
+}
+void ScriptHandle::Release() {
+  isolate_handle_->GetIsolateHolder()->ClearUnboundScript(address_);
+}
+
+void ScriptHandle::Trace(cppgc::Visitor* visitor) const {
+  visitor->Trace(isolate_handle_);
+  ScriptWrappable::Trace(visitor);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -22,15 +22,10 @@ class PlatformDelegate {
   }
 
   static void InitializeDelegate();
-
   static node::MultiIsolatePlatform* GetNodePlatform();
-
   static void RegisterIsolate(v8::Isolate* isolate,
                               node::IsolatePlatformDelegate* isolate_delegate);
-
-  static void RegisterIsolate(v8::Isolate* isolate,
-                              uv_loop_t* loop);
-
+  static void RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop);
   static void UnregisterIsolate(v8::Isolate* isolate);
 
   node::MultiIsolatePlatform* node_platform = nullptr;

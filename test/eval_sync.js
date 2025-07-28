@@ -10,7 +10,9 @@ console.time("eval sync")
 for (let i = 0; i < times; i++) {
     try {
         console.time("eval " + i)
-        const result = ctx.eval(`this.a = {name: 'Jack', age: 18}`, "filename.js");
+        const result = ctx.eval(`
+        this.a = {name: 'Jack', age: 18};
+        JSON.stringify(this.a);`, "filename.js");
         console.timeEnd("eval " + i)
         // console.log(`eval result = `, result)
     } catch (e) {

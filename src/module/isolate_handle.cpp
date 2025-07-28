@@ -3,6 +3,8 @@
 #include <cppgc/member.h>
 #include <cppgc/visitor.h>
 
+#include <iostream>
+
 #include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
@@ -65,7 +67,7 @@ class CreateContextAsyncTask final : public AsyncTask {
   void Run() override {
     v8::Context* const address =
         info_->isolate_handle->GetIsolateHolder()->CreateContext();
-    info_->isolate_handle->PostTaskToPar(
+    info_->isolate_handle->PostHandleTaskToPar(
         std::make_unique<Callback>(std::move(info_), address));
   }
 };
@@ -90,7 +92,9 @@ IsolateHandle::IsolateHandle(IsolateParams& params)
     : isolate_holder_(std::make_unique<IsolateHolder>(params)) {}
 
 IsolateHandle::~IsolateHandle() {
-  default_context_.Clear();
+#ifdef DEBUG
+  std::cout << "~IsolateHandle()" << std::endl;
+#endif
 }
 
 v8::Isolate* IsolateHandle::GetIsolateSel() const {
@@ -102,10 +106,10 @@ v8::Isolate* IsolateHandle::GetIsolatePar() const {
 }
 
 ContextHandle* IsolateHandle::GetContextHandle() {
-  if (!default_context_) {
-    default_context_ = CreateContext();
+  if (!context_handle_) {
+    context_handle_ = CreateContext();
   }
-  return default_context_.Get();
+  return context_handle_.Get();
 }
 
 v8::Local<v8::Context> IsolateHandle::GetContext(
@@ -128,12 +132,18 @@ Scheduler* IsolateHandle::GetSchedulerPar() const {
 void IsolateHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) const {
   isolate_holder_->PostTaskToSel(std::move(task));
 }
+void IsolateHandle::PostHandleTaskToSel(std::unique_ptr<v8::Task> task) const {
+  isolate_holder_->PostHandleTaskToSel(std::move(task));
+}
+void IsolateHandle::PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const {
+  isolate_holder_->PostHandleTaskToPar(std::move(task));
+}
 
 void IsolateHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
   isolate_holder_->PostTaskToPar(std::move(task));
 }
-void IsolateHandle::PostInspectorTask(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostInspectorTask(std::move(task));
+void IsolateHandle::PostInterruptTask(std::unique_ptr<v8::Task> task) const {
+  isolate_holder_->PostInterruptTask(std::move(task));
 }
 void IsolateHandle::AddDebugContext(ContextHandle* context) const {
   session_handle_->AddContext(context);
@@ -170,15 +180,17 @@ ScriptHandle* IsolateHandle::CreateScript(std::string script,
 
 SessionHandle* IsolateHandle::GetInspectorSession() {
   if (!session_handle_) {
-    session_handle_ = MakeCppGcObject<GC::kCurrent, SessionHandle>(this);
     v8::Isolate* isolate = GetIsolatePar();
+    SessionHandle* session_handle =
+        MakeCppGcObject<GC::kSpecified, SessionHandle>(isolate, this);
     NewInstance<V8SessionHandle>(isolate, isolate->GetCurrentContext(),
-                                 session_handle_.Get());
+                                 session_handle);
+    session_handle_ = session_handle;
   }
   return session_handle_.Get();
 }
 
-void IsolateHandle::IsolateGc() {
+void IsolateHandle::IsolateGc() const {
   PostTaskToSel(
       std::make_unique<IsolateGcTask>(isolate_holder_->GetIsolateSel()));
 }
@@ -195,7 +207,7 @@ v8::HeapStatistics IsolateHandle::GetHeapStatistics() const {
 }
 
 void IsolateHandle::Trace(cppgc::Visitor* visitor) const {
-  visitor->Trace(default_context_);
+  visitor->Trace(context_handle_);
   visitor->Trace(session_handle_);
   ScriptWrappable::Trace(visitor);
 }

@@ -15,35 +15,35 @@ namespace svm {
 
 class Scheduler {
  public:
-  explicit Scheduler(v8::Isolate* isolate) : isolate_(isolate) {}
-  virtual ~Scheduler() {
-    isolate_ = nullptr;
-    uv_loop_ = nullptr;
-    auxiliary_ = nullptr;
-  }
+  using TaskQueue = std::queue<std::unique_ptr<v8::Task>>;
+  explicit Scheduler(v8::Isolate* isolate);
+  virtual ~Scheduler();
 
-  static void RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop);
-  static uv_loop_t* GetIsolateUvLoop(const v8::Isolate* isolate);
+  static void RegisterIsolateLoop(v8::Isolate* isolate, uv_loop_t* loop);
+  static void UnregisterIsolateLoop(v8::Isolate* isolate);
+  static uv_loop_t* GetIsolateLoop(v8::Isolate* isolate);
 
-  virtual uv_loop_t* GetUvLoop() const { return uv_loop_; }
-  virtual std::shared_ptr<v8::TaskRunner> TaskRunner() const;
-  virtual void PostInspectorTask(std::unique_ptr<v8::Task> task) {}
-  virtual void KeepAlive() {
-    if (++uv_ref_count == 1) {
-      uv_ref(reinterpret_cast<uv_handle_t*>(auxiliary_));
-    }
-  }
-  virtual void WillDie() {
-    if (--uv_ref_count == 0) {
-      uv_unref(reinterpret_cast<uv_handle_t*>(auxiliary_));
-    }
-  }
+  uv_loop_t* GetLoop() const { return uv_loop_; }
+  std::shared_ptr<v8::TaskRunner> TaskRunner();
+  void PostTask(std::unique_ptr<v8::Task> task);
+  void PostDelayedTask(std::unique_ptr<v8::Task> task, double delay);
+  void PostHandleTask(std::unique_ptr<v8::Task> task);
+  void PostInterruptTask(std::unique_ptr<v8::Task> task);
+  void RunTasks();
+  void KeepAlive();
+  void WillDie();
 
  protected:
-  v8::Isolate* isolate_{nullptr};
-  uv_loop_t* uv_loop_{nullptr};
-  uv_async_t* auxiliary_{nullptr};
+  std::mutex mutex_task_;
+  TaskQueue tasks_;
+  TaskQueue tasks_handle_;
+  TaskQueue tasks_interrupts_;
+
+  v8::Isolate* isolate_{};
+  uv_loop_t* uv_loop_{};
+  uv_async_t* uv_task_{};
   std::atomic<int> uv_ref_count{0};
+  std::shared_ptr<v8::TaskRunner> task_runner_;
 };
 
 class UVSchedulerSel : public Scheduler {
@@ -53,17 +53,12 @@ class UVSchedulerSel : public Scheduler {
       std::unique_ptr<node::ArrayBufferAllocator> allocator);
   ~UVSchedulerSel() override;
 
-  void RunTaskLoop();
-  static void RunInspectorTasks(UVSchedulerSel* scheduler);
-  void PostInspectorTask(std::unique_ptr<v8::Task> task) override;
+  void StartLoop();
+  void RunInterruptTasks();
 
  private:
   node::IsolateData* isolate_data_{nullptr};
   std::unique_ptr<node::ArrayBufferAllocator> allocator_;
-
-  std::mutex mutex_;
-  std::condition_variable cv_;
-  std::queue<std::unique_ptr<v8::Task>> tasks_;
 
   std::thread thread_;
   std::atomic<bool> running{false};

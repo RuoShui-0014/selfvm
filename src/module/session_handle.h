@@ -4,7 +4,9 @@
 
 #pragma once
 
-#include <queue>
+#include <cppgc/member.h>
+
+#include <optional>
 
 #include "../isolate/script_wrappable.h"
 #include "../utils/utils.h"
@@ -12,7 +14,6 @@
 
 namespace svm {
 
-class Scheduler;
 class IsolateHandle;
 class ContextHandle;
 class SessionHandle;
@@ -24,7 +25,7 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
   ~InspectorAgent() override;
 
   void connectInspector();
-  void addContext(v8::Local<v8::Context> context);
+  void addContext(v8::Local<v8::Context> context) const;
   void dispatchMessage(std::string message);
   void dispose();
 
@@ -34,7 +35,7 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
   void runIfWaitingForDebugger(int context_group_id) override;
 
  private:
-  cppgc::WeakMember<SessionHandle> session_handle_;
+  SessionHandle* session_handle_;
   v8::Isolate* isolate_{};
 
   std::atomic_bool waiting_for_frontend_{false};
@@ -43,7 +44,7 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
 
   std::unique_ptr<v8_inspector::V8Inspector> inspector_;
   std::unique_ptr<InspectorChannel> channel_;
-  std::shared_ptr<v8_inspector::V8InspectorSession> session_;
+  std::unique_ptr<v8_inspector::V8InspectorSession> session_;
 };
 
 class InspectorChannel : public v8_inspector::V8Inspector::Channel {
@@ -60,7 +61,7 @@ class InspectorChannel : public v8_inspector::V8Inspector::Channel {
   void flushProtocolNotifications() override;
 
  private:
-  cppgc::WeakMember<SessionHandle> session_handle_;
+  SessionHandle* session_handle_;
 };
 
 class SessionHandle : public ScriptWrappable {
@@ -78,6 +79,8 @@ class SessionHandle : public ScriptWrappable {
 
   std::optional<RemoteHandle<v8::Function>> on_response_;
   std::optional<RemoteHandle<v8::Function>> on_notification_;
+
+  void Trace(cppgc::Visitor* visitor) const override;
 
  private:
   friend class InspectorAgent;

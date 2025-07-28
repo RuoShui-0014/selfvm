@@ -18,6 +18,7 @@ class raw_ptr {
   T* get() const { return ptr_; }
   T& operator*() const { return *ptr_; }
   T* operator->() const { return ptr_; }
+  explicit operator bool() const { return ptr_ == nullptr; }
 
  private:
   T* ptr_{nullptr};

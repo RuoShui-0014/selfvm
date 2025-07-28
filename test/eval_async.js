@@ -8,7 +8,9 @@ const ctx = isolate.context
 async function test(i) {
     try {
         console.time("eval_Async" + i)
-        ctx.evalAsync(`this.a = {name: 'Jack', age: 18};`, "self-vm.js").then(result => {
+        ctx.evalAsync(`
+        this.a = {name: 'Jack', age: 18};
+        JSON.stringify(this.a);`, "self-vm.js").then(result => {
             console.timeEnd("eval_Async" + i)
             console.log(`微任务成功 evalAsync() = `, result);
         }, error => {
@@ -18,7 +20,6 @@ async function test(i) {
         console.error('Error:', err);
     }
 }
-
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 100; i++) {
     test(i)
 }

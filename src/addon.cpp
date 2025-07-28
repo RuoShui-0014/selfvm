@@ -10,6 +10,7 @@ void NodeGcOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   info.GetIsolate()->LowMemoryNotification();
 }
 
+UVSchedulerPar* g_scheduler_par{nullptr};
 PerIsolateData* g_per_isolate_data{nullptr};
 
 void Initialize(v8::Local<v8::Object> exports) {
@@ -18,8 +19,9 @@ void Initialize(v8::Local<v8::Object> exports) {
 
   // init nodejs env
   PlatformDelegate::InitializeDelegate();
-  Scheduler::RegisterIsolate(isolate, node::GetCurrentEventLoop(isolate));
-  g_per_isolate_data = new PerIsolateData(isolate);
+  Scheduler::RegisterIsolateLoop(isolate, node::GetCurrentEventLoop(isolate));
+  g_scheduler_par = new UVSchedulerPar(isolate);
+  g_per_isolate_data = new PerIsolateData(isolate, g_scheduler_par);
 
   // can release nodejs isolate memory
   v8::Local<v8::String> str = toString(isolate, "gc");
@@ -33,6 +35,9 @@ void Initialize(v8::Local<v8::Object> exports) {
   exports->Set(context, toString(isolate, "Isolate"),
                NewFunction<V8IsolateHandle>(isolate, context));
 
+  node::AddEnvironmentCleanupHook(
+      isolate, [](void* arg) { delete static_cast<UVSchedulerPar*>(arg); },
+      g_scheduler_par);
   node::AddEnvironmentCleanupHook(
       isolate, [](void* arg) { delete static_cast<PerIsolateData*>(arg); },
       g_per_isolate_data);

@@ -1,10 +1,12 @@
 #include "per_isolate_data.h"
 
+#include "scheduler.h"
 #include "wrapper_type_info.h"
 
 namespace svm {
 
-PerIsolateData::PerIsolateData(v8::Isolate* isolate) : isolate_(isolate) {
+PerIsolateData::PerIsolateData(v8::Isolate* isolate, Scheduler* scheduler)
+    : isolate_{isolate}, scheduler_{scheduler} {
   if (!isolate) {
     return;
   }
@@ -39,6 +41,9 @@ void PerIsolateData::Reset(v8::Isolate* isolate) {
 
   isolate_ = isolate;
   isolate->SetData(IsolateData::kPerIsolateData, this);
+}
+Scheduler* PerIsolateData::GetScheduler() const {
+  return scheduler_;
 }
 
 }  // namespace svm

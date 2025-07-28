@@ -10,59 +10,68 @@
 namespace svm {
 
 IsolateHolder::IsolateHolder(IsolateParams& params)
-    : isolate_par_{params.isolate_par}, isolate_params_(params) {
+    : isolate_params_(params), isolate_par_{params.isolate_par} {
   v8::ResourceConstraints rc;
-  size_t young_space_in_kb = static_cast<size_t>(std::pow(
-      2, std::min(sizeof(void*) >= 8 ? 4.0 : 3.0, params.memory_limit / 128.0) +
-             10));
-  size_t old_generation_size_in_mb = params.memory_limit;
+  size_t young_space_in_kb = static_cast<size_t>(
+      std::pow(2, std::min(sizeof(void*) >= 8 ? 4.0 : 3.0,
+                           isolate_params_.memory_limit / 128.0) +
+                      10));
+  size_t old_generation_size_in_mb = isolate_params_.memory_limit;
   rc.set_max_young_generation_size_in_bytes(young_space_in_kb * 1024);
   rc.set_max_old_generation_size_in_bytes(old_generation_size_in_mb * 1024 *
                                           1024);
 
-  auto allocator = node::ArrayBufferAllocator::Create();
+  std::unique_ptr<node::ArrayBufferAllocator> allocator =
+      node::ArrayBufferAllocator::Create();
   v8::Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = allocator.get();
-  {
-    isolate_sel_ = v8::Isolate::Allocate();
-    scheduler_sel_ =
-        std::make_unique<UVSchedulerSel>(isolate_sel_, std::move(allocator));
-    PlatformDelegate::RegisterIsolate(isolate_sel_,
-                                      scheduler_sel_->GetUvLoop());
-  }
+
+  isolate_sel_ = v8::Isolate::Allocate();
+  scheduler_sel_ =
+      std::make_unique<UVSchedulerSel>(isolate_sel_, std::move(allocator));
+  PlatformDelegate::RegisterIsolate(isolate_sel_, scheduler_sel_->GetLoop());
   v8::Isolate::Initialize(isolate_sel_, create_params);
-  static_cast<UVSchedulerSel*>(scheduler_sel_.get())->RunTaskLoop();
+  scheduler_sel_->StartLoop();
+  per_isolate_data_ =
+      std::make_unique<PerIsolateData>(isolate_sel_, scheduler_sel_.get());
 
-  scheduler_par_ = std::make_unique<UVSchedulerPar>(isolate_par_);
-
-  per_isolate_data_ = std::move(std::make_unique<PerIsolateData>(isolate_sel_));
+  scheduler_par_ = PerIsolateData::From(isolate_par_)->GetScheduler();
 }
 
 IsolateHolder::~IsolateHolder() {
   context_map_.clear();
+  unbound_script_map_.clear();
+
   per_isolate_data_.reset();
   scheduler_sel_.reset();
-  scheduler_par_.reset();
 }
 
 void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task) const {
-  scheduler_sel_->TaskRunner()->PostTask(std::move(task));
+  scheduler_sel_->PostTask(std::move(task));
 }
-void IsolateHolder::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
-  scheduler_par_->TaskRunner()->PostTask(std::move(task));
+void IsolateHolder::PostHandleTaskToSel(std::unique_ptr<v8::Task> task) const {
+  scheduler_sel_->PostHandleTask(std::move(task));
 }
 void IsolateHolder::PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
                                          double delay_in_seconds) const {
   scheduler_sel_->TaskRunner()->PostDelayedTask(std::move(task),
                                                 delay_in_seconds);
 }
+
+void IsolateHolder::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
+  scheduler_par_->PostTask(std::move(task));
+}
+void IsolateHolder::PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const {
+  scheduler_par_->PostHandleTask(std::move(task));
+}
 void IsolateHolder::PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                                          double delay_in_seconds) const {
   scheduler_par_->TaskRunner()->PostDelayedTask(std::move(task),
                                                 delay_in_seconds);
 }
-void IsolateHolder::PostInspectorTask(std::unique_ptr<v8::Task> task) const {
-  scheduler_sel_->PostInspectorTask(std::move(task));
+
+void IsolateHolder::PostInterruptTask(std::unique_ptr<v8::Task> task) const {
+  scheduler_sel_->PostInterruptTask(std::move(task));
 }
 
 static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
@@ -93,7 +102,8 @@ ContextId IsolateHolder::CreateContext() {
   return *context;
 }
 
-void IsolateHolder::ClearContext(v8::Context* address) {
+void IsolateHolder::ClearContext(ContextId address) {
+  std::lock_guard lock(mutex_context_map_);
   context_map_.erase(address);
 }
 
@@ -115,6 +125,10 @@ v8::Local<v8::UnboundScript> IsolateHolder::GetUnboundScript(ScriptId address) {
     return it->second.Get(isolate_sel_);
   }
   return {};
+}
+void IsolateHolder::ClearUnboundScript(ScriptId address) {
+  std::lock_guard lock(mutex_unbound_script_map_);
+  unbound_script_map_.erase(address);
 }
 
 }  // namespace svm

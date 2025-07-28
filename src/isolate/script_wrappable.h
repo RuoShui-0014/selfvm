@@ -9,7 +9,6 @@
 #include "cppgc/visitor.h"
 #include "v8-cppgc.h"
 #include "v8-traced-handle.h"
-#include "v8.h"
 
 namespace svm {
 

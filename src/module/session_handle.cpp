@@ -1,5 +1,9 @@
 #include "session_handle.h"
 
+#include <cppgc/visitor.h>
+
+#include <iostream>
+
 #include "../isolate/isolate_holder.h"
 #include "../isolate/platform_delegate.h"
 #include "context_handle.h"
@@ -14,7 +18,14 @@ InspectorAgent::InspectorAgent(SessionHandle* session_handle,
       channel_(std::make_unique<InspectorChannel>(session_handle)) {
   connectInspector();
 }
-InspectorAgent::~InspectorAgent() = default;
+InspectorAgent::~InspectorAgent() {
+#ifdef DEBUG
+  std::cout << "~InspectorAgent()" << std::endl;
+#endif
+  channel_.reset();
+  session_.reset();
+  inspector_.reset();
+}
 
 void InspectorAgent::connectInspector() {
   inspector_ = v8_inspector::V8Inspector::create(isolate_, this);
@@ -24,7 +35,7 @@ void InspectorAgent::connectInspector() {
       v8_inspector::V8Inspector::SessionPauseState::kWaitingForDebugger);
 }
 
-void InspectorAgent::addContext(v8::Local<v8::Context> context) {
+void InspectorAgent::addContext(v8::Local<v8::Context> context) const {
   v8_inspector::StringView contextName{
       reinterpret_cast<const uint8_t*>("inspector"), 9};
   inspector_->contextCreated(
@@ -34,10 +45,9 @@ void InspectorAgent::addContext(v8::Local<v8::Context> context) {
 void InspectorAgent::dispatchMessage(std::string message) {
   class DispatchMessageTask : public v8::Task {
    public:
-    explicit DispatchMessageTask(
-        const std::shared_ptr<v8_inspector::V8InspectorSession>& session,
-        std::string message)
-        : session_(session), message_(message) {}
+    explicit DispatchMessageTask(v8_inspector::V8InspectorSession* session,
+                                 const std::string& message)
+        : message_(message), session_(std::move(session)) {}
     ~DispatchMessageTask() override = default;
     void Run() override {
       session_->dispatchProtocolMessage(v8_inspector::StringView{
@@ -47,11 +57,11 @@ void InspectorAgent::dispatchMessage(std::string message) {
 
    private:
     std::string message_;
-    std::shared_ptr<v8_inspector::V8InspectorSession> session_;
+    v8_inspector::V8InspectorSession* session_;
   };
 
-  auto task = std::make_unique<DispatchMessageTask>(session_, message);
-  session_handle_->isolate_handle_->PostInspectorTask(std::move(task));
+  auto task = std::make_unique<DispatchMessageTask>(session_.get(), message);
+  session_handle_->isolate_handle_->PostInterruptTask(std::move(task));
 }
 void InspectorAgent::dispose() {
   waiting_for_frontend_.store(false);
@@ -67,9 +77,9 @@ void InspectorAgent::runMessageLoopOnPause(int context_group_id) {
   waiting_for_resume_.store(true);
 
   while (waiting_for_frontend_ && waiting_for_resume_) {
-    Scheduler* scheduler = session_handle_->isolate_handle_->GetSchedulerSel();
-    UVSchedulerSel::RunInspectorTasks(
-        reinterpret_cast<UVSchedulerSel*>(scheduler));
+    UVSchedulerSel* scheduler = static_cast<UVSchedulerSel*>(
+        session_handle_->isolate_handle_->GetSchedulerSel());
+    scheduler->RunInterruptTasks();
   }
 
   running_nested_loop_.store(false);
@@ -174,7 +184,9 @@ SessionHandle::SessionHandle(IsolateHandle* isolate_handle)
       inspector_agent_(std::make_unique<InspectorAgent>(
           this,
           isolate_handle->GetIsolateHolder()->GetIsolateSel())) {}
-SessionHandle::~SessionHandle() = default;
+SessionHandle::~SessionHandle() {
+  std::cout << "~SessionHandle()" << std::endl;
+}
 
 IsolateHandle* SessionHandle::GetIsolateHandle() const {
   return isolate_handle_.Get();
@@ -217,6 +229,10 @@ void SessionHandle::Dispose() {
   on_notification_.reset();
   on_response_.reset();
   inspector_agent_->dispose();
+}
+void SessionHandle::Trace(cppgc::Visitor* visitor) const {
+  visitor->Trace(isolate_handle_);
+  ScriptWrappable::Trace(visitor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////

@@ -37,8 +37,12 @@ class IsolateHandle : public ScriptWrappable {
   v8::Local<v8::UnboundScript> GetScript(ScriptId address) const;
 
   void PostTaskToSel(std::unique_ptr<v8::Task> task) const;
+  void PostHandleTaskToSel(std::unique_ptr<v8::Task> task) const;
+
   void PostTaskToPar(std::unique_ptr<v8::Task> task) const;
-  void PostInspectorTask(std::unique_ptr<v8::Task> task) const;
+  void PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const;
+
+  void PostInterruptTask(std::unique_ptr<v8::Task> task) const;
 
   void AddDebugContext(ContextHandle* context) const;
 
@@ -50,14 +54,14 @@ class IsolateHandle : public ScriptWrappable {
                           v8::Local<v8::Promise::Resolver> resolver);
   ScriptHandle* CreateScript(std::string script, std::string filename);
   SessionHandle* GetInspectorSession();
-  void IsolateGc();
+  void IsolateGc() const;
   void Release();
   v8::HeapStatistics GetHeapStatistics() const;
 
   void Trace(cppgc::Visitor* visitor) const override;
 
  private:
-  cppgc::Member<ContextHandle> default_context_;
+  cppgc::Member<ContextHandle> context_handle_;
   cppgc::Member<SessionHandle> session_handle_;
   std::unique_ptr<IsolateHolder> isolate_holder_;
 };
