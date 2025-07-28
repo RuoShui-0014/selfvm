@@ -13,7 +13,6 @@
 #include "../vendor/v8-inspector.h"
 
 namespace svm {
-
 class IsolateHandle;
 class ContextHandle;
 class SessionHandle;
@@ -35,7 +34,7 @@ class InspectorAgent : public v8_inspector::V8InspectorClient {
   void runIfWaitingForDebugger(int context_group_id) override;
 
  private:
-  SessionHandle* session_handle_;
+  cppgc::WeakMember<SessionHandle> session_handle_;
   v8::Isolate* isolate_{};
 
   std::atomic_bool waiting_for_frontend_{false};
@@ -61,7 +60,7 @@ class InspectorChannel : public v8_inspector::V8Inspector::Channel {
   void flushProtocolNotifications() override;
 
  private:
-  SessionHandle* session_handle_;
+  cppgc::WeakMember<SessionHandle> session_handle_;
 };
 
 class SessionHandle : public ScriptWrappable {
@@ -71,6 +70,7 @@ class SessionHandle : public ScriptWrappable {
 
   IsolateHandle* GetIsolateHandle() const;
   void AddContext(v8::Local<v8::Context> context) const;
+  void Release();
 
   /* js interface */
   void DispatchInspectorMessage(std::string message);

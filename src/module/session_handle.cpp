@@ -185,7 +185,9 @@ SessionHandle::SessionHandle(IsolateHandle* isolate_handle)
           this,
           isolate_handle->GetIsolateHolder()->GetIsolateSel())) {}
 SessionHandle::~SessionHandle() {
+#ifdef DEBUG
   std::cout << "~SessionHandle()" << std::endl;
+#endif
 }
 
 IsolateHandle* SessionHandle::GetIsolateHandle() const {
@@ -194,6 +196,9 @@ IsolateHandle* SessionHandle::GetIsolateHandle() const {
 
 void SessionHandle::AddContext(v8::Local<v8::Context> context) const {
   inspector_agent_->addContext(context);
+}
+void SessionHandle::Release() {
+  inspector_agent_.reset();
 }
 void SessionHandle::DispatchInspectorMessage(std::string message) {
   inspector_agent_->dispatchMessage(std::move(message));

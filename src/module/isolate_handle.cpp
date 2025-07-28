@@ -92,6 +92,10 @@ IsolateHandle::IsolateHandle(IsolateParams& params)
     : isolate_holder_(std::make_unique<IsolateHolder>(params)) {}
 
 IsolateHandle::~IsolateHandle() {
+  if (session_handle_) {
+    session_handle_->Release();
+  }
+
 #ifdef DEBUG
   std::cout << "~IsolateHandle()" << std::endl;
 #endif

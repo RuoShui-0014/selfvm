@@ -25,11 +25,15 @@ class Scheduler {
 
   uv_loop_t* GetLoop() const { return uv_loop_; }
   std::shared_ptr<v8::TaskRunner> TaskRunner();
+
   void PostTask(std::unique_ptr<v8::Task> task);
   void PostDelayedTask(std::unique_ptr<v8::Task> task, double delay);
   void PostHandleTask(std::unique_ptr<v8::Task> task);
   void PostInterruptTask(std::unique_ptr<v8::Task> task);
-  void RunTasks();
+
+  void RunForegroundTask(std::unique_ptr<v8::Task> task);
+  void FlushForegroundTasksInternal();
+
   void KeepAlive();
   void WillDie();
 
@@ -38,6 +42,7 @@ class Scheduler {
   TaskQueue tasks_;
   TaskQueue tasks_handle_;
   TaskQueue tasks_interrupts_;
+  std::atomic<bool> running{false};
 
   v8::Isolate* isolate_{};
   uv_loop_t* uv_loop_{};
@@ -61,7 +66,6 @@ class UVSchedulerSel : public Scheduler {
   std::unique_ptr<node::ArrayBufferAllocator> allocator_;
 
   std::thread thread_;
-  std::atomic<bool> running{false};
 };
 
 class UVSchedulerPar : public Scheduler {

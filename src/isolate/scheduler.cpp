@@ -76,7 +76,15 @@ void Scheduler::PostInterruptTask(std::unique_ptr<v8::Task> task) {
   uv_async_send(uv_task_);
 }
 
-void Scheduler::RunTasks() {
+void Scheduler::RunForegroundTask(std::unique_ptr<v8::Task> task) {
+  if (!running.load()) {
+    return;
+  }
+  v8::HandleScope handle_scope(isolate_);
+  task->Run();
+}
+
+void Scheduler::FlushForegroundTasksInternal() {
   while (true) {
     TaskQueue tasks, tasks_handle, tasks_interrupts;
     {
@@ -106,8 +114,9 @@ void Scheduler::RunTasks() {
 
       // 执行宏任务
       while (!tasks.empty()) {
-        tasks.front()->Run();
+        std::unique_ptr<v8::Task> task = std::move(tasks.front());
         tasks.pop();
+        RunForegroundTask(std::move(task));
       }
     }
   }
@@ -140,7 +149,7 @@ UVSchedulerSel::UVSchedulerSel(
       return;
     }
 
-    scheduler->RunTasks();
+    scheduler->FlushForegroundTasksInternal();
   });
   uv_task_->data = this;
 }
@@ -197,7 +206,7 @@ UVSchedulerPar::UVSchedulerPar(v8::Isolate* isolate) : Scheduler(isolate) {
   uv_task_ = new uv_async_t;
   uv_async_init(uv_loop_, uv_task_, [](uv_async_t* handle) {
     UVSchedulerPar* scheduler = static_cast<UVSchedulerPar*>(handle->data);
-    scheduler->RunTasks();
+    scheduler->FlushForegroundTasksInternal();
   });
   uv_task_->data = this;
   uv_unref(reinterpret_cast<uv_handle_t*>(uv_task_));

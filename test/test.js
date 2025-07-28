@@ -51,8 +51,8 @@ this.result = ctx.eval("this.a = {title: 'test 套娃'}");
 `, "filename.js");
 console.log(script.run(ctx))
 
-// const session = isolate.session
-// session.addContext(ctx);
+const session = isolate.session
+session.addContext(ctx);
 // // Create an inspector channel on port 10000
 // let wss = new WebSocket.Server({port: 10000});
 // wss.on('connection', function (ws) {
