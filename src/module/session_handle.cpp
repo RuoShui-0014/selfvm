@@ -2,7 +2,9 @@
 
 #include <cppgc/visitor.h>
 
+#ifdef DEBUG
 #include <iostream>
+#endif
 
 #include "../isolate/isolate_holder.h"
 #include "../isolate/platform_delegate.h"
@@ -19,12 +21,13 @@ InspectorAgent::InspectorAgent(SessionHandle* session_handle,
   connectInspector();
 }
 InspectorAgent::~InspectorAgent() {
-#ifdef DEBUG
-  std::cout << "~InspectorAgent()" << std::endl;
-#endif
   channel_.reset();
   session_.reset();
   inspector_.reset();
+
+#ifdef DEBUG
+  std::cout << "~InspectorAgent()" << std::endl;
+#endif
 }
 
 void InspectorAgent::connectInspector() {
@@ -181,6 +184,7 @@ void InspectorChannel::flushProtocolNotifications() {}
 
 SessionHandle::SessionHandle(IsolateHandle* isolate_handle)
     : isolate_handle_(isolate_handle),
+      isolate_holder_(isolate_handle->GetIsolateHolder()),
       inspector_agent_(std::make_unique<InspectorAgent>(
           this,
           isolate_handle->GetIsolateHolder()->GetIsolateSel())) {}
@@ -227,7 +231,7 @@ void SessionHandle::AddContext(ContextHandle* context_handle) {
   auto task =
       std::make_unique<AddContextTask>(this, context_handle->GetContextId());
   std::future<bool> future = task->GetFuture();
-  isolate_handle_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task));
   future.get();
 }
 void SessionHandle::Dispose() {

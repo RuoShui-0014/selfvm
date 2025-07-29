@@ -149,7 +149,9 @@ class ScriptAsyncTask final : public AsyncTask {
 
 ContextHandle::ContextHandle(IsolateHandle* isolate_handle,
                              v8::Context* address)
-    : isolate_handle_(isolate_handle), address_{address} {}
+    : isolate_handle_(isolate_handle),
+      isolate_holder_(isolate_handle->GetIsolateHolder()),
+      address_{address} {}
 
 ContextHandle::~ContextHandle() {
   Release();
@@ -177,25 +179,25 @@ void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
 }
 
 void ContextHandle::Release() {
-  isolate_handle_->GetIsolateHolder()->ClearContext(address_);
+  isolate_holder_->ClearContext(address_);
 }
 v8::Isolate* ContextHandle::GetIsolateSel() {
-  return isolate_handle_->GetIsolateSel();
+  return isolate_holder_->GetIsolateSel();
 }
 v8::Isolate* ContextHandle::GetIsolatePar() {
-  return isolate_handle_->GetIsolatePar();
+  return isolate_holder_->GetIsolatePar();
 }
 
 v8::Local<v8::Context> ContextHandle::GetContext() {
-  return isolate_handle_->GetContext(address_);
+  return isolate_holder_->GetContext(address_);
 }
 
 void ContextHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
-  isolate_handle_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task));
 }
 
 void ContextHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) {
-  isolate_handle_->PostTaskToPar(std::move(task));
+  isolate_holder_->PostTaskToPar(std::move(task));
 }
 
 void ContextHandle::Trace(cppgc::Visitor* visitor) const {

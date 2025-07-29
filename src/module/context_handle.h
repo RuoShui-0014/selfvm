@@ -12,6 +12,7 @@
 
 namespace svm {
 
+class IsolateHolder;
 class IsolateHandle;
 class AsyncInfo;
 
@@ -43,6 +44,7 @@ class ContextHandle : public ScriptWrappable {
 
  private:
   cppgc::Member<IsolateHandle> isolate_handle_;
+  std::shared_ptr<IsolateHolder> isolate_holder_;
   ContextId const address_;
 };
 

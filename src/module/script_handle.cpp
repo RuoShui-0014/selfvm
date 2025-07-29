@@ -149,7 +149,9 @@ ScriptHandle* ScriptHandle::Create(IsolateHandle* isolate_handle,
 }
 
 ScriptHandle::ScriptHandle(IsolateHandle* isolate_handle, ScriptId address)
-    : isolate_handle_(isolate_handle), address_(address) {}
+    : isolate_handle_(isolate_handle),
+      isolate_holder_(isolate_handle->GetIsolateHolder()),
+      address_(address) {}
 ScriptHandle::~ScriptHandle() {
 #ifdef DEBUG
   std::cout << "~ScriptHandle()" << std::endl;
@@ -157,17 +159,17 @@ ScriptHandle::~ScriptHandle() {
 }
 
 v8::Local<v8::UnboundScript> ScriptHandle::GetUnboundScript() const {
-  return isolate_handle_->GetScript(address_);
+  return isolate_holder_->GetUnboundScript(address_);
 }
 
 std::pair<uint8_t*, size_t> ScriptHandle::Run(ContextHandle* context_handle) {
   auto task = std::make_unique<ScriptRunTask>(context_handle, this);
   auto future = task->GetFuture();
-  isolate_handle_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task));
   return future.get();
 }
 void ScriptHandle::Release() {
-  isolate_handle_->GetIsolateHolder()->ClearUnboundScript(address_);
+  isolate_holder_->ClearUnboundScript(address_);
 }
 
 void ScriptHandle::Trace(cppgc::Visitor* visitor) const {

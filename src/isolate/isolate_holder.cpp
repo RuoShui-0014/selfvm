@@ -1,6 +1,8 @@
 #include "isolate_holder.h"
 
+#ifdef DEBUG
 #include <iostream>
+#endif
 
 #include "../module/context_handle.h"
 #include "../utils/utils.h"
@@ -41,9 +43,12 @@ IsolateHolder::IsolateHolder(IsolateParams& params)
 IsolateHolder::~IsolateHolder() {
   context_map_.clear();
   unbound_script_map_.clear();
-
   per_isolate_data_.reset();
   scheduler_sel_.reset();
+
+#ifdef DEBUG
+  std::cout << "~ContextHandle()" << std::endl;
+#endif
 }
 
 void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task) const {

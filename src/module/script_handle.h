@@ -8,6 +8,7 @@
 
 namespace svm {
 
+class IsolateHolder;
 class IsolateHandle;
 class ContextHandle;
 
@@ -32,6 +33,7 @@ class ScriptHandle : public ScriptWrappable {
 
  private:
   cppgc::Member<IsolateHandle> isolate_handle_;
+  std::shared_ptr<IsolateHolder> isolate_holder_;
   ScriptId const address_;
 };
 

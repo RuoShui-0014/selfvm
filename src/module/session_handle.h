@@ -13,6 +13,8 @@
 #include "../vendor/v8-inspector.h"
 
 namespace svm {
+
+class IsolateHolder;
 class IsolateHandle;
 class ContextHandle;
 class SessionHandle;
@@ -87,6 +89,7 @@ class SessionHandle : public ScriptWrappable {
   friend class InspectorChannel;
 
   cppgc::Member<IsolateHandle> isolate_handle_;
+  std::shared_ptr<IsolateHolder> isolate_holder_;
   std::unique_ptr<InspectorAgent> inspector_agent_;
 };
 

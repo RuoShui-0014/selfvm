@@ -89,7 +89,7 @@ IsolateHandle* IsolateHandle::Create(IsolateParams& params) {
 }
 
 IsolateHandle::IsolateHandle(IsolateParams& params)
-    : isolate_holder_(std::make_unique<IsolateHolder>(params)) {}
+    : isolate_holder_(std::make_shared<IsolateHolder>(params)) {}
 
 IsolateHandle::~IsolateHandle() {
   if (session_handle_) {
@@ -99,6 +99,10 @@ IsolateHandle::~IsolateHandle() {
 #ifdef DEBUG
   std::cout << "~IsolateHandle()" << std::endl;
 #endif
+}
+
+std::shared_ptr<IsolateHolder> IsolateHandle::GetIsolateHolder() const {
+  return isolate_holder_;
 }
 
 v8::Isolate* IsolateHandle::GetIsolateSel() const {

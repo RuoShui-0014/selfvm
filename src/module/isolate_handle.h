@@ -26,7 +26,7 @@ class IsolateHandle : public ScriptWrappable {
   explicit IsolateHandle(IsolateParams& params);
   ~IsolateHandle() override;
 
-  IsolateHolder* GetIsolateHolder() const { return isolate_holder_.get(); }
+  std::shared_ptr<IsolateHolder> GetIsolateHolder() const;
   v8::Isolate* GetIsolateSel() const;
   v8::Isolate* GetIsolatePar() const;
 
@@ -63,7 +63,7 @@ class IsolateHandle : public ScriptWrappable {
  private:
   cppgc::Member<ContextHandle> context_handle_;
   cppgc::Member<SessionHandle> session_handle_;
-  std::unique_ptr<IsolateHolder> isolate_holder_;
+  std::shared_ptr<IsolateHolder> isolate_holder_;
 };
 
 class V8IsolateHandle {
