@@ -13,21 +13,20 @@ namespace svm {
 
 class CompileScriptTask final : public SyncTask<ScriptId> {
  public:
-  CompileScriptTask(IsolateHandle* isolate_handle,
+  CompileScriptTask(ContextHandle* context_handle,
                     std::string& script,
                     std::string& filename)
-      : isolate_handle_(isolate_handle),
+      : context_handle_(context_handle),
         script_(std::move(script)),
         filename_(std::move(filename)) {}
   ~CompileScriptTask() override = default;
 
   void Run() override {
-    v8::Isolate* isolate = isolate_handle_->GetIsolateSel();
+    v8::Isolate* isolate = context_handle_->GetIsolateSel();
     v8::Isolate::Scope isolate_scope(isolate);
     v8::HandleScope handle_scope(isolate);
 
-    v8::Local<v8::Context> context =
-        isolate_handle_->GetContextHandle()->GetContext();
+    v8::Local<v8::Context> context = context_handle_->GetContext();
     v8::Context::Scope scope(context);
 
     v8::ScriptOrigin origin(isolate, toString(isolate, filename_));
@@ -36,7 +35,9 @@ class CompileScriptTask final : public SyncTask<ScriptId> {
     v8::Local<v8::UnboundScript> unbound_script;
     if (v8::ScriptCompiler::CompileUnboundScript(isolate, &source)
             .ToLocal(&unbound_script)) {
-      isolate_handle_->GetIsolateHolder()->CreateUnboundScript(unbound_script);
+      context_handle_->GetIsolateHandle()
+          ->GetIsolateHolder()
+          ->CreateUnboundScript(unbound_script);
       SetResult(*unbound_script);
     } else {
       SetResult(nullptr);
@@ -44,7 +45,7 @@ class CompileScriptTask final : public SyncTask<ScriptId> {
   }
 
  private:
-  cppgc::WeakMember<IsolateHandle> isolate_handle_;
+  cppgc::WeakMember<ContextHandle> context_handle_;
   std::string script_;
   std::string filename_;
 };
@@ -128,8 +129,9 @@ class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
 ScriptHandle* ScriptHandle::Create(IsolateHandle* isolate_handle,
                                    std::string script,
                                    std::string filename) {
+  ContextHandle* context_handle = isolate_handle->CreateContext();
   auto task =
-      std::make_unique<CompileScriptTask>(isolate_handle, script, filename);
+      std::make_unique<CompileScriptTask>(context_handle, script, filename);
   std::future<ScriptId> future = task->GetFuture();
   isolate_handle->PostTaskToSel(std::move(task));
   ScriptId address = future.get();
