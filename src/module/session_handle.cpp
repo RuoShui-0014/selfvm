@@ -64,7 +64,7 @@ void InspectorAgent::dispatchMessage(std::string message) {
   };
 
   auto task = std::make_unique<DispatchMessageTask>(session_.get(), message);
-  session_handle_->isolate_handle_->PostInterruptTask(std::move(task));
+  session_handle_->GetIsolateHolder()->PostInterruptTask(std::move(task));
 }
 void InspectorAgent::dispose() {
   waiting_for_frontend_.store(false);
@@ -136,7 +136,7 @@ void InspectorChannel::sendResponse(
     cppgc::Member<SessionHandle> session_handle_;
   };
 
-  session_handle_->isolate_handle_->PostTaskToPar(
+  session_handle_->GetIsolateHolder()->PostTaskToPar(
       std::make_unique<SendResponseTask>(session_handle_, std::move(message)));
 }
 void InspectorChannel::sendNotification(
@@ -176,7 +176,7 @@ void InspectorChannel::sendNotification(
     std::unique_ptr<v8_inspector::StringBuffer> message_;
     cppgc::Member<SessionHandle> session_handle_;
   };
-  session_handle_->isolate_handle_->PostTaskToPar(
+  session_handle_->GetIsolateHolder()->PostTaskToPar(
       std::make_unique<SendNotificationTask>(session_handle_,
                                              std::move(message)));
 }
@@ -196,6 +196,9 @@ SessionHandle::~SessionHandle() {
 
 IsolateHandle* SessionHandle::GetIsolateHandle() const {
   return isolate_handle_.Get();
+}
+std::shared_ptr<IsolateHolder> SessionHandle::GetIsolateHolder() const {
+  return isolate_holder_;
 }
 
 void SessionHandle::AddContext(v8::Local<v8::Context> context) const {

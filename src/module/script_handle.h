@@ -16,10 +16,6 @@ using ScriptId = v8::UnboundScript*;
 
 class ScriptHandle : public ScriptWrappable {
  public:
-  static ScriptHandle* Create(IsolateHandle* isolate_handle,
-                              std::string script,
-                              std::string filename);
-
   explicit ScriptHandle(IsolateHandle* isolate_handle, ScriptId address);
   ~ScriptHandle() override;
 
@@ -27,7 +23,7 @@ class ScriptHandle : public ScriptWrappable {
 
   /*********************** js interface *************************/
   std::pair<uint8_t*, size_t> Run(ContextHandle* context_handle);
-  void Release();
+  void Release() const;
 
   void Trace(cppgc::Visitor* visitor) const override;
 

@@ -14,6 +14,7 @@ namespace svm {
 
 class ContextHandle;
 class IsolateHandle;
+class IsolateHolder;
 
 template <typename T>
 class SyncTask;
@@ -85,14 +86,16 @@ class SyncTask<T> : public v8::Task {
 // 异步任务
 class AsyncInfo {
  public:
-  AsyncInfo(IsolateHandle* isolate_handle,
-            v8::Isolate* isolate,
+  AsyncInfo(std::shared_ptr<IsolateHolder> isolate_holder,
             RemoteHandle<v8::Context> context,
             RemoteHandle<v8::Promise::Resolver> resolver);
   ~AsyncInfo();
 
-  IsolateHandle* isolate_handle;
-  v8::Isolate* isolate;
+  v8::Isolate* GetIsolateSel() const;
+  v8::Isolate* GetIsolatePar() const;
+  void PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const;
+
+  std::shared_ptr<IsolateHolder> isolate_holder_;
   RemoteHandle<v8::Context> context;
   RemoteHandle<v8::Promise::Resolver> resolver;
 };

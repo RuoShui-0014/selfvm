@@ -49,6 +49,11 @@ declare module SelfVm {
         createScript(code: string, filename?: string): Script;
 
         /**
+         * 创建Script同步获取结果
+         */
+        createScriptAsync(code: string, filename?: string): Promise<Script>;
+
+        /**
          * 获取Session
          */
         readonly session: Session;

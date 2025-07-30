@@ -113,25 +113,24 @@ void IsolateHolder::ClearContext(ContextId address) {
 }
 
 v8::Local<v8::Context> IsolateHolder::GetContext(ContextId address) {
-  auto it = context_map_.find(address);
+  const auto it = context_map_.find(address);
   if (it != context_map_.end()) {
     return it->second.Get(isolate_sel_);
   }
   return {};
 }
-void IsolateHolder::CreateUnboundScript(
-    v8::Local<v8::UnboundScript> unbound_script) {
+void IsolateHolder::CreateScript(v8::Local<v8::UnboundScript> unbound_script) {
   unbound_script_map_.emplace(*unbound_script,
                               RemoteHandle{isolate_sel_, unbound_script});
 }
-v8::Local<v8::UnboundScript> IsolateHolder::GetUnboundScript(ScriptId address) {
-  auto it = unbound_script_map_.find(address);
+v8::Local<v8::UnboundScript> IsolateHolder::GetScript(ScriptId address) {
+  const auto it = unbound_script_map_.find(address);
   if (it != unbound_script_map_.end()) {
     return it->second.Get(isolate_sel_);
   }
   return {};
 }
-void IsolateHolder::ClearUnboundScript(ScriptId address) {
+void IsolateHolder::ClearScript(ScriptId address) {
   std::lock_guard lock(mutex_unbound_script_map_);
   unbound_script_map_.erase(address);
 }

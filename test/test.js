@@ -2,10 +2,10 @@
 const svm = require('../self-vm');
 const WebSocket = require("ws");
 
-this.isolate = new svm.Isolate({memoryLimit: 128});
+const isolate = new svm.Isolate({memoryLimit: 128});
 
 /* isolate有一个默认的context */
-const ctx = this.isolate.createContext()
+const ctx = isolate.context
 
 /* context可通过eval进行代码的同步运行 */
 try {
@@ -30,7 +30,7 @@ try {
     console.error('Error:', err)
 }
 
-const data = this.isolate.getHeapStatistics();
+const data = isolate.getHeapStatistics();
 console.log(data)
 
 /*  释放isolate隔离实例的相关资源 */
@@ -43,15 +43,7 @@ console.log(data)
 // delete this.ctx
 // svm.gc()
 
-// 子环境中创建子环境
-const script = this.isolate.createScript(`
-// const isolate = new Isolate();
-// const ctx = isolate.context;
-// this.result = ctx.eval("this.a = {title: 'test 套娃'}");
-`, "filename.js");
-console.log(script.run(ctx))
-
-const session = this.isolate.session
+const session = isolate.session
 session.addContext(ctx);
 // // Create an inspector channel on port 10000
 // let wss = new WebSocket.Server({port: 10000});
@@ -93,13 +85,27 @@ session.addContext(ctx);
 // });
 // console.log('devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=127.0.0.1:10000');
 
-delete this.isolate;
-setTimeout(async () => {
-    try {
-        const result = await ctx.evalAsync(`debugger;this.a`, "test");
-        console.log(`调试 eval result = `, result)
-        svm.gc()
-    } catch (e) {
-        console.error(e)
-    }
-}, 3000);
+// 子环境中创建子环境
+// const script = isolate.createScript(`
+// // const isolate = new Isolate();
+// // const ctx = isolate.context;
+// // this.result = ctx.eval("this.a = {title: 'test 套娃'}");
+// `, "filename.js");
+// console.log(script.run(ctx))
+isolate.createScriptAsync("this.a = {title: 'createScriptAsync test.'}"
+    , "filename.js").then(script1 => {
+    const result = script1.run(ctx);
+    console.log(`微任务成功 createScriptAsync() = `, result);
+}, error => {
+    console.log(`微任务失败 createScriptAsync() = `, error);
+});
+
+// setTimeout(async () => {
+//     try {
+//         const result = await ctx.evalAsync(`debugger;this.a`, "test");
+//         console.log(`调试 eval result = `, result)
+//         svm.gc()
+//     } catch (e) {
+//         console.error(e)
+//     }
+// }, 3000);

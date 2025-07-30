@@ -71,6 +71,7 @@ class SessionHandle : public ScriptWrappable {
   ~SessionHandle() override;
 
   IsolateHandle* GetIsolateHandle() const;
+  std::shared_ptr<IsolateHolder> GetIsolateHolder() const;
   void AddContext(v8::Local<v8::Context> context) const;
   void Release();
 

@@ -28,17 +28,15 @@ class ContextHandle : public ScriptWrappable {
   void EvalAsync(std::unique_ptr<AsyncInfo> info,
                  std::string script,
                  std::string filename);
-  void Release();
+  void Release() const;
 
   IsolateHandle* GetIsolateHandle() const { return isolate_handle_.Get(); };
+  std::shared_ptr<IsolateHolder> GetIsolateHolder() const;
   ContextId GetContextId() const { return address_; }
-  v8::Local<v8::Context> GetContext();
+  v8::Local<v8::Context> GetContext() const;
 
-  v8::Isolate* GetIsolateSel();
-  v8::Isolate* GetIsolatePar();
-
-  void PostTaskToSel(std::unique_ptr<v8::Task> task);
-  void PostTaskToPar(std::unique_ptr<v8::Task> task);
+  v8::Isolate* GetIsolateSel() const;
+  v8::Isolate* GetIsolatePar() const;
 
   void Trace(cppgc::Visitor* visitor) const override;
 

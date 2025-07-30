@@ -15,6 +15,7 @@ class ContextHandle;
 class ScriptHandle;
 class SessionHandle;
 struct IsolateParams;
+class AsyncInfo;
 
 class IsolateHandle : public ScriptWrappable {
  public:
@@ -36,23 +37,16 @@ class IsolateHandle : public ScriptWrappable {
   v8::Local<v8::Context> GetContext(ContextId address) const;
   v8::Local<v8::UnboundScript> GetScript(ScriptId address) const;
 
-  void PostTaskToSel(std::unique_ptr<v8::Task> task) const;
-  void PostHandleTaskToSel(std::unique_ptr<v8::Task> task) const;
-
-  void PostTaskToPar(std::unique_ptr<v8::Task> task) const;
-  void PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const;
-
-  void PostInterruptTask(std::unique_ptr<v8::Task> task) const;
-
   void AddDebugContext(ContextHandle* context) const;
 
   /*********************** js interface *************************/
   ContextHandle* GetContextHandle();
   ContextHandle* CreateContext();
-  void CreateContextAsync(v8::Isolate* isolate,
-                          v8::Local<v8::Context> context,
-                          v8::Local<v8::Promise::Resolver> resolver);
+  void CreateContextAsync(std::unique_ptr<AsyncInfo> info);
   ScriptHandle* CreateScript(std::string script, std::string filename);
+  void CreateScriptAsync(std::unique_ptr<AsyncInfo> info,
+                         std::string script,
+                         std::string filename);
   SessionHandle* GetInspectorSession();
   void IsolateGc() const;
   void Release();

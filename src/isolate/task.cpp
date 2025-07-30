@@ -1,25 +1,29 @@
 #include "task.h"
 
 #include "../isolate/isolate_holder.h"
-#include "../module/context_handle.h"
-#include "../module/isolate_handle.h"
 #include "../utils/utils.h"
-#include "external_data.h"
 
 namespace svm {
 
-AsyncInfo::AsyncInfo(IsolateHandle* isolate_handle,
-                     v8::Isolate* isolate,
+AsyncInfo::AsyncInfo(std::shared_ptr<IsolateHolder> isolate_holder,
                      RemoteHandle<v8::Context> context,
                      RemoteHandle<v8::Promise::Resolver> resolver)
-    : isolate_handle(isolate_handle),
-      isolate(isolate),
+    : isolate_holder_(isolate_holder),
       context(context),
       resolver(resolver) {
-  isolate_handle->GetSchedulerPar()->KeepAlive();
+  isolate_holder_->GetSchedulerPar()->KeepAlive();
 }
 AsyncInfo::~AsyncInfo() {
-  isolate_handle->GetSchedulerPar()->WillDie();
+  isolate_holder_->GetSchedulerPar()->WillDie();
+}
+v8::Isolate* AsyncInfo::GetIsolateSel() const {
+  return isolate_holder_->GetIsolateSel();
+}
+v8::Isolate* AsyncInfo::GetIsolatePar() const {
+  return isolate_holder_->GetIsolatePar();
+}
+void AsyncInfo::PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const {
+  isolate_holder_->PostHandleTaskToPar(std::move(task));
 }
 
 }  // namespace svm

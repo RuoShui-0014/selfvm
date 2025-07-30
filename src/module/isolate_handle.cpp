@@ -33,43 +33,141 @@ class CreateContextAsyncTask final : public AsyncTask {
  public:
   class Callback : public v8::Task {
    public:
-    explicit Callback(std::unique_ptr<AsyncInfo> info, v8::Context* address)
-        : info_(std::move(info)), address_(address) {}
+    explicit Callback(std::unique_ptr<AsyncInfo> info,
+                      IsolateHandle* isolate_handle,
+                      v8::Context* address)
+        : info_(std::move(info)),
+          isolate_handle_(isolate_handle),
+          address_(address) {}
     ~Callback() override = default;
 
     void Run() override {
-      v8::Isolate* isolate = info_->isolate;
+      v8::Isolate* isolate = info_->GetIsolatePar();
       v8::Local<v8::Context> context = info_->context.Get(isolate);
-      v8::HandleScope source_scope(isolate);
 
       ContextHandle* context_handle =
           MakeCppGcObject<GC::kSpecified, ContextHandle>(
-              isolate, info_->isolate_handle, address_);
-      v8::Local<v8::FunctionTemplate> isolate_handle_template =
-          V8ContextHandle::GetWrapperTypeInfo()
-              ->GetV8ClassTemplate(isolate)
-              .As<v8::FunctionTemplate>();
-      v8::Local<v8::Object> obj =
-          isolate_handle_template->InstanceTemplate()
-              ->NewInstance(isolate->GetCurrentContext())
-              .ToLocalChecked();
-      ScriptWrappable::Wrap(obj, context_handle);
+              isolate, isolate_handle_.Get(), address_);
+
+      v8::Local<v8::Object> obj = NewInstance<V8ContextHandle>(
+          isolate, isolate->GetCurrentContext(), context_handle);
       info_->resolver.Get(isolate)->Resolve(context, obj);
     }
 
     std::unique_ptr<AsyncInfo> info_;
+    cppgc::Member<IsolateHandle> isolate_handle_;
     v8::Context* const address_;
   };
-  explicit CreateContextAsyncTask(std::unique_ptr<AsyncInfo> info)
-      : AsyncTask(std::move(info)) {}
+  explicit CreateContextAsyncTask(std::unique_ptr<AsyncInfo> info,
+                                  IsolateHandle* isolate_handle)
+      : AsyncTask(std::move(info)), isolate_handle_(isolate_handle) {}
   ~CreateContextAsyncTask() override = default;
 
   void Run() override {
-    v8::Context* const address =
-        info_->isolate_handle->GetIsolateHolder()->CreateContext();
-    info_->isolate_handle->PostHandleTaskToPar(
-        std::make_unique<Callback>(std::move(info_), address));
+    v8::Context* const address = info_->isolate_holder_->CreateContext();
+    info_->PostHandleTaskToPar(std::make_unique<Callback>(
+        std::move(info_), isolate_handle_.Get(), address));
   }
+
+ private:
+  cppgc::Member<IsolateHandle> isolate_handle_;
+};
+
+class CompileScriptTask final : public SyncTask<ScriptId> {
+ public:
+  CompileScriptTask(ContextHandle* context_handle,
+                    std::string& script,
+                    std::string& filename)
+      : context_handle_(context_handle),
+        script_(std::move(script)),
+        filename_(std::move(filename)) {}
+  ~CompileScriptTask() override = default;
+
+  void Run() override {
+    v8::Isolate* isolate = context_handle_->GetIsolateSel();
+    v8::Local<v8::Context> context = context_handle_->GetContext();
+    v8::Context::Scope scope(context);
+
+    v8::ScriptOrigin origin(isolate, toString(isolate, filename_));
+    v8::ScriptCompiler::Source source(toString(isolate, script_), origin);
+
+    v8::Local<v8::UnboundScript> unbound_script;
+    if (v8::ScriptCompiler::CompileUnboundScript(isolate, &source)
+            .ToLocal(&unbound_script)) {
+      context_handle_->GetIsolateHolder()->CreateScript(unbound_script);
+      SetResult(*unbound_script);
+    } else {
+      SetResult(nullptr);
+    }
+  }
+
+ private:
+  cppgc::Member<ContextHandle> context_handle_;
+  std::string script_;
+  std::string filename_;
+};
+class CompileScriptAsyncTask final : public AsyncTask {
+ public:
+  class Callback : public v8::Task {
+   public:
+    Callback(std::unique_ptr<AsyncInfo> info,
+             IsolateHandle* isolate_handle,
+             v8::UnboundScript* unbound_script)
+        : info_{std::move(info)},
+          isolate_handle_(isolate_handle),
+          unbound_script_{unbound_script} {}
+    ~Callback() override = default;
+
+    void Run() override {
+      v8::Isolate* isolate = info_->GetIsolatePar();
+      v8::Local<v8::Context> context = isolate->GetCurrentContext();
+      ScriptHandle* script_handle =
+          MakeCppGcObject<GC::kSpecified, ScriptHandle>(
+              isolate, isolate_handle_, unbound_script_);
+      v8::Local<v8::Object> target =
+          NewInstance<V8ScriptHandle>(isolate, context, script_handle);
+      info_->resolver.Get(isolate)->Resolve(context, target);
+    }
+
+    std::unique_ptr<AsyncInfo> info_;
+    cppgc::Member<IsolateHandle> isolate_handle_;
+    v8::UnboundScript* unbound_script_;
+  };
+  CompileScriptAsyncTask(std::unique_ptr<AsyncInfo> info,
+                         ContextHandle* context_handle,
+                         std::string script,
+                         std::string filename)
+      : AsyncTask(std::move(info)),
+        context_handle_(context_handle),
+        script_(std::move(script)),
+        filename_(std::move(filename)) {}
+  ~CompileScriptAsyncTask() override = default;
+
+  void Run() override {
+    v8::Isolate* isolate = info_->GetIsolateSel();
+    v8::Local<v8::Context> context = context_handle_->GetContext();
+    v8::Context::Scope scope(context);
+
+    v8::ScriptOrigin origin(isolate, toString(isolate, filename_));
+    v8::ScriptCompiler::Source source(toString(isolate, script_), origin);
+
+    v8::Local<v8::UnboundScript> unbound_script;
+    if (v8::ScriptCompiler::CompileUnboundScript(isolate, &source)
+            .ToLocal(&unbound_script)) {
+      context_handle_->GetIsolateHolder()->CreateScript(unbound_script);
+      info_->PostHandleTaskToPar(std::make_unique<Callback>(
+          std::move(info_), context_handle_->GetIsolateHandle(),
+          *unbound_script));
+    } else {
+      info_->PostHandleTaskToPar(std::make_unique<Callback>(
+          std::move(info_), context_handle_->GetIsolateHandle(), nullptr));
+    }
+  }
+
+ private:
+  cppgc::WeakMember<ContextHandle> context_handle_;
+  std::string script_;
+  std::string filename_;
 };
 
 class IsolateGcTask final : public SyncTask<void> {
@@ -116,6 +214,9 @@ v8::Isolate* IsolateHandle::GetIsolatePar() const {
 ContextHandle* IsolateHandle::GetContextHandle() {
   if (!context_handle_) {
     context_handle_ = CreateContext();
+    NewInstance<V8ContextHandle>(GetIsolatePar(),
+                                 GetIsolatePar()->GetCurrentContext(),
+                                 context_handle_.Get());
   }
   return context_handle_.Get();
 }
@@ -126,7 +227,7 @@ v8::Local<v8::Context> IsolateHandle::GetContext(
 }
 v8::Local<v8::UnboundScript> IsolateHandle::GetScript(
     ScriptId const address) const {
-  return isolate_holder_->GetUnboundScript(address);
+  return isolate_holder_->GetScript(address);
 }
 
 Scheduler* IsolateHandle::GetSchedulerSel() const {
@@ -137,22 +238,6 @@ Scheduler* IsolateHandle::GetSchedulerPar() const {
   return isolate_holder_->GetSchedulerPar();
 }
 
-void IsolateHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostTaskToSel(std::move(task));
-}
-void IsolateHandle::PostHandleTaskToSel(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostHandleTaskToSel(std::move(task));
-}
-void IsolateHandle::PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostHandleTaskToPar(std::move(task));
-}
-
-void IsolateHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostTaskToPar(std::move(task));
-}
-void IsolateHandle::PostInterruptTask(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostInterruptTask(std::move(task));
-}
 void IsolateHandle::AddDebugContext(ContextHandle* context) const {
   session_handle_->AddContext(context);
 }
@@ -160,30 +245,44 @@ void IsolateHandle::AddDebugContext(ContextHandle* context) const {
 ContextHandle* IsolateHandle::CreateContext() {
   auto task = std::make_unique<CreateContextTask>(this);
   auto future = task->GetFuture();
-  PostTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task));
   auto id = future.get();
 
   v8::Isolate* isolate = GetIsolatePar();
   ContextHandle* context_handle =
       MakeCppGcObject<GC::kSpecified, ContextHandle>(isolate, this, id);
-  NewInstance<V8ContextHandle>(isolate, isolate->GetCurrentContext(),
-                               context_handle);
   return context_handle;
 }
 
-void IsolateHandle::CreateContextAsync(
-    v8::Isolate* isolate,
-    v8::Local<v8::Context> context,
-    v8::Local<v8::Promise::Resolver> resolver) {
-  auto async_info =
-      std::make_unique<AsyncInfo>(this, isolate, RemoteHandle(isolate, context),
-                                  RemoteHandle(isolate, resolver));
-  auto task = std::make_unique<CreateContextAsyncTask>(std::move(async_info));
-  PostTaskToSel(std::move(task));
+void IsolateHandle::CreateContextAsync(std::unique_ptr<AsyncInfo> info) {
+  auto task = std::make_unique<CreateContextAsyncTask>(std::move(info), this);
+  isolate_holder_->PostTaskToSel(std::move(task));
 }
+
 ScriptHandle* IsolateHandle::CreateScript(std::string script,
                                           std::string filename) {
-  return ScriptHandle::Create(this, std::move(script), std::move(filename));
+  auto task =
+      std::make_unique<CompileScriptTask>(GetContextHandle(), script, filename);
+  std::future<ScriptId> future = task->GetFuture();
+  isolate_holder_->PostTaskToSel(std::move(task));
+  ScriptId address = future.get();
+
+  if (!address) {
+    return nullptr;
+  }
+
+  v8::Isolate* isolate = GetIsolatePar();
+  ScriptHandle* script_handle =
+      MakeCppGcObject<GC::kSpecified, ScriptHandle>(isolate, this, address);
+  return script_handle;
+}
+void IsolateHandle::CreateScriptAsync(std::unique_ptr<AsyncInfo> info,
+                                      std::string script,
+                                      std::string filename) {
+  auto task = std::make_unique<CompileScriptAsyncTask>(
+      std::move(info), GetContextHandle(), std::move(script),
+      std::move(filename));
+  isolate_holder_->PostTaskToSel(std::move(task));
 }
 
 SessionHandle* IsolateHandle::GetInspectorSession() {
@@ -199,7 +298,7 @@ SessionHandle* IsolateHandle::GetInspectorSession() {
 }
 
 void IsolateHandle::IsolateGc() const {
-  PostTaskToSel(
+  isolate_holder_->PostTaskToSel(
       std::make_unique<IsolateGcTask>(isolate_holder_->GetIsolateSel()));
 }
 
@@ -255,11 +354,14 @@ void ContextAttributeGetCallback(
 
 void CreateContextOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
   v8::Local<v8::Object> receiver = info.This();
   IsolateHandle* isolate_handle =
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   ContextHandle* context_handle = isolate_handle->CreateContext();
-  info.GetReturnValue().Set(context_handle->V8Object(info.GetIsolate()));
+  v8::Local<v8::Object> target = NewInstance<V8ContextHandle>(
+      isolate, isolate->GetCurrentContext(), context_handle);
+  info.GetReturnValue().Set(target);
 }
 
 void CreateContextAsyncOperationCallback(
@@ -272,8 +374,12 @@ void CreateContextAsyncOperationCallback(
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   v8::Local<v8::Promise::Resolver> resolver =
       v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
-  isolate_handle->CreateContextAsync(isolate, isolate->GetCurrentContext(),
-                                     resolver);
+
+  auto async_info = std::make_unique<AsyncInfo>(
+      isolate_handle->GetIsolateHolder(),
+      RemoteHandle(isolate, isolate->GetCurrentContext()),
+      RemoteHandle(isolate, resolver));
+  isolate_handle->CreateContextAsync(std::move(async_info));
 
   info.GetReturnValue().Set(resolver->GetPromise());
 }
@@ -304,12 +410,51 @@ void CreateScriptOperationCallback(
       ScriptWrappable::Unwrap<IsolateHandle>(receiver);
   ScriptHandle* script_handle =
       isolate_handle->CreateScript(std::move(script), std::move(filename));
+  v8::Local<v8::Object> target = NewInstance<V8ScriptHandle>(
+      isolate, isolate->GetCurrentContext(), script_handle);
   if (script_handle) {
-    info.GetReturnValue().Set(script_handle->V8Object(info.GetIsolate()));
+    info.GetReturnValue().Set(target);
   } else {
     isolate->ThrowException(v8::Exception::TypeError(
         toString(isolate, "Failed to compile the script.")));
   }
+}
+
+void CreateScriptAsyncOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1) {
+    return;
+  }
+
+  v8::Isolate* isolate = info.GetIsolate();
+  std::string script, filename;
+  if (info[0]->IsString()) {
+    script = *v8::String::Utf8Value(isolate, info[0]);
+    if (script == "") {
+      isolate->ThrowException(v8::Exception::TypeError(
+          toString(isolate, "The script must be a string and not is empty")));
+      return;
+    }
+  }
+
+  if (info.Length() > 1 && info[1]->IsString()) {
+    filename = *v8::String::Utf8Value(isolate, info[1]);
+  }
+
+  v8::Local<v8::Object> receiver = info.This();
+  IsolateHandle* isolate_handle =
+      ScriptWrappable::Unwrap<IsolateHandle>(receiver);
+  v8::Local<v8::Promise::Resolver> resolver =
+      v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
+
+  auto async_info = std::make_unique<AsyncInfo>(
+      isolate_handle->GetIsolateHolder(),
+      RemoteHandle(isolate, isolate->GetCurrentContext()),
+      RemoteHandle(isolate, resolver));
+  isolate_handle->CreateScriptAsync(std::move(async_info), std::move(script),
+                                    std::move(filename));
+
+  info.GetReturnValue().Set(resolver->GetPromise());
 }
 
 void GetInspectorSessionOperationCallback(
@@ -391,7 +536,9 @@ void V8IsolateHandle::InstallInterfaceTemplate(
       {"createContextAsync", 0, CreateContextAsyncOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
 
-      {"createScript", 0, CreateScriptOperationCallback,
+      {"createScript", 1, CreateScriptOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"createScriptAsync", 1, CreateScriptAsyncOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
 
       {"getHeapStatistics", 0, GetHeapStatisticsOperationCallback,

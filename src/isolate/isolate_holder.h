@@ -48,18 +48,18 @@ class IsolateHolder {
   v8::Local<v8::Context> GetContext(ContextId address);
   void ClearContext(ContextId address);
 
-  void CreateUnboundScript(v8::Local<v8::UnboundScript> unbound_script);
-  v8::Local<v8::UnboundScript> GetUnboundScript(ScriptId address);
-  void ClearUnboundScript(ScriptId address);
+  void CreateScript(v8::Local<v8::UnboundScript> unbound_script);
+  v8::Local<v8::UnboundScript> GetScript(ScriptId address);
+  void ClearScript(ScriptId address);
 
  private:
   IsolateParams isolate_params_;
 
-  v8::Isolate* isolate_par_{nullptr};
-  v8::Isolate* isolate_sel_{nullptr};
+  v8::Isolate* isolate_par_{};
+  v8::Isolate* isolate_sel_{};
 
   std::unique_ptr<UVSchedulerSel> scheduler_sel_;
-  Scheduler* scheduler_par_;
+  Scheduler* scheduler_par_{};
 
   std::unique_ptr<PerIsolateData> per_isolate_data_;
 

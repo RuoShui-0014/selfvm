@@ -11,82 +11,6 @@
 
 namespace svm {
 
-class CompileScriptTask final : public SyncTask<ScriptId> {
- public:
-  CompileScriptTask(ContextHandle* context_handle,
-                    std::string& script,
-                    std::string& filename)
-      : context_handle_(context_handle),
-        script_(std::move(script)),
-        filename_(std::move(filename)) {}
-  ~CompileScriptTask() override = default;
-
-  void Run() override {
-    v8::Isolate* isolate = context_handle_->GetIsolateSel();
-    v8::Isolate::Scope isolate_scope(isolate);
-    v8::HandleScope handle_scope(isolate);
-
-    v8::Local<v8::Context> context = context_handle_->GetContext();
-    v8::Context::Scope scope(context);
-
-    v8::ScriptOrigin origin(isolate, toString(isolate, filename_));
-    v8::ScriptCompiler::Source source(toString(isolate, script_), origin);
-
-    v8::Local<v8::UnboundScript> unbound_script;
-    if (v8::ScriptCompiler::CompileUnboundScript(isolate, &source)
-            .ToLocal(&unbound_script)) {
-      context_handle_->GetIsolateHandle()
-          ->GetIsolateHolder()
-          ->CreateUnboundScript(unbound_script);
-      SetResult(*unbound_script);
-    } else {
-      SetResult(nullptr);
-    }
-  }
-
- private:
-  cppgc::WeakMember<ContextHandle> context_handle_;
-  std::string script_;
-  std::string filename_;
-};
-
-class CompileScriptAsyncTask final : public AsyncTask {
- public:
-  CompileScriptAsyncTask(std::unique_ptr<AsyncInfo> info,
-                         IsolateHandle* isolate_handle,
-                         std::string script,
-                         std::string filename)
-      : AsyncTask(std::move(info)),
-        isolate_handle_(isolate_handle),
-        script_(std::move(script)),
-        filename_(std::move(filename)) {}
-  ~CompileScriptAsyncTask() override = default;
-
-  void Run() override {
-    v8::Isolate* isolate = isolate_handle_->GetIsolateSel();
-    v8::Isolate::Scope isolate_scope(isolate);
-    v8::HandleScope handle_scope(isolate);
-
-    v8::Local<v8::Context> context =
-        isolate_handle_->GetContextHandle()->GetContext();
-    v8::Context::Scope scope(context);
-
-    v8::ScriptOrigin origin(isolate, toString(isolate, filename_));
-    v8::ScriptCompiler::Source source(toString(isolate, script_), origin);
-
-    v8::Local<v8::UnboundScript> unbound_script;
-    if (v8::ScriptCompiler::CompileUnboundScript(isolate, &source)
-            .ToLocal(&unbound_script)) {
-    } else {
-    }
-  }
-
- private:
-  cppgc::Member<IsolateHandle> isolate_handle_;
-  std::string script_;
-  std::string filename_;
-};
-
 class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
  public:
   ScriptRunTask(ContextHandle* context_handle, ScriptHandle* script_handle)
@@ -122,31 +46,9 @@ class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
   }
 
  private:
-  cppgc::WeakMember<ContextHandle> context_handle_;
-  cppgc::WeakMember<ScriptHandle> script_handle_;
+  cppgc::Member<ContextHandle> context_handle_;
+  cppgc::Member<ScriptHandle> script_handle_;
 };
-
-ScriptHandle* ScriptHandle::Create(IsolateHandle* isolate_handle,
-                                   std::string script,
-                                   std::string filename) {
-  ContextHandle* context_handle = isolate_handle->CreateContext();
-  auto task =
-      std::make_unique<CompileScriptTask>(context_handle, script, filename);
-  std::future<ScriptId> future = task->GetFuture();
-  isolate_handle->PostTaskToSel(std::move(task));
-  ScriptId address = future.get();
-
-  if (!address) {
-    return nullptr;
-  }
-
-  v8::Isolate* isolate = isolate_handle->GetIsolatePar();
-  ScriptHandle* script_handle = MakeCppGcObject<GC::kSpecified, ScriptHandle>(
-      isolate_handle->GetIsolatePar(), isolate_handle, address);
-  NewInstance<V8ScriptHandle>(isolate, isolate->GetCurrentContext(),
-                              script_handle);
-  return script_handle;
-}
 
 ScriptHandle::ScriptHandle(IsolateHandle* isolate_handle, ScriptId address)
     : isolate_handle_(isolate_handle),
@@ -159,7 +61,7 @@ ScriptHandle::~ScriptHandle() {
 }
 
 v8::Local<v8::UnboundScript> ScriptHandle::GetUnboundScript() const {
-  return isolate_holder_->GetUnboundScript(address_);
+  return isolate_holder_->GetScript(address_);
 }
 
 std::pair<uint8_t*, size_t> ScriptHandle::Run(ContextHandle* context_handle) {
@@ -168,8 +70,8 @@ std::pair<uint8_t*, size_t> ScriptHandle::Run(ContextHandle* context_handle) {
   isolate_holder_->PostTaskToSel(std::move(task));
   return future.get();
 }
-void ScriptHandle::Release() {
-  isolate_holder_->ClearUnboundScript(address_);
+void ScriptHandle::Release() const {
+  isolate_holder_->ClearScript(address_);
 }
 
 void ScriptHandle::Trace(cppgc::Visitor* visitor) const {

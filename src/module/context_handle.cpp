@@ -65,8 +65,7 @@ class ScriptAsyncTask final : public AsyncTask {
     ~Callback() override = default;
 
     void Run() override {
-      v8::Isolate* isolate = info_->isolate;
-      v8::HandleScope source_scope(isolate);
+      v8::Isolate* isolate = info_->isolate_holder_->GetIsolatePar();
       v8::Local<v8::Context> context = info_->context.Get(isolate);
       v8::Context::Scope context_scope{context};
 
@@ -107,8 +106,7 @@ class ScriptAsyncTask final : public AsyncTask {
   ~ScriptAsyncTask() override = default;
 
   void Run() override {
-    v8::Isolate* isolate = context_handle_->GetIsolateSel();
-    v8::HandleScope source_scope(isolate);
+    v8::Isolate* isolate = info_->GetIsolateSel();
     v8::Local<v8::Context> context = context_handle_->GetContext();
     v8::Context::Scope context_scope{context};
 
@@ -123,10 +121,9 @@ class ScriptAsyncTask final : public AsyncTask {
         ExternalData::SourceData data{isolate, context,
                                       maybe_result.ToLocalChecked()};
         auto buff = ExternalData::SerializerAsync(data);
-        IsolateHandle* isolate_handle = context_handle_->GetIsolateHandle();
-        isolate_handle->PostHandleTaskToPar(
-            std::make_unique<ScriptAsyncTask::Callback>(std::move(info_),
-                                                        buff));
+
+        info_->PostHandleTaskToPar(
+            std::make_unique<Callback>(std::move(info_), buff));
         return;
       }
     }
@@ -134,9 +131,8 @@ class ScriptAsyncTask final : public AsyncTask {
     if (try_catch.HasCaught()) {
       ExternalData::SourceData data{isolate, context, try_catch.Exception()};
       auto buff = ExternalData::SerializerAsync(data);
-      IsolateHandle* isolate_handle = context_handle_->GetIsolateHandle();
-      isolate_handle->PostHandleTaskToPar(
-          std::make_unique<ScriptAsyncTask::Callback>(std::move(info_), buff));
+      info_->PostHandleTaskToPar(
+          std::make_unique<Callback>(std::move(info_), buff));
       try_catch.Reset();
     }
   }
@@ -166,7 +162,7 @@ std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script,
   auto task = std::make_unique<ScriptTask>(this, std::move(script),
                                            std::move(filename));
   auto future = task->GetFuture();
-  PostTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task));
   return future->get();
 }
 
@@ -175,29 +171,24 @@ void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
                               std::string filename) {
   auto task = std::make_unique<ScriptAsyncTask>(
       std::move(info), this, std::move(script), std::move(filename));
-  PostTaskToSel(std::move(task));
-}
-
-void ContextHandle::Release() {
-  isolate_holder_->ClearContext(address_);
-}
-v8::Isolate* ContextHandle::GetIsolateSel() {
-  return isolate_holder_->GetIsolateSel();
-}
-v8::Isolate* ContextHandle::GetIsolatePar() {
-  return isolate_holder_->GetIsolatePar();
-}
-
-v8::Local<v8::Context> ContextHandle::GetContext() {
-  return isolate_holder_->GetContext(address_);
-}
-
-void ContextHandle::PostTaskToSel(std::unique_ptr<v8::Task> task) {
   isolate_holder_->PostTaskToSel(std::move(task));
 }
 
-void ContextHandle::PostTaskToPar(std::unique_ptr<v8::Task> task) {
-  isolate_holder_->PostTaskToPar(std::move(task));
+void ContextHandle::Release() const {
+  isolate_holder_->ClearContext(address_);
+}
+std::shared_ptr<IsolateHolder> ContextHandle::GetIsolateHolder() const {
+  return isolate_holder_;
+}
+v8::Isolate* ContextHandle::GetIsolateSel() const {
+  return isolate_holder_->GetIsolateSel();
+}
+v8::Isolate* ContextHandle::GetIsolatePar() const {
+  return isolate_holder_->GetIsolatePar();
+}
+
+v8::Local<v8::Context> ContextHandle::GetContext() const {
+  return isolate_holder_->GetContext(address_);
 }
 
 void ContextHandle::Trace(cppgc::Visitor* visitor) const {
@@ -243,6 +234,7 @@ void EvalAsyncOperationCallback(
 
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope scope(isolate);
+
   v8::Local<v8::Object> receiver = info.This();
   ContextHandle* context_handle =
       ScriptWrappable::Unwrap<ContextHandle>(receiver);
@@ -250,7 +242,7 @@ void EvalAsyncOperationCallback(
       v8::Promise::Resolver::New(isolate->GetCurrentContext()).ToLocalChecked();
 
   auto async_info = std::make_unique<AsyncInfo>(
-      context_handle->GetIsolateHandle(), isolate,
+      context_handle->GetIsolateHolder(),
       RemoteHandle(isolate, isolate->GetCurrentContext()),
       RemoteHandle(isolate, resolver));
   std::string script = *v8::String::Utf8Value(isolate, info[0]);
