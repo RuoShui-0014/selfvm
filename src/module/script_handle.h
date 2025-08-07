@@ -14,7 +14,7 @@ class ContextHandle;
 
 using ScriptId = v8::UnboundScript*;
 
-class ScriptHandle : public ScriptWrappable {
+class ScriptHandle final : public ScriptWrappable {
  public:
   explicit ScriptHandle(IsolateHandle* isolate_handle, ScriptId address);
   ~ScriptHandle() override;

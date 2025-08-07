@@ -12,7 +12,7 @@
 
 namespace svm {
 
-class ScriptTask final : public SyncFastTask<std::pair<uint8_t*, size_t>> {
+class ScriptTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
  public:
   ScriptTask(ContextHandle* context_handle,
              std::string script,
@@ -24,7 +24,6 @@ class ScriptTask final : public SyncFastTask<std::pair<uint8_t*, size_t>> {
 
   void Run() override {
     v8::Isolate* isolate = context_handle_->GetIsolateSel();
-    v8::HandleScope source_scope(isolate);
     v8::Local<v8::Context> context = context_handle_->GetContext();
     v8::Context::Scope context_scope{context};
 
@@ -163,7 +162,7 @@ std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script,
                                            std::move(filename));
   auto future = task->GetFuture();
   isolate_holder_->PostTaskToSel(std::move(task));
-  return future->get();
+  return future.get();
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,

@@ -168,6 +168,20 @@ inline void InstallExposedConstructs(
   }
 }
 
+inline void ObjectAddFunction(v8::Local<v8::Object> target,
+                       const char* name,
+                       int length,
+                       v8::FunctionCallback callback) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Local<v8::FunctionTemplate> function_template = v8::FunctionTemplate::New(
+      isolate, callback, v8::Local<v8::Value>(), v8::Local<v8::Signature>(),
+      length, v8::ConstructorBehavior::kThrow);
+  function_template->SetClassName(toString(isolate, name));
+  target->Set(context, toString(isolate, name),
+              function_template->GetFunction(context).ToLocalChecked());
+}
+
 template <typename T>
 class RemoteHandle;
 

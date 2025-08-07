@@ -13,7 +13,7 @@ namespace svm {
 
 class Scheduler;
 
-class PerIsolateData {
+class PerIsolateData final {
   using V8TemplateMap =
       std::unordered_map<const void*, v8::Eternal<v8::Template>>;
 

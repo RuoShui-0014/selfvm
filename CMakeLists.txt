@@ -5,7 +5,9 @@ project(${PROJECT_NAME} VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(${PROJECT_NAME} SHARED
-    src/base/raw_ptr.h)
+    src/base/raw_ptr.h
+    src/isolate/inspector_agent.cpp
+    src/isolate/inspector_agent.h)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${PROJECT_NAME} PRIVATE

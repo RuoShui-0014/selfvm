@@ -190,10 +190,6 @@ IsolateHandle::IsolateHandle(IsolateParams& params)
     : isolate_holder_(std::make_shared<IsolateHolder>(params)) {}
 
 IsolateHandle::~IsolateHandle() {
-  if (session_handle_) {
-    session_handle_->Release();
-  }
-
 #ifdef DEBUG
   std::cout << "~IsolateHandle()" << std::endl;
 #endif
@@ -236,10 +232,6 @@ Scheduler* IsolateHandle::GetSchedulerSel() const {
 
 Scheduler* IsolateHandle::GetSchedulerPar() const {
   return isolate_holder_->GetSchedulerPar();
-}
-
-void IsolateHandle::AddDebugContext(ContextHandle* context) const {
-  session_handle_->AddContext(context);
 }
 
 ContextHandle* IsolateHandle::CreateContext() {

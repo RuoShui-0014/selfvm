@@ -1,11 +1,11 @@
-const svm = require('../self-vm');
+const { svm } = require('../self-vm');
 
 const isolate = new svm.Isolate();
 
 const ctx = isolate.context
 
 // context可通过eval进行代码的同步运行
-let times = 1000;
+let times = 10000;
 console.time("eval sync")
 for (let i = 0; i < times; i++) {
     try {

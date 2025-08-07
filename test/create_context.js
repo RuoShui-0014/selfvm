@@ -1,4 +1,4 @@
-const svm = require("../self-vm")
+const { svm } = require('../self-vm');
 
 const isolate = new svm.Isolate();
 

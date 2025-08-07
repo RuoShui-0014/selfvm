@@ -1,6 +1,11 @@
 declare module SelfVm {
     export function gc(): void;
 
+    export function sessionDispatchMessage(port: number, message: string): void;
+
+    export function sessionDispose(port: number): void;
+
+
     export class Isolate {
         /**
          * 创建一个新的 Isolate 实例
@@ -85,24 +90,14 @@ declare module SelfVm {
 
     export class Session {
         /**
+         * 连接至会话端口
+         */
+        connect(port: number): void
+
+        /**
          * 添加需要调试的context
          */
-        addContext(context: Context): void;
-
-        /**
-         * 分发从客户端接收到的协议数据
-         */
-        dispatchMessage(msg: string): void;
-
-        /**
-         * 发送协议数据到客户端的回调
-         */
-        onResponse: (msg: string) => {};
-
-        /**
-         * 发送协议数据到客户端的回调
-         */
-        onNotification: (msg: string) => {};
+        addContext(context: Context, session_name: string): void;
 
         /**
          * 运行代码异步获取结果

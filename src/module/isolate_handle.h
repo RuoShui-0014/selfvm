@@ -17,7 +17,7 @@ class SessionHandle;
 struct IsolateParams;
 class AsyncInfo;
 
-class IsolateHandle : public ScriptWrappable {
+class IsolateHandle final : public ScriptWrappable {
  public:
   using ContextId = v8::Context*;
   using ScriptId = v8::UnboundScript*;
@@ -36,8 +36,6 @@ class IsolateHandle : public ScriptWrappable {
 
   v8::Local<v8::Context> GetContext(ContextId address) const;
   v8::Local<v8::UnboundScript> GetScript(ScriptId address) const;
-
-  void AddDebugContext(ContextHandle* context) const;
 
   /*********************** js interface *************************/
   ContextHandle* GetContextHandle();

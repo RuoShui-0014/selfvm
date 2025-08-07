@@ -36,13 +36,13 @@ class IsolateHolder {
   void PostHandleTaskToSel(std::unique_ptr<v8::Task> task) const;
   void PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
                             double delay_in_seconds) const;
+  void PostInterruptTaskToSel(std::unique_ptr<v8::Task> task) const;
 
   void PostTaskToPar(std::unique_ptr<v8::Task> task) const;
   void PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const;
   void PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                             double delay_in_seconds) const;
-
-  void PostInterruptTask(std::unique_ptr<v8::Task> task) const;
+  void PostInterruptTaskToPar(std::unique_ptr<v8::Task> task) const;
 
   ContextId CreateContext();
   v8::Local<v8::Context> GetContext(ContextId address);

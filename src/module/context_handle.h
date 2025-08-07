@@ -18,7 +18,7 @@ class AsyncInfo;
 
 using ContextId = v8::Context*;
 
-class ContextHandle : public ScriptWrappable {
+class ContextHandle final : public ScriptWrappable {
  public:
   explicit ContextHandle(IsolateHandle* isolate_handle, ContextId address);
   ~ContextHandle() override;

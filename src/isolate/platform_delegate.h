@@ -4,7 +4,7 @@
 #include <uv.h>
 
 namespace svm {
-class PlatformDelegate {
+class PlatformDelegate final {
  public:
   explicit PlatformDelegate(node::MultiIsolatePlatform* node_platform)
       : node_platform{node_platform} {}

@@ -19,7 +19,6 @@ class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
 
   void Run() override {
     v8::Isolate* isolate = context_handle_->GetIsolateSel();
-    v8::HandleScope handle_scope(isolate);
     v8::Local<v8::Context> context = context_handle_->GetContext();
     v8::Context::Scope scope(context);
 
@@ -27,10 +26,9 @@ class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
     v8::Local<v8::UnboundScript> unbound_script =
         script_handle_->GetUnboundScript();
     v8::Local<v8::Script> script = unbound_script->BindToCurrentContext();
-    v8::MaybeLocal<v8::Value> maybe_result = script->Run(context);
-    if (!maybe_result.IsEmpty()) {
-      ExternalData::SourceData data{isolate, context,
-                                    maybe_result.ToLocalChecked()};
+    v8::Local<v8::Value> result;
+    if (script->Run(context).ToLocal(&result)) {
+      ExternalData::SourceData data{isolate, context, result};
       SetResult(ExternalData::SerializerSync(data));
       return;
     }

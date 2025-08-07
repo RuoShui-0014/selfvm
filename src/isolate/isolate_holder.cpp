@@ -34,6 +34,12 @@ IsolateHolder::IsolateHolder(IsolateParams& params)
   PlatformDelegate::RegisterIsolate(isolate_sel_, scheduler_sel_->GetLoop());
   v8::Isolate::Initialize(isolate_sel_, create_params);
   scheduler_sel_->StartLoop();
+  isolate_sel_->AddNearHeapLimitCallback(
+      [](void* data, size_t current_limit, size_t initial_limit) {
+        // 增加100MB堆限制
+        return current_limit + 100 * 1024 * 1024;
+      },
+      nullptr);
   per_isolate_data_ =
       std::make_unique<PerIsolateData>(isolate_sel_, scheduler_sel_.get());
 
@@ -62,6 +68,10 @@ void IsolateHolder::PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
   scheduler_sel_->TaskRunner()->PostDelayedTask(std::move(task),
                                                 delay_in_seconds);
 }
+void IsolateHolder::PostInterruptTaskToSel(
+    std::unique_ptr<v8::Task> task) const {
+  scheduler_sel_->PostInterruptTask(std::move(task));
+}
 
 void IsolateHolder::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
   scheduler_par_->PostTask(std::move(task));
@@ -74,9 +84,9 @@ void IsolateHolder::PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
   scheduler_par_->TaskRunner()->PostDelayedTask(std::move(task),
                                                 delay_in_seconds);
 }
-
-void IsolateHolder::PostInterruptTask(std::unique_ptr<v8::Task> task) const {
-  scheduler_sel_->PostInterruptTask(std::move(task));
+void IsolateHolder::PostInterruptTaskToPar(
+    std::unique_ptr<v8::Task> task) const {
+  scheduler_par_->PostInterruptTask(std::move(task));
 }
 
 static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,

@@ -5,31 +5,33 @@
 #include <map>
 
 #include "../utils/utils.h"
+#include "inspector_agent.h"
 #include "platform_delegate.h"
 
 namespace svm {
 
 namespace {
 std::mutex mutex;
-std::map<v8::Isolate* const, uv_loop_t*> isolate_loop_map;
+std::map<v8::Isolate*, Scheduler*> isolate_loop_map;
 }  // namespace
 
-Scheduler::Scheduler(v8::Isolate* isolate) : isolate_(isolate) {}
+Scheduler::Scheduler(v8::Isolate* isolate) : isolate_(isolate) {
+  RegisterIsolateScheduler(isolate_, this);
+}
 Scheduler::~Scheduler() {
-  isolate_ = nullptr;
-  uv_loop_ = nullptr;
-  uv_task_ = nullptr;
+  UnregisterIsolateScheduler(isolate_);
 }
 
-void Scheduler::RegisterIsolateLoop(v8::Isolate* isolate, uv_loop_t* loop) {
+void Scheduler::RegisterIsolateScheduler(v8::Isolate* isolate,
+                                         Scheduler* loop) {
   std::lock_guard lock(mutex);
   isolate_loop_map.emplace(isolate, loop);
 }
-void Scheduler::UnregisterIsolateLoop(v8::Isolate* isolate) {
+void Scheduler::UnregisterIsolateScheduler(v8::Isolate* isolate) {
   std::lock_guard lock(mutex);
   isolate_loop_map.erase(isolate);
 }
-uv_loop_t* Scheduler::GetIsolateLoop(v8::Isolate* const isolate) {
+Scheduler* Scheduler::GetIsolateScheduler(v8::Isolate* const isolate) {
   const auto it = isolate_loop_map.find(isolate);
   if (it != isolate_loop_map.end()) {
     return it->second;
@@ -76,11 +78,10 @@ void Scheduler::PostInterruptTask(std::unique_ptr<v8::Task> task) {
   uv_async_send(uv_task_);
 }
 
-void Scheduler::RunForegroundTask(std::unique_ptr<v8::Task> task) {
+void Scheduler::RunForegroundTask(std::unique_ptr<v8::Task> task) const {
   if (!running.load()) {
     return;
   }
-  v8::HandleScope handle_scope(isolate_);
   task->Run();
 }
 
@@ -139,8 +140,6 @@ UVSchedulerSel::UVSchedulerSel(
   uv_loop_ = new uv_loop_t;
   uv_loop_init(uv_loop_);
 
-  Scheduler::RegisterIsolateLoop(isolate_, uv_loop_);
-
   uv_task_ = new uv_async_t;
   uv_async_init(uv_loop_, uv_task_, [](uv_async_t* handle) {
     UVSchedulerSel* scheduler = static_cast<UVSchedulerSel*>(handle->data);
@@ -160,6 +159,24 @@ UVSchedulerSel::~UVSchedulerSel() {
     thread_.join();
   }
 }
+void UVSchedulerSel::AgentConnect(int port) const {
+  inspector_agent_->Connect(port);
+}
+void UVSchedulerSel::AgentDisconnect() const {
+  inspector_agent_->Disconnect();
+}
+void UVSchedulerSel::AgentAddContext(v8::Local<v8::Context> context,
+                                     const std::string& name) const {
+  inspector_agent_->AddContext(context, name);
+}
+
+void UVSchedulerSel::AgentDispatchProtocolMessage(std::string message) const {
+  inspector_agent_->DispatchProtocolMessage(std::move(message));
+}
+void UVSchedulerSel::AgentDispose() const {
+  inspector_agent_->Dispose();
+}
+
 void UVSchedulerSel::StartLoop() {
   thread_ = std::thread([this]() {
     {
@@ -170,14 +187,16 @@ void UVSchedulerSel::StartLoop() {
       isolate_data_ = node::CreateIsolateData(
           isolate_, uv_loop_, PlatformDelegate::GetNodePlatform(),
           allocator_.get());
+      inspector_agent_ = std::make_unique<InspectorAgent>(isolate_, this);
 
       running.store(true);
       uv_run(uv_loop_, UV_RUN_DEFAULT);
+
+      inspector_agent_.reset();
     }
 
     node::FreeIsolateData(isolate_data_);
     PlatformDelegate::UnregisterIsolate(isolate_);
-    Scheduler::UnregisterIsolateLoop(isolate_);
     isolate_->Dispose();
 
     uv_close(reinterpret_cast<uv_handle_t*>(uv_task_), [](uv_handle_t* handle) {
@@ -201,8 +220,13 @@ void UVSchedulerSel::RunInterruptTasks() {
   }
 }
 
-UVSchedulerPar::UVSchedulerPar(v8::Isolate* isolate) : Scheduler(isolate) {
-  uv_loop_ = GetIsolateLoop(isolate_);
+UVSchedulerPar* UVSchedulerPar::nodejs_scheduler{};
+
+UVSchedulerPar::UVSchedulerPar(v8::Isolate* isolate, uv_loop_t* uv_loop)
+    : Scheduler(isolate) {
+  nodejs_scheduler = this;
+
+  uv_loop_ = uv_loop;
   uv_task_ = new uv_async_t;
   uv_async_init(uv_loop_, uv_task_, [](uv_async_t* handle) {
     UVSchedulerPar* scheduler = static_cast<UVSchedulerPar*>(handle->data);
