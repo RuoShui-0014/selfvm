@@ -22,7 +22,7 @@ class InspectorAgent final : public v8_inspector::V8InspectorClient,
   ~InspectorAgent() override;
 
   void Connect(int port);
-  void Disconnect() const;
+  void Disconnect();
   void AddContext(v8::Local<v8::Context> context,
                   const std::string& name) const;
   void DispatchProtocolMessage(const std::string& message) const;
@@ -45,6 +45,7 @@ class InspectorAgent final : public v8_inspector::V8InspectorClient,
   v8::Isolate* isolate_{};
   Scheduler* scheduler_{};
   int port_;
+  bool is_connected_ = false;
 
   std::atomic_bool waiting_for_frontend_{false};
   std::atomic_bool waiting_for_resume_{false};

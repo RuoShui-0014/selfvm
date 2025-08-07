@@ -79,8 +79,9 @@ void InspectorAgent::Connect(int port) {
       std::make_unique<ConnectTask>(port));
   port_ = port;
   RegisterAgent(port, scheduler_);
+  is_connected_ = true;
 }
-void InspectorAgent::Disconnect() const {
+void InspectorAgent::Disconnect() {
   if (!UVSchedulerPar::nodejs_scheduler) {
     return;
   }
@@ -111,10 +112,14 @@ void InspectorAgent::Disconnect() const {
   UVSchedulerPar::nodejs_scheduler->PostInterruptTask(
       std::make_unique<DisconnectTask>(port_));
   UnregisterAgent(port_);
+  is_connected_ = false;
 }
 
 void InspectorAgent::AddContext(v8::Local<v8::Context> context,
                                 const std::string& name) const {
+  if (!is_connected_) {
+    return;
+  }
   v8_inspector::StringView contextName{
       reinterpret_cast<const uint8_t*>(name.data()), name.length()};
   inspector_->contextCreated(
