@@ -21,8 +21,8 @@ class ExternalData {
     v8::Local<v8::Value>* result;
   };
 
-  static std::pair<uint8_t*, size_t> SerializerSync(SourceData& source);
-  static std::pair<uint8_t*, size_t> SerializerAsync(SourceData& source);
+  static std::pair<uint8_t*, size_t> SerializerSync(const SourceData& source);
+  static std::pair<uint8_t*, size_t> SerializerAsync(const SourceData& source);
 
   static v8::Local<v8::Value> DeserializerSync(
       v8::Isolate* isolate,

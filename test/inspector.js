@@ -8,7 +8,7 @@ const ctx = isolate.context
 
 // 创建调试会话
 const session = isolate.session
-// 连接会话
+// 连接至会话端口
 session.connect(10001);
 // 将需要调试的context加入会话
 session.addContext(ctx, "session_01");

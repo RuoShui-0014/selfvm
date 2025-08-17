@@ -34,7 +34,7 @@ Scheduler* InspectorAgent::GetAgent(int port) {
 }
 
 InspectorAgent::InspectorAgent(v8::Isolate* isolate, Scheduler* scheduler)
-    : isolate_(isolate), scheduler_(scheduler), port_(0) {}
+    : isolate_{isolate}, scheduler_{scheduler}, port_(0) {}
 InspectorAgent::~InspectorAgent() {
 #ifdef DEBUG
   std::cout << "~InspectorAgent()" << std::endl;
@@ -54,15 +54,15 @@ void InspectorAgent::Connect(int port) {
 
   class ConnectTask : public v8::Task {
    public:
-    explicit ConnectTask(int port) : port_(port) {}
+    explicit ConnectTask(int port) : port_{port} {}
     ~ConnectTask() override = default;
 
     void Run() override {
-      v8::Isolate* isolate = v8::Isolate::GetCurrent();
-      v8::HandleScope scope(isolate);
-      v8::Local<v8::Context> context = isolate->GetCurrentContext();
+      v8::Isolate* isolate{v8::Isolate::GetCurrent()};
+      v8::HandleScope scope{isolate};
+      v8::Local context{isolate->GetCurrentContext()};
 
-      v8::Local<v8::Value> callback;
+      v8::Local<v8::Value> callback{};
       if (context->Global()
               ->Get(context, toString(isolate, "sessionConnect"))
               .ToLocal(&callback) &&
@@ -88,15 +88,15 @@ void InspectorAgent::Disconnect() {
 
   class DisconnectTask : public v8::Task {
    public:
-    explicit DisconnectTask(int port) : port_(port) {}
+    explicit DisconnectTask(int port) : port_{port} {}
     ~DisconnectTask() override = default;
 
     void Run() override {
-      v8::Isolate* isolate = v8::Isolate::GetCurrent();
-      v8::HandleScope scope(isolate);
-      v8::Local<v8::Context> context = isolate->GetCurrentContext();
+      v8::Isolate* isolate{v8::Isolate::GetCurrent()};
+      v8::HandleScope scope{isolate};
+      v8::Local context{isolate->GetCurrentContext()};
 
-      v8::Local<v8::Value> callback;
+      v8::Local<v8::Value> callback{};
       if (context->Global()
               ->Get(context, toString(isolate, "sessionDisconnect"))
               .ToLocal(&callback) &&
@@ -144,7 +144,7 @@ void InspectorAgent::runMessageLoopOnPause(int context_group_id) {
   waiting_for_resume_.store(true);
 
   while (waiting_for_frontend_.load() && waiting_for_resume_.load()) {
-    UVSchedulerSel* scheduler = static_cast<UVSchedulerSel*>(scheduler_);
+    UVSchedulerSel* scheduler{static_cast<UVSchedulerSel*>(scheduler_)};
     scheduler->RunInterruptTasks();
   }
 
@@ -165,25 +165,25 @@ void InspectorAgent::sendResponse(
     explicit SendResponseTask(
         int port,
         std::unique_ptr<v8_inspector::StringBuffer> message)
-        : port_(port), message_(std::move(message)) {}
+        : port_{port}, message_{std::move(message)} {}
     ~SendResponseTask() override = default;
 
     void Run() override {
-      v8::Isolate* isolate = v8::Isolate::GetCurrent();
-      v8::HandleScope handle_scope(isolate);
-      v8::Local<v8::Context> context = isolate->GetCurrentContext();
-      v8::Context::Scope ctx_scope(context);
+      v8::Isolate* isolate{v8::Isolate::GetCurrent()};
+      v8::HandleScope handle_scope{isolate};
+      v8::Local context{isolate->GetCurrentContext()};
+      v8::Context::Scope context_scope{context};
 
-      auto stringView = message_->string();
-      int length = static_cast<int>(stringView.length());
-      v8::Local<v8::String> message =
+      auto stringView{message_->string()};
+      int length{static_cast<int>(stringView.length())};
+      v8::Local message{
           (stringView.is8Bit()
                ? v8::String::NewFromOneByte(isolate, stringView.characters8(),
                                             v8::NewStringType::kNormal, length)
                : v8::String::NewFromTwoByte(isolate, stringView.characters16(),
                                             v8::NewStringType::kNormal, length))
-              .ToLocalChecked();
-      v8::Local<v8::Value> callback;
+              .ToLocalChecked()};
+      v8::Local<v8::Value> callback{};
       if (context->Global()
               ->Get(context, toString(isolate, "sessionOnResponse"))
               .ToLocal(&callback)) {
@@ -208,25 +208,25 @@ void InspectorAgent::sendNotification(
     explicit SendNotificationTask(
         int port,
         std::unique_ptr<v8_inspector::StringBuffer> message)
-        : port_(port), message_(std::move(message)) {}
+        : port_{port}, message_{std::move(message)} {}
     ~SendNotificationTask() override = default;
 
     void Run() override {
-      v8::Isolate* isolate = v8::Isolate::GetCurrent();
-      v8::HandleScope handle_scope(isolate);
-      v8::Local<v8::Context> context = isolate->GetCurrentContext();
-      v8::Context::Scope ctx_scope(context);
+      v8::Isolate* isolate{v8::Isolate::GetCurrent()};
+      v8::HandleScope handle_scope{isolate};
+      v8::Local context{isolate->GetCurrentContext()};
+      v8::Context::Scope context_scope{context};
 
-      auto stringView = message_->string();
-      int length = static_cast<int>(stringView.length());
-      v8::Local<v8::String> message =
+      auto stringView{message_->string()};
+      int length{static_cast<int>(stringView.length())};
+      v8::Local message{
           (stringView.is8Bit()
                ? v8::String::NewFromOneByte(isolate, stringView.characters8(),
                                             v8::NewStringType::kNormal, length)
                : v8::String::NewFromTwoByte(isolate, stringView.characters16(),
                                             v8::NewStringType::kNormal, length))
-              .ToLocalChecked();
-      v8::Local<v8::Value> callback;
+              .ToLocalChecked()};
+      v8::Local<v8::Value> callback{};
       if (context->Global()
               ->Get(context, toString(isolate, "sessionOnNotification"))
               .ToLocal(&callback)) {

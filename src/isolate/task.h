@@ -102,7 +102,7 @@ class AsyncInfo {
 class AsyncTask : public v8::Task {
  public:
   explicit AsyncTask(std::unique_ptr<AsyncInfo> info)
-      : info_(std::move(info)) {}
+      : info_{std::move(info)} {}
   ~AsyncTask() override = default;
 
  protected:

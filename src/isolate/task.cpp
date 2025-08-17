@@ -8,9 +8,7 @@ namespace svm {
 AsyncInfo::AsyncInfo(std::shared_ptr<IsolateHolder> isolate_holder,
                      RemoteHandle<v8::Context> context,
                      RemoteHandle<v8::Promise::Resolver> resolver)
-    : isolate_holder_(isolate_holder),
-      context(context),
-      resolver(resolver) {
+    : isolate_holder_{isolate_holder}, context{context}, resolver{resolver} {
   isolate_holder_->GetSchedulerPar()->KeepAlive();
 }
 AsyncInfo::~AsyncInfo() {

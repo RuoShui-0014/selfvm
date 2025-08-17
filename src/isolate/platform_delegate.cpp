@@ -8,9 +8,9 @@ PlatformDelegate delegate;
 }
 
 void PlatformDelegate::InitializeDelegate() {
-  auto context = v8::Isolate::GetCurrent()->GetCurrentContext();
-  auto* node_platform =
-      node::GetMultiIsolatePlatform(node::GetCurrentEnvironment(context));
+  auto context{v8::Isolate::GetCurrent()->GetCurrentContext()};
+  auto* node_platform{
+      node::GetMultiIsolatePlatform(node::GetCurrentEnvironment(context))};
   delegate = PlatformDelegate{node_platform};
 }
 

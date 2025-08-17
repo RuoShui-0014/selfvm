@@ -15,7 +15,7 @@ std::mutex mutex;
 std::map<v8::Isolate*, Scheduler*> isolate_loop_map;
 }  // namespace
 
-Scheduler::Scheduler(v8::Isolate* isolate) : isolate_(isolate) {
+Scheduler::Scheduler(v8::Isolate* isolate) : isolate_{isolate} {
   RegisterIsolateScheduler(isolate_, this);
 }
 Scheduler::~Scheduler() {
@@ -24,15 +24,15 @@ Scheduler::~Scheduler() {
 
 void Scheduler::RegisterIsolateScheduler(v8::Isolate* isolate,
                                          Scheduler* loop) {
-  std::lock_guard lock(mutex);
+  std::lock_guard lock{mutex};
   isolate_loop_map.emplace(isolate, loop);
 }
 void Scheduler::UnregisterIsolateScheduler(v8::Isolate* isolate) {
-  std::lock_guard lock(mutex);
+  std::lock_guard lock{mutex};
   isolate_loop_map.erase(isolate);
 }
 Scheduler* Scheduler::GetIsolateScheduler(v8::Isolate* const isolate) {
-  const auto it = isolate_loop_map.find(isolate);
+  const auto it{isolate_loop_map.find(isolate)};
   if (it != isolate_loop_map.end()) {
     return it->second;
   }
@@ -51,28 +51,28 @@ std::shared_ptr<v8::TaskRunner> Scheduler::TaskRunner() {
 
 void Scheduler::PostTask(std::unique_ptr<v8::Task> task) {
   {
-    std::lock_guard lock(mutex_task_);
+    std::lock_guard lock{mutex_task_};
     tasks_.push(std::move(task));
   }
   uv_async_send(uv_task_);
 }
 void Scheduler::PostDelayedTask(std::unique_ptr<v8::Task> task, double delay) {
   {
-    std::lock_guard lock(mutex_task_);
+    std::lock_guard lock{mutex_task_};
     tasks_.push(std::move(task));
   }
   uv_async_send(uv_task_);
 }
 void Scheduler::PostHandleTask(std::unique_ptr<v8::Task> task) {
   {
-    std::lock_guard lock(mutex_task_);
+    std::lock_guard lock{mutex_task_};
     tasks_handle_.push(std::move(task));
   }
   uv_async_send(uv_task_);
 }
 void Scheduler::PostInterruptTask(std::unique_ptr<v8::Task> task) {
   {
-    std::lock_guard lock(mutex_task_);
+    std::lock_guard lock{mutex_task_};
     tasks_interrupts_.push(std::move(task));
   }
   uv_async_send(uv_task_);
@@ -89,7 +89,7 @@ void Scheduler::FlushForegroundTasksInternal() {
   while (true) {
     TaskQueue tasks, tasks_handle, tasks_interrupts;
     {
-      std::lock_guard lock(mutex_task_);
+      std::lock_guard lock{mutex_task_};
       tasks = std::exchange(tasks_, {});
       tasks_handle = std::exchange(tasks_handle_, {});
       tasks_interrupts = std::exchange(tasks_interrupts_, {});
@@ -99,7 +99,7 @@ void Scheduler::FlushForegroundTasksInternal() {
     }
 
     {
-      v8::HandleScope handle_scope(isolate_);
+      v8::HandleScope handle_scope{isolate_};
 
       //
       while (!tasks_interrupts.empty()) {
@@ -136,7 +136,7 @@ void Scheduler::WillDie() {
 UVSchedulerSel::UVSchedulerSel(
     v8::Isolate* isolate,
     std::unique_ptr<node::ArrayBufferAllocator> allocator)
-    : Scheduler(isolate), allocator_(std::move(allocator)) {
+    : Scheduler{isolate}, allocator_{std::move(allocator)} {
   uv_loop_ = new uv_loop_t;
   uv_loop_init(uv_loop_);
 
@@ -180,9 +180,9 @@ void UVSchedulerSel::AgentDispose() const {
 void UVSchedulerSel::StartLoop() {
   thread_ = std::thread([this]() {
     {
-      v8::Locker locker(isolate_);
-      v8::Isolate::Scope isolate_scope(isolate_);
-      v8::HandleScope handle_scope(isolate_);
+      v8::Locker locker{isolate_};
+      v8::Isolate::Scope isolate_scope{isolate_};
+      v8::HandleScope handle_scope{isolate_};
 
       isolate_data_ = node::CreateIsolateData(
           isolate_, uv_loop_, PlatformDelegate::GetNodePlatform(),
@@ -210,7 +210,7 @@ void UVSchedulerSel::StartLoop() {
 void UVSchedulerSel::RunInterruptTasks() {
   TaskQueue tasks;
   {
-    std::lock_guard lock(mutex_task_);
+    std::lock_guard lock{mutex_task_};
     tasks = std::exchange(tasks_interrupts_, {});
   }
 
@@ -223,7 +223,7 @@ void UVSchedulerSel::RunInterruptTasks() {
 UVSchedulerPar* UVSchedulerPar::nodejs_scheduler{};
 
 UVSchedulerPar::UVSchedulerPar(v8::Isolate* isolate, uv_loop_t* uv_loop)
-    : Scheduler(isolate) {
+    : Scheduler{isolate} {
   nodejs_scheduler = this;
 
   uv_loop_ = uv_loop;

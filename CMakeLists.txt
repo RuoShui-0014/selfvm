@@ -7,7 +7,9 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(${PROJECT_NAME} SHARED
     src/base/raw_ptr.h
     src/isolate/inspector_agent.cpp
-    src/isolate/inspector_agent.h)
+    src/isolate/inspector_agent.h
+    src/net/request.cpp
+    src/net/request.h)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${PROJECT_NAME} PRIVATE
@@ -74,6 +76,9 @@ target_sources(${PROJECT_NAME} PRIVATE
 
     src/web/local_dom_window.cpp
     src/web/local_dom_window.h
+
+    src/net/request.cpp
+    src/net/request.h
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB})
 

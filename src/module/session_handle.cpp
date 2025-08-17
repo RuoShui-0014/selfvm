@@ -14,8 +14,8 @@
 namespace svm {
 
 SessionHandle::SessionHandle(IsolateHandle* isolate_handle)
-    : isolate_handle_(isolate_handle),
-      isolate_holder_(isolate_handle->GetIsolateHolder()) {}
+    : isolate_handle_{isolate_handle},
+      isolate_holder_{isolate_handle->GetIsolateHolder()} {}
 SessionHandle::~SessionHandle() {
 #ifdef DEBUG
   std::cout << "~SessionHandle()" << std::endl;
@@ -34,7 +34,7 @@ void SessionHandle::Connect(int port) const {
    public:
     ConnectAgentTask(const std::shared_ptr<IsolateHolder>& isolate_holder,
                      int port)
-        : isolate_holder_(isolate_holder), port_(port) {}
+        : isolate_holder_{isolate_holder}, port_{port} {}
     ~ConnectAgentTask() override = default;
 
     void Run() override {
@@ -46,6 +46,7 @@ void SessionHandle::Connect(int port) const {
     std::shared_ptr<IsolateHolder> isolate_holder_;
     int port_;
   };
+
   isolate_holder_->PostInterruptTaskToSel(
       std::make_unique<ConnectAgentTask>(isolate_holder_, port));
 }
@@ -56,16 +57,16 @@ void SessionHandle::AddContext(ContextHandle* context_handle,
     AddContextTask(const std::shared_ptr<IsolateHolder>& isolate_holder,
                    v8::Context* const address,
                    std::string name)
-        : isolate_holder_(isolate_holder),
-          address_(address),
-          name_(std::move(name)) {}
+        : isolate_holder_{isolate_holder},
+          address_{address},
+          name_{std::move(name)} {}
     ~AddContextTask() override = default;
 
     void Run() override {
-      v8::Isolate* isolate = v8::Isolate::GetCurrent();
-      v8::HandleScope handle_scope(isolate);
+      v8::Isolate* isolate{v8::Isolate::GetCurrent()};
+      v8::HandleScope handle_scope{isolate};
 
-      v8::Local<v8::Context> context = isolate_holder_->GetContext(address_);
+      v8::Local context{isolate_holder_->GetContext(address_)};
       static_cast<UVSchedulerSel*>(isolate_holder_->GetSchedulerSel())
           ->AgentAddContext(context, std::move(name_));
       SetResult(true);
@@ -76,9 +77,10 @@ void SessionHandle::AddContext(ContextHandle* context_handle,
     v8::Context* const address_{};
     std::string name_;
   };
-  auto task = std::make_unique<AddContextTask>(
-      isolate_holder_, context_handle->GetContextId(), std::move(name));
-  std::future<bool> future = task->GetFuture();
+
+  auto task{std::make_unique<AddContextTask>(
+      isolate_holder_, context_handle->GetContextId(), std::move(name))};
+  std::future future{task->GetFuture()};
   isolate_holder_->PostTaskToSel(std::move(task));
   future.get();
 }
@@ -87,7 +89,7 @@ void SessionHandle::Dispose() const {
    public:
     explicit DisconnectAgentTask(
         const std::shared_ptr<IsolateHolder>& isolate_holder)
-        : isolate_holder_(isolate_holder) {}
+        : isolate_holder_{isolate_holder} {}
     ~DisconnectAgentTask() override = default;
 
     void Run() override {
@@ -98,6 +100,7 @@ void SessionHandle::Dispose() const {
    private:
     std::shared_ptr<IsolateHolder> isolate_holder_;
   };
+
   isolate_holder_->PostInterruptTaskToSel(
       std::make_unique<DisconnectAgentTask>(isolate_holder_));
 }
@@ -109,28 +112,28 @@ void SessionHandle::Trace(cppgc::Visitor* visitor) const {
 
 ///////////////////////////////////////////////////////////////////////////////
 void ConnectOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Isolate* isolate = info.GetIsolate();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Isolate* isolate{info.GetIsolate()};
+  v8::Local context{isolate->GetCurrentContext()};
 
-  v8::Local<v8::Object> receiver = info.This();
-  SessionHandle* session_handle =
-      ScriptWrappable::Unwrap<SessionHandle>(receiver);
+  v8::Local receiver{info.This()};
+  SessionHandle* session_handle{
+      ScriptWrappable::Unwrap<SessionHandle>(receiver)};
   session_handle->Connect(info[0]->Int32Value(context).FromJust());
 }
 void AddContextOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Object> receiver = info.This();
-  SessionHandle* session_handle =
-      ScriptWrappable::Unwrap<SessionHandle>(receiver);
-  ContextHandle* context_handle =
-      ScriptWrappable::Unwrap<ContextHandle>(info[0].As<v8::Object>());
+  v8::Local receiver{info.This()};
+  SessionHandle* session_handle{
+      ScriptWrappable::Unwrap<SessionHandle>(receiver)};
+  ContextHandle* context_handle{
+      ScriptWrappable::Unwrap<ContextHandle>(info[0].As<v8::Object>())};
   session_handle->AddContext(
       context_handle, *v8::String::Utf8Value(info.GetIsolate(), info[1]));
 }
 void DisposeOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  v8::Local<v8::Object> receiver = info.This();
-  SessionHandle* session_handle =
-      ScriptWrappable::Unwrap<SessionHandle>(receiver);
+  v8::Local receiver{info.This()};
+  SessionHandle* session_handle{
+      ScriptWrappable::Unwrap<SessionHandle>(receiver)};
   session_handle->Dispose();
 }
 
@@ -149,8 +152,7 @@ void V8SessionHandle::InstallInterfaceTemplate(
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
 
-  v8::Local<v8::Signature> signature =
-      v8::Local<v8::Signature>::Cast(interface_template);
+  v8::Local signature{v8::Local<v8::Signature>::Cast(interface_template)};
   InstallOperations(isolate, interface_template, signature, operas);
 }
 

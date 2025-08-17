@@ -12,20 +12,19 @@
 namespace svm {
 
 IsolateHolder::IsolateHolder(IsolateParams& params)
-    : isolate_params_(params), isolate_par_{params.isolate_par} {
+    : isolate_params_{params}, isolate_par_{params.isolate_par} {
   v8::ResourceConstraints rc;
-  size_t young_space_in_kb = static_cast<size_t>(
+  size_t young_space_in_kb{static_cast<size_t>(
       std::pow(2, std::min(sizeof(void*) >= 8 ? 4.0 : 3.0,
                            isolate_params_.memory_limit / 128.0) +
-                      10));
-  size_t old_generation_size_in_mb = isolate_params_.memory_limit;
+                      10))};
+  size_t old_generation_size_in_mb{isolate_params_.memory_limit};
   rc.set_max_young_generation_size_in_bytes(young_space_in_kb * 1024);
   rc.set_max_old_generation_size_in_bytes(old_generation_size_in_mb * 1024 *
                                           1024);
 
-  std::unique_ptr<node::ArrayBufferAllocator> allocator =
-      node::ArrayBufferAllocator::Create();
-  v8::Isolate::CreateParams create_params;
+  auto allocator{node::ArrayBufferAllocator::Create()};
+  v8::Isolate::CreateParams create_params{};
   create_params.array_buffer_allocator = allocator.get();
 
   isolate_sel_ = v8::Isolate::Allocate();
@@ -94,18 +93,16 @@ static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
                                               v8::StartupData /*payload*/,
                                               void* /*data*/) {}
 ContextId IsolateHolder::CreateContext() {
-  v8::Isolate::Scope isolate_scope(isolate_sel_);
-  v8::HandleScope handle_scope(isolate_sel_);
+  v8::Isolate::Scope isolate_scope{isolate_sel_};
+  v8::HandleScope handle_scope{isolate_sel_};
 
-  v8::Local<v8::ObjectTemplate> object_template =
-      V8Window::GetWrapperTypeInfo()
-          ->GetV8ClassTemplate(isolate_sel_)
-          .As<v8::FunctionTemplate>()
-          ->InstanceTemplate();
+  v8::Local object_template{V8Window::GetWrapperTypeInfo()
+                                ->GetV8ClassTemplate(isolate_sel_)
+                                .As<v8::FunctionTemplate>()
+                                ->InstanceTemplate()};
 
-  v8::Local<v8::Context> context =
-      v8::Context::New(isolate_sel_, nullptr, object_template, {},
-                       &DeserializeInternalFieldsCallback);
+  v8::Local context{v8::Context::New(isolate_sel_, nullptr, object_template, {},
+                                     &DeserializeInternalFieldsCallback)};
   ScriptWrappable::Wrap(
       context->Global(),
       MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_sel_, this));
@@ -118,12 +115,12 @@ ContextId IsolateHolder::CreateContext() {
 }
 
 void IsolateHolder::ClearContext(ContextId address) {
-  std::lock_guard lock(mutex_context_map_);
+  std::lock_guard lock{mutex_context_map_};
   context_map_.erase(address);
 }
 
 v8::Local<v8::Context> IsolateHolder::GetContext(ContextId address) {
-  const auto it = context_map_.find(address);
+  const auto it{context_map_.find(address)};
   if (it != context_map_.end()) {
     return it->second.Get(isolate_sel_);
   }
@@ -134,14 +131,14 @@ void IsolateHolder::CreateScript(v8::Local<v8::UnboundScript> unbound_script) {
                               RemoteHandle{isolate_sel_, unbound_script});
 }
 v8::Local<v8::UnboundScript> IsolateHolder::GetScript(ScriptId address) {
-  const auto it = unbound_script_map_.find(address);
+  const auto it{unbound_script_map_.find(address)};
   if (it != unbound_script_map_.end()) {
     return it->second.Get(isolate_sel_);
   }
   return {};
 }
 void IsolateHolder::ClearScript(ScriptId address) {
-  std::lock_guard lock(mutex_unbound_script_map_);
+  std::lock_guard lock{mutex_unbound_script_map_};
   unbound_script_map_.erase(address);
 }
 

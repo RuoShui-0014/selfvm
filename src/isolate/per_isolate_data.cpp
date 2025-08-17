@@ -21,17 +21,16 @@ PerIsolateData::~PerIsolateData() {
 }
 
 v8::Local<v8::Template> PerIsolateData::FindV8Template(const void* key) {
-  auto result = template_map_.find(key);
+  auto result{template_map_.find(key)};
   if (result != template_map_.end()) {
     return result->second.Get(isolate_);
   }
-  return v8::Local<v8::Template>();
+  return v8::Local<v8::Template>{};
 }
 
 void PerIsolateData::AddV8Template(const void* key,
                                    v8::Local<v8::Template> value) {
-  auto result =
-      template_map_.emplace(key, v8::Eternal<v8::Template>(isolate_, value));
+  template_map_.emplace(key, v8::Eternal<v8::Template>(isolate_, value));
 }
 
 void PerIsolateData::Reset(v8::Isolate* isolate) {

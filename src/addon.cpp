@@ -3,6 +3,7 @@
 #include "isolate/platform_delegate.h"
 #include "isolate/scheduler.h"
 #include "module/isolate_handle.h"
+// #include "net/request.h"
 #include "utils/utils.h"
 
 namespace svm {
@@ -16,7 +17,7 @@ void SessionDispatchMessageCallback(
   class SessionDispatchMessage : public v8::Task {
    public:
     SessionDispatchMessage(Scheduler* scheduler, std::string message)
-        : scheduler_(scheduler), message_(std::move(message)) {}
+        : scheduler_{scheduler}, message_{std::move(message)} {}
     ~SessionDispatchMessage() override = default;
 
     void Run() override {
@@ -32,11 +33,11 @@ void SessionDispatchMessageCallback(
   if (info.Length() < 2 && !info[0]->IsNumber() && !info[1]->IsString()) {
     return;
   }
-  v8::Isolate* isolate = info.GetIsolate();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Isolate* isolate{info.GetIsolate()};
+  v8::Local context{isolate->GetCurrentContext()};
 
-  int port = info[0]->Int32Value(context).FromJust();
-  std::string message = *v8::String::Utf8Value(isolate, info[1]);
+  int port{info[0]->Int32Value(context).FromJust()};
+  std::string message{*v8::String::Utf8Value(isolate, info[1])};
   if (Scheduler* scheduler = InspectorAgent::GetAgent(port)) {
     scheduler->PostInterruptTask(std::make_unique<SessionDispatchMessage>(
         scheduler, std::move(message)));
@@ -46,7 +47,7 @@ void SessionDispatchMessageCallback(
 void SessionDisposeCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   class DisposeAgentTask : public v8::Task {
    public:
-    explicit DisposeAgentTask(Scheduler* scheduler) : scheduler_(scheduler) {}
+    explicit DisposeAgentTask(Scheduler* scheduler) : scheduler_{scheduler} {}
     ~DisposeAgentTask() override = default;
 
     void Run() override {
@@ -60,10 +61,10 @@ void SessionDisposeCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1 && !info[0]->IsNumber()) {
     return;
   }
-  v8::Isolate* isolate = info.GetIsolate();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Isolate* isolate{info.GetIsolate()};
+  v8::Local context{isolate->GetCurrentContext()};
 
-  int port = info[0]->Int32Value(context).FromJust();
+  int port{info[0]->Int32Value(context).FromJust()};
   if (Scheduler* scheduler = InspectorAgent::GetAgent(port)) {
     scheduler->PostInterruptTask(std::make_unique<DisposeAgentTask>(scheduler));
   }
@@ -86,8 +87,8 @@ UVSchedulerPar* g_scheduler_par{nullptr};
 PerIsolateData* g_per_isolate_data{nullptr};
 
 void Initialize(v8::Local<v8::Object> exports) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::Isolate* isolate{v8::Isolate::GetCurrent()};
+  v8::Local context{isolate->GetCurrentContext()};
 
   // init nodejs env
   PlatformDelegate::InitializeDelegate();
@@ -97,6 +98,10 @@ void Initialize(v8::Local<v8::Object> exports) {
 
   //
   CreateNodeEx(isolate, context, exports);
+
+  /* test */
+  // Request* request = new Request(node::GetCurrentEventLoop(isolate), "");
+  // request->Connect();
 
   // release some object
   node::AddEnvironmentCleanupHook(

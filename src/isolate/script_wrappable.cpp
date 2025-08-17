@@ -14,7 +14,7 @@ void ScriptWrappable::Wrap(v8::Local<v8::Object> object,
                            ScriptWrappable* wrappable) {
   assert(wrappable->wrapper_.IsEmpty());
   assert(object->InternalFieldCount() > 1);
-  v8::Isolate* isolate = object->GetIsolate();
+  v8::Isolate* isolate{object->GetIsolate()};
   node::SetCppgcReference(isolate, object, wrappable);
   wrappable->wrapper_.Reset(isolate, object);
 }

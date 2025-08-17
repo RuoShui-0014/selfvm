@@ -13,20 +13,23 @@ namespace svm {
 
 class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
  public:
-  ScriptRunTask(ContextHandle* context_handle, ScriptHandle* script_handle)
-      : context_handle_(context_handle), script_handle_(script_handle) {}
+  ScriptRunTask(const std::shared_ptr<IsolateHolder>& isolate_holder,
+                ContextId context_id,
+                ScriptId script_id)
+      : isolate_holder_{isolate_holder},
+        context_id_{context_id},
+        script_id_{script_id} {}
   ~ScriptRunTask() override = default;
 
   void Run() override {
-    v8::Isolate* isolate = context_handle_->GetIsolateSel();
-    v8::Local<v8::Context> context = context_handle_->GetContext();
-    v8::Context::Scope scope(context);
+    v8::Isolate* isolate{isolate_holder_->GetIsolateSel()};
+    v8::Local context{isolate_holder_->GetContext(context_id_)};
+    v8::Context::Scope scope{context};
 
-    v8::TryCatch try_catch(isolate);
-    v8::Local<v8::UnboundScript> unbound_script =
-        script_handle_->GetUnboundScript();
-    v8::Local<v8::Script> script = unbound_script->BindToCurrentContext();
-    v8::Local<v8::Value> result;
+    v8::TryCatch try_catch{isolate};
+    v8::Local unbound_script{isolate_holder_->GetScript(script_id_)};
+    v8::Local script{unbound_script->BindToCurrentContext()};
+    v8::Local<v8::Value> result{};
     if (script->Run(context).ToLocal(&result)) {
       ExternalData::SourceData data{isolate, context, result};
       SetResult(ExternalData::SerializerSync(data));
@@ -44,27 +47,29 @@ class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
   }
 
  private:
-  cppgc::Member<ContextHandle> context_handle_;
-  cppgc::Member<ScriptHandle> script_handle_;
+  std::shared_ptr<IsolateHolder> isolate_holder_;
+  ContextId context_id_;
+  ScriptId script_id_;
 };
 
 ScriptHandle::ScriptHandle(IsolateHandle* isolate_handle, ScriptId address)
-    : isolate_handle_(isolate_handle),
-      isolate_holder_(isolate_handle->GetIsolateHolder()),
-      address_(address) {}
+    : isolate_handle_{isolate_handle},
+      isolate_holder_{isolate_handle->GetIsolateHolder()},
+      address_{address} {}
 ScriptHandle::~ScriptHandle() {
 #ifdef DEBUG
   std::cout << "~ScriptHandle()" << std::endl;
 #endif
 }
 
-v8::Local<v8::UnboundScript> ScriptHandle::GetUnboundScript() const {
+v8::Local<v8::UnboundScript> ScriptHandle::GetScript() const {
   return isolate_holder_->GetScript(address_);
 }
 
 std::pair<uint8_t*, size_t> ScriptHandle::Run(ContextHandle* context_handle) {
-  auto task = std::make_unique<ScriptRunTask>(context_handle, this);
-  auto future = task->GetFuture();
+  auto task{std::make_unique<ScriptRunTask>(
+      isolate_holder_, context_handle->GetContextId(), address_)};
+  auto future{task->GetFuture()};
   isolate_holder_->PostTaskToSel(std::move(task));
   return future.get();
 }
@@ -83,23 +88,22 @@ void RunOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
     return;
   }
 
-  v8::Isolate* isolate = info.GetIsolate();
+  v8::Isolate* isolate{info.GetIsolate()};
   if (!IsInstance<V8ContextHandle>(isolate, info[0])) {
     isolate->ThrowException(v8::Exception::TypeError(
         toString(isolate, "The first argument must be Context.")));
     return;
   }
 
-  v8::HandleScope scope(isolate);
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  v8::HandleScope scope{isolate};
+  v8::Local context{isolate->GetCurrentContext()};
+  v8::Local receiver{info.This()};
 
-  v8::Local<v8::Object> receiver = info.This();
-  ScriptHandle* script_handle = ScriptWrappable::Unwrap<ScriptHandle>(receiver);
-  ContextHandle* context_handle =
-      ScriptWrappable::Unwrap<ContextHandle>(info[0].As<v8::Object>());
-  auto buff = script_handle->Run(context_handle);
-  v8::Local<v8::Value> result =
-      ExternalData::DeserializerSync(isolate, context, buff);
+  ScriptHandle* script_handle{ScriptWrappable::Unwrap<ScriptHandle>(receiver)};
+  ContextHandle* context_handle{
+      ScriptWrappable::Unwrap<ContextHandle>(info[0].As<v8::Object>())};
+  auto buff{script_handle->Run(context_handle)};
+  v8::Local result{ExternalData::DeserializerSync(isolate, context, buff)};
   if (!result->IsNativeError()) {
     info.GetReturnValue().Set(result);
   } else {
@@ -119,8 +123,7 @@ void V8ScriptHandle::InstallInterfaceTemplate(
        Dependence::kPrototype},
   };
 
-  v8::Local<v8::Signature> signature =
-      v8::Local<v8::Signature>::Cast(interface_template);
+  v8::Local signature{v8::Local<v8::Signature>::Cast(interface_template)};
   // InstallAttributes(isolate, interface_template, signature, attrs);
   InstallOperations(isolate, interface_template, signature, operas);
 }

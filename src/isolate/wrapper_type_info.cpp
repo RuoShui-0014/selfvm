@@ -6,8 +6,8 @@ namespace svm {
 
 v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
     v8::Isolate* isolate) const {
-  PerIsolateData* per_isolate_data = PerIsolateData::From(isolate);
-  v8::Local<v8::Template> v8_template = per_isolate_data->FindV8Template(this);
+  PerIsolateData* per_isolate_data{PerIsolateData::From(isolate)};
+  v8::Local v8_template{per_isolate_data->FindV8Template(this)};
   if (!v8_template.IsEmpty()) {
     return v8_template;
   }

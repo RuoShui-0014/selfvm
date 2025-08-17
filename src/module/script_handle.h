@@ -19,7 +19,7 @@ class ScriptHandle final : public ScriptWrappable {
   explicit ScriptHandle(IsolateHandle* isolate_handle, ScriptId address);
   ~ScriptHandle() override;
 
-  v8::Local<v8::UnboundScript> GetUnboundScript() const;
+  v8::Local<v8::UnboundScript> GetScript() const;
 
   /*********************** js interface *************************/
   std::pair<uint8_t*, size_t> Run(ContextHandle* context_handle);

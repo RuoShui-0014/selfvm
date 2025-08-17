@@ -8,7 +8,7 @@ template <typename T>
 class raw_ptr {
  public:
   raw_ptr() = default;
-  explicit raw_ptr(T* ptr) : ptr_(ptr) {}
+  explicit raw_ptr(T* ptr) : ptr_{ptr} {}
   ~raw_ptr() { ptr_ = nullptr; }
 
   raw_ptr(const raw_ptr&) = delete;
