@@ -3,8 +3,7 @@
 #include <cppgc/member.h>
 #include <cppgc/visitor.h>
 
-#include <iostream>
-
+#include "../base/logger.h"
 #include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
 #include "../utils/utils.h"
@@ -190,12 +189,12 @@ IsolateHandle* IsolateHandle::Create(IsolateParams& params) {
 }
 
 IsolateHandle::IsolateHandle(IsolateParams& params)
-    : isolate_holder_{std::make_shared<IsolateHolder>(params)} {}
+    : isolate_holder_{std::make_shared<IsolateHolder>(params)} {
+  LOG_DEBUG("Isolate handle create.");
+}
 
 IsolateHandle::~IsolateHandle() {
-#ifdef DEBUG
-  std::cout << "~IsolateHandle()" << std::endl;
-#endif
+  LOG_DEBUG("Isolate handle delete.");
 }
 
 std::shared_ptr<IsolateHolder> IsolateHandle::GetIsolateHolder() const {

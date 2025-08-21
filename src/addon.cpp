@@ -4,6 +4,7 @@
 #include "isolate/scheduler.h"
 #include "module/isolate_handle.h"
 // #include "net/request.h"
+#include "base/logger.h"
 #include "utils/utils.h"
 
 namespace svm {
@@ -87,6 +88,13 @@ UVSchedulerPar* g_scheduler_par{nullptr};
 PerIsolateData* g_per_isolate_data{nullptr};
 
 void Initialize(v8::Local<v8::Object> exports) {
+#ifdef DEBUG
+  base::Logger::Initialize("./log.txt", base::Logger::Level::kDebug);
+#else
+  base::Logger::Initialize("./log.txt", base::Logger::Level::kInfo);
+#endif
+  LOG_INFO("Nodejs extension load.");
+
   v8::Isolate* isolate{v8::Isolate::GetCurrent()};
   v8::Local context{isolate->GetCurrentContext()};
 
@@ -105,10 +113,18 @@ void Initialize(v8::Local<v8::Object> exports) {
 
   // release some object
   node::AddEnvironmentCleanupHook(
-      isolate, [](void* arg) { delete static_cast<UVSchedulerPar*>(arg); },
+      isolate,
+      [](void* arg) {
+        delete static_cast<UVSchedulerPar*>(arg);
+        LOG_INFO("Nodejs scheduler delete.");
+      },
       g_scheduler_par);
   node::AddEnvironmentCleanupHook(
-      isolate, [](void* arg) { delete static_cast<PerIsolateData*>(arg); },
+      isolate,
+      [](void* arg) {
+        delete static_cast<PerIsolateData*>(arg);
+        LOG_INFO("Nodejs PerIsolateData delete.");
+      },
       g_per_isolate_data);
 }
 

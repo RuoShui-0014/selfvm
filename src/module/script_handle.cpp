@@ -1,7 +1,6 @@
 #include "script_handle.h"
 
-#include <iostream>
-
+#include "../base/logger.h"
 #include "../isolate/external_data.h"
 #include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
@@ -55,11 +54,11 @@ class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
 ScriptHandle::ScriptHandle(IsolateHandle* isolate_handle, ScriptId address)
     : isolate_handle_{isolate_handle},
       isolate_holder_{isolate_handle->GetIsolateHolder()},
-      address_{address} {}
+      address_{address} {
+  LOG_DEBUG("Script handle create.");
+}
 ScriptHandle::~ScriptHandle() {
-#ifdef DEBUG
-  std::cout << "~ScriptHandle()" << std::endl;
-#endif
+  LOG_DEBUG("Script handle delete.");
 }
 
 v8::Local<v8::UnboundScript> ScriptHandle::GetScript() const {

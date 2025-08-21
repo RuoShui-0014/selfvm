@@ -1,9 +1,6 @@
 #include "isolate_holder.h"
 
-#ifdef DEBUG
-#include <iostream>
-#endif
-
+#include "../base/logger.h"
 #include "../module/context_handle.h"
 #include "../utils/utils.h"
 #include "../web/local_dom_window.h"
@@ -13,6 +10,8 @@ namespace svm {
 
 IsolateHolder::IsolateHolder(IsolateParams& params)
     : isolate_params_{params}, isolate_par_{params.isolate_par} {
+  LOG_INFO("IsolateHolder create.");
+
   v8::ResourceConstraints rc;
   size_t young_space_in_kb{static_cast<size_t>(
       std::pow(2, std::min(sizeof(void*) >= 8 ? 4.0 : 3.0,
@@ -46,14 +45,12 @@ IsolateHolder::IsolateHolder(IsolateParams& params)
 }
 
 IsolateHolder::~IsolateHolder() {
+  LOG_INFO("IsolateHolder delete.");
+
   context_map_.clear();
   unbound_script_map_.clear();
   per_isolate_data_.reset();
   scheduler_sel_.reset();
-
-#ifdef DEBUG
-  std::cout << "~ContextHandle()" << std::endl;
-#endif
 }
 
 void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task) const {

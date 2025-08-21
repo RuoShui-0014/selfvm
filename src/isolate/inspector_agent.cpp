@@ -8,6 +8,7 @@
 #include <iostream>
 #endif
 
+#include "../base/logger.h"
 #include "scheduler.h"
 
 namespace svm {
@@ -34,11 +35,11 @@ Scheduler* InspectorAgent::GetAgent(int port) {
 }
 
 InspectorAgent::InspectorAgent(v8::Isolate* isolate, Scheduler* scheduler)
-    : isolate_{isolate}, scheduler_{scheduler}, port_(0) {}
+    : isolate_{isolate}, scheduler_{scheduler} {
+  LOG_INFO("InspectorAgent create.");
+}
 InspectorAgent::~InspectorAgent() {
-#ifdef DEBUG
-  std::cout << "~InspectorAgent()" << std::endl;
-#endif
+  LOG_INFO("InspectorAgent Delete.");
 }
 
 void InspectorAgent::Connect(int port) {

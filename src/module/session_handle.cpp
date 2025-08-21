@@ -2,12 +2,8 @@
 
 #include <cppgc/visitor.h>
 
-#ifdef DEBUG
-#include <iostream>
-#endif
-
+#include "../base/logger.h"
 #include "../isolate/isolate_holder.h"
-#include "../isolate/platform_delegate.h"
 #include "context_handle.h"
 #include "isolate_handle.h"
 
@@ -15,11 +11,11 @@ namespace svm {
 
 SessionHandle::SessionHandle(IsolateHandle* isolate_handle)
     : isolate_handle_{isolate_handle},
-      isolate_holder_{isolate_handle->GetIsolateHolder()} {}
+      isolate_holder_{isolate_handle->GetIsolateHolder()} {
+  LOG_DEBUG("Session handle create.");
+}
 SessionHandle::~SessionHandle() {
-#ifdef DEBUG
-  std::cout << "~SessionHandle()" << std::endl;
-#endif
+  LOG_DEBUG("Session handle delete.");
 }
 
 IsolateHandle* SessionHandle::GetIsolateHandle() const {

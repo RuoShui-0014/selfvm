@@ -2,8 +2,7 @@
 
 #include <cppgc/visitor.h>
 
-#include <iostream>
-
+#include "../base/logger.h"
 #include "../isolate/external_data.h"
 #include "../isolate/isolate_holder.h"
 #include "../isolate/task.h"
@@ -147,13 +146,14 @@ ContextHandle::ContextHandle(IsolateHandle* isolate_handle,
                              v8::Context* address)
     : isolate_handle_{isolate_handle},
       isolate_holder_{isolate_handle->GetIsolateHolder()},
-      address_{address} {}
+      address_{address} {
+  LOG_DEBUG("Context handle create.");
+}
 
 ContextHandle::~ContextHandle() {
+  LOG_DEBUG("Context handle delete.");
+
   Release();
-#ifdef DEBUG
-  std::cout << "~ContextHandle()" << std::endl;
-#endif
 }
 
 // 同步任务

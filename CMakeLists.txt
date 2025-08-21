@@ -44,6 +44,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_JS_INC})
 target_sources(${PROJECT_NAME} PRIVATE
     src/addon.cpp
 
+    src/base/logger.cpp
+    src/base/logger.h
+
     src/utils/utils.h
     src/utils/utils.h
 

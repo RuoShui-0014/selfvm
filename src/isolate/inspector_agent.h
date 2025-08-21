@@ -44,8 +44,8 @@ class InspectorAgent final : public v8_inspector::V8InspectorClient,
  private:
   v8::Isolate* isolate_{};
   Scheduler* scheduler_{};
-  int port_;
-  bool is_connected_ = false;
+  int port_{0};
+  bool is_connected_{false};
 
   std::atomic_bool waiting_for_frontend_{false};
   std::atomic_bool waiting_for_resume_{false};
