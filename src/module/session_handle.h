@@ -28,7 +28,7 @@ class SessionHandle final : public ScriptWrappable {
 
   /* js interface */
   void Connect(int port) const;
-  void AddContext(ContextHandle* context_handle, std::string name);
+  void AddContext(const ContextHandle* context_handle, std::string name);
   void Dispose() const;
 
   void Trace(cppgc::Visitor* visitor) const override;

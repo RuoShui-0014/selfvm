@@ -12,7 +12,6 @@ async function test(i) {
         this.a = {name: 'Jack', age: 18};
         JSON.stringify(this.a);`, "self-vm.js").then(result => {
             console.timeEnd("eval_Async" + i)
-            console.log(`微任务成功 evalAsync() = `, result);
         }, error => {
             console.log(`微任务失败  evalAsync() = `, error);
         });

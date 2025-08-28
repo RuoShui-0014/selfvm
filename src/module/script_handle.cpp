@@ -29,7 +29,12 @@ class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
     v8::Local unbound_script{isolate_holder_->GetScript(script_id_)};
     v8::Local script{unbound_script->BindToCurrentContext()};
     v8::Local<v8::Value> result{};
-    if (script->Run(context).ToLocal(&result)) {
+    const bool right{script->Run(context).ToLocal(&result)};
+    if (!GetWaiter()) {
+      return;
+    }
+
+    if (right) {
       ExternalData::SourceData data{isolate, context, result};
       SetResult(ExternalData::SerializerSync(data));
       return;
@@ -47,8 +52,8 @@ class ScriptRunTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
 
  private:
   std::shared_ptr<IsolateHolder> isolate_holder_;
-  ContextId context_id_;
-  ScriptId script_id_;
+  const ContextId context_id_;
+  const ScriptId script_id_;
 };
 
 ScriptHandle::ScriptHandle(IsolateHandle* isolate_handle, ScriptId address)
@@ -65,13 +70,22 @@ v8::Local<v8::UnboundScript> ScriptHandle::GetScript() const {
   return isolate_holder_->GetScript(address_);
 }
 
-std::pair<uint8_t*, size_t> ScriptHandle::Run(ContextHandle* context_handle) {
+std::pair<uint8_t*, size_t> ScriptHandle::Run(
+    const ContextHandle* context_handle) {
+  auto waiter{base::Waiter<std::pair<uint8_t*, size_t>>{}};
   auto task{std::make_unique<ScriptRunTask>(
       isolate_holder_, context_handle->GetContextId(), address_)};
-  auto future{task->GetFuture()};
+  task->SetWaiter(&waiter);
   isolate_holder_->PostTaskToSel(std::move(task));
-  return future.get();
+  return waiter.WaitFor();
 }
+
+void ScriptHandle::RunIgnored(const ContextHandle* context_handle) {
+  auto task{std::make_unique<ScriptRunTask>(
+      isolate_holder_, context_handle->GetContextId(), address_)};
+  isolate_holder_->PostTaskToSel(std::move(task));
+}
+
 void ScriptHandle::Release() const {
   isolate_holder_->ClearScript(address_);
 }
@@ -96,9 +110,9 @@ void RunOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   v8::HandleScope scope{isolate};
   v8::Local context{isolate->GetCurrentContext()};
-  v8::Local receiver{info.This()};
 
-  ScriptHandle* script_handle{ScriptWrappable::Unwrap<ScriptHandle>(receiver)};
+  ScriptHandle* script_handle{
+      ScriptWrappable::Unwrap<ScriptHandle>(info.This())};
   ContextHandle* context_handle{
       ScriptWrappable::Unwrap<ContextHandle>(info[0].As<v8::Object>())};
   auto buff{script_handle->Run(context_handle)};
@@ -108,6 +122,28 @@ void RunOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   } else {
     isolate->ThrowException(result);
   }
+}
+
+void RunIgnoredOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1 || !info[0]->IsObject()) {
+    return;
+  }
+
+  v8::Isolate* isolate{info.GetIsolate()};
+  if (!IsInstance<V8ContextHandle>(isolate, info[0])) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        toString(isolate, "The first argument must be Context.")));
+    return;
+  }
+
+  v8::HandleScope scope{isolate};
+
+  ScriptHandle* script_handle{
+      ScriptWrappable::Unwrap<ScriptHandle>(info.This())};
+  const ContextHandle* context_handle{
+      ScriptWrappable::Unwrap<ContextHandle>(info[0].As<v8::Object>())};
+  script_handle->RunIgnored(context_handle);
 }
 
 void V8ScriptHandle::InstallInterfaceTemplate(
@@ -120,6 +156,8 @@ void V8ScriptHandle::InstallInterfaceTemplate(
   OperationConfig operas[]{
       {"run", 0, RunOperationCallback, v8::PropertyAttribute::DontDelete,
        Dependence::kPrototype},
+      {"runIgnored", 0, RunIgnoredOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
 
   v8::Local signature{v8::Local<v8::Signature>::Cast(interface_template)};

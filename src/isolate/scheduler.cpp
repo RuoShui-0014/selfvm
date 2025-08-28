@@ -31,9 +31,9 @@ void Scheduler::UnregisterIsolateScheduler(v8::Isolate* isolate) {
   std::lock_guard lock{mutex};
   isolate_loop_map.erase(isolate);
 }
-Scheduler* Scheduler::GetIsolateScheduler(v8::Isolate* const isolate) {
-  const auto it{isolate_loop_map.find(isolate)};
-  if (it != isolate_loop_map.end()) {
+Scheduler* Scheduler::GetIsolateScheduler(v8::Isolate* isolate) {
+  if (const auto it{isolate_loop_map.find(isolate)};
+      it != isolate_loop_map.end()) {
     return it->second;
   }
   return nullptr;
@@ -142,7 +142,7 @@ UVSchedulerSel::UVSchedulerSel(
 
   uv_task_ = new uv_async_t;
   uv_async_init(uv_loop_, uv_task_, [](uv_async_t* handle) {
-    UVSchedulerSel* scheduler = static_cast<UVSchedulerSel*>(handle->data);
+    auto* scheduler = static_cast<UVSchedulerSel*>(handle->data);
     if (!scheduler->running.load()) {
       uv_stop(handle->loop);
       return;
@@ -178,7 +178,7 @@ void UVSchedulerSel::AgentDispose() const {
 }
 
 void UVSchedulerSel::StartLoop() {
-  thread_ = std::thread([this]() {
+  thread_ = std::thread{[this]() {
     {
       v8::Locker locker{isolate_};
       v8::Isolate::Scope isolate_scope{isolate_};
@@ -204,7 +204,7 @@ void UVSchedulerSel::StartLoop() {
     });
     uv_loop_close(uv_loop_);
     delete uv_loop_;
-  });
+  }};
 }
 
 void UVSchedulerSel::RunInterruptTasks() {
@@ -229,7 +229,7 @@ UVSchedulerPar::UVSchedulerPar(v8::Isolate* isolate, uv_loop_t* uv_loop)
   uv_loop_ = uv_loop;
   uv_task_ = new uv_async_t;
   uv_async_init(uv_loop_, uv_task_, [](uv_async_t* handle) {
-    UVSchedulerPar* scheduler = static_cast<UVSchedulerPar*>(handle->data);
+    auto* scheduler = static_cast<UVSchedulerPar*>(handle->data);
     scheduler->FlushForegroundTasksInternal();
   });
   uv_task_->data = this;

@@ -71,6 +71,11 @@ declare module SelfVm {
         eval(code: string, filename?: string): any;
 
         /**
+         * 运行代码忽略结果
+         */
+        evalIgnored(code: string, filename?: string): any;
+
+        /**
          * 运行代码异步获取结果
          */
         evalAsync(code: string, filename?: string): Promise<any>;
@@ -81,6 +86,11 @@ declare module SelfVm {
          * 运行代码同步获取结果
          */
         run(context: Context): any;
+
+        /**
+         * 运行代码忽略结果
+         */
+        runIgnored(context: Context): any;
 
         /**
          * 运行代码异步获取结果

@@ -15,7 +15,7 @@ Logger& Logger::Get() {
   return logger;
 }
 
-void Logger::Initialize(std::string file, Level level) {
+void Logger::Initialize(const std::string& file, const Level level) {
   Logger& logger{Logger::Get()};
 
   std::filesystem::create_directories(
@@ -84,13 +84,12 @@ void Logger::WriteLog() {
     queue.swap(logger.queue_);
   }
   while (!queue.empty()) {
-    Info info{std::move(queue.front())};
+    auto [level, message, location, time]{std::move(queue.front())};
     queue.pop();
-    logger.file_ << std::format(
-                        "{:%Y-%m-%d %H:%M:%S} |{: <6}| {} | {}:{}:{}",
-                        info.time, leval_string[static_cast<int>(info.level)],
-                        info.message, info.location.file_name(),
-                        info.location.line(), info.location.function_name())
+    logger.file_ << std::format("{:%Y-%m-%d %H:%M:%S} |{: <6}| {} | {}:{}:{}",
+                                time, leval_string[static_cast<int>(level)],
+                                message, location.file_name(), location.line(),
+                                location.function_name())
                  << std::endl;
   }
 }

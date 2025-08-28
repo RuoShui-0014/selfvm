@@ -1,7 +1,3 @@
-//
-// Created by ruoshui on 25-7-4.
-//
-
 #pragma once
 
 #include <v8.h>
@@ -26,37 +22,35 @@ struct WrapperTypeInfo final {
 
 template <typename T>
 v8::Local<v8::Function> NewFunction(v8::Isolate* isolate,
-                                  v8::Local<v8::Context> context) {
-  v8::Local<v8::FunctionTemplate> handle_template =
+                                    v8::Local<v8::Context> context) {
+  const v8::Local<v8::FunctionTemplate> handle_template{
       T::GetWrapperTypeInfo()
           ->GetV8ClassTemplate(isolate)
-          .template As<v8::FunctionTemplate>();
-  v8::Local<v8::Function> target =
-      handle_template->GetFunction(context).ToLocalChecked();
-  return target;
+          .template As<v8::FunctionTemplate>()};
+  return {handle_template->GetFunction(context).ToLocalChecked()};
 }
 
 template <typename T, typename Wrappable>
 v8::Local<v8::Object> NewInstance(v8::Isolate* isolate,
                                   v8::Local<v8::Context> context,
                                   Wrappable* wrappable) {
-  v8::Local<v8::FunctionTemplate> handle_template =
+  const v8::Local<v8::FunctionTemplate> handle_template{
       T::GetWrapperTypeInfo()
           ->GetV8ClassTemplate(isolate)
-          .template As<v8::FunctionTemplate>();
-  v8::Local<v8::Object> target = handle_template->InstanceTemplate()
-                                     ->NewInstance(context)
-                                     .ToLocalChecked();
+          .template As<v8::FunctionTemplate>()};
+  v8::Local target{handle_template->InstanceTemplate()
+                       ->NewInstance(context)
+                       .ToLocalChecked()};
   ScriptWrappable::Wrap(target, wrappable);
   return target;
 }
 
 template <typename T>
 bool IsInstance(v8::Isolate* isolate, v8::Local<v8::Value> target) {
-  v8::Local<v8::FunctionTemplate> handle_template =
+  const v8::Local<v8::FunctionTemplate> handle_template{
       T::GetWrapperTypeInfo()
           ->GetV8ClassTemplate(isolate)
-          .template As<v8::FunctionTemplate>();
+          .template As<v8::FunctionTemplate>()};
   return handle_template->HasInstance(target);
 }
 

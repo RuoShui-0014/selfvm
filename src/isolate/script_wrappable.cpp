@@ -10,7 +10,7 @@ namespace svm {
 
 ScriptWrappable::~ScriptWrappable() = default;
 
-void ScriptWrappable::Wrap(v8::Local<v8::Object> object,
+void ScriptWrappable::Wrap(const v8::Local<v8::Object> object,
                            ScriptWrappable* wrappable) {
   assert(wrappable->wrapper_.IsEmpty());
   assert(object->InternalFieldCount() > 1);

@@ -28,11 +28,6 @@ class IsolateHandle final : public ScriptWrappable {
   ~IsolateHandle() override;
 
   std::shared_ptr<IsolateHolder> GetIsolateHolder() const;
-  v8::Isolate* GetIsolateSel() const;
-  v8::Isolate* GetIsolatePar() const;
-
-  Scheduler* GetSchedulerSel() const;
-  Scheduler* GetSchedulerPar() const;
 
   v8::Local<v8::Context> GetContext(ContextId address) const;
   v8::Local<v8::UnboundScript> GetScript(ScriptId address) const;

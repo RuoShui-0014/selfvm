@@ -65,7 +65,7 @@ void SessionDisposeCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate{info.GetIsolate()};
   v8::Local context{isolate->GetCurrentContext()};
 
-  int port{info[0]->Int32Value(context).FromJust()};
+  const int port{info[0]->Int32Value(context).FromJust()};
   if (Scheduler* scheduler = InspectorAgent::GetAgent(port)) {
     scheduler->PostInterruptTask(std::make_unique<DisposeAgentTask>(scheduler));
   }
@@ -84,8 +84,10 @@ void CreateNodeEx(v8::Isolate* isolate,
                NewFunction<V8IsolateHandle>(isolate, context));
 }
 
-UVSchedulerPar* g_scheduler_par{nullptr};
-PerIsolateData* g_per_isolate_data{nullptr};
+struct NodeData {
+  UVSchedulerPar* g_scheduler_par{nullptr};
+  PerIsolateData* g_per_isolate_data{nullptr};
+} node_data;
 
 void Initialize(v8::Local<v8::Object> exports) {
 #ifdef DEBUG
@@ -93,16 +95,17 @@ void Initialize(v8::Local<v8::Object> exports) {
 #else
   base::Logger::Initialize("./log.txt", base::Logger::Level::kInfo);
 #endif
-  LOG_INFO("Nodejs extension load.");
+  LOG_INFO("Self-vm load.");
 
   v8::Isolate* isolate{v8::Isolate::GetCurrent()};
   v8::Local context{isolate->GetCurrentContext()};
 
   // init nodejs env
   PlatformDelegate::InitializeDelegate();
-  g_scheduler_par =
+  node_data.g_scheduler_par =
       new UVSchedulerPar(isolate, node::GetCurrentEventLoop(isolate));
-  g_per_isolate_data = new PerIsolateData(isolate, g_scheduler_par);
+  node_data.g_per_isolate_data =
+      new PerIsolateData(isolate, node_data.g_scheduler_par);
 
   //
   CreateNodeEx(isolate, context, exports);
@@ -115,17 +118,15 @@ void Initialize(v8::Local<v8::Object> exports) {
   node::AddEnvironmentCleanupHook(
       isolate,
       [](void* arg) {
-        delete static_cast<UVSchedulerPar*>(arg);
+        NodeData node_data{*static_cast<NodeData*>(arg)};
+
+        delete node_data.g_scheduler_par;
         LOG_INFO("Nodejs scheduler delete.");
-      },
-      g_scheduler_par);
-  node::AddEnvironmentCleanupHook(
-      isolate,
-      [](void* arg) {
-        delete static_cast<PerIsolateData*>(arg);
+
+        delete node_data.g_per_isolate_data;
         LOG_INFO("Nodejs PerIsolateData delete.");
       },
-      g_per_isolate_data);
+      &node_data);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize)

@@ -22,7 +22,8 @@ class ScriptHandle final : public ScriptWrappable {
   v8::Local<v8::UnboundScript> GetScript() const;
 
   /*********************** js interface *************************/
-  std::pair<uint8_t*, size_t> Run(ContextHandle* context_handle);
+  std::pair<uint8_t*, size_t> Run(const ContextHandle* context_handle);
+  void RunIgnored(const ContextHandle* context_handle);
   void Release() const;
 
   void Trace(cppgc::Visitor* visitor) const override;

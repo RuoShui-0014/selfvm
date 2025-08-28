@@ -8,76 +8,42 @@
 
 #include <future>
 
+#include "../base/waiter.h"
 #include "../utils/utils.h"
 
 namespace svm {
 
-class ContextHandle;
-class IsolateHandle;
 class IsolateHolder;
 
-template <typename T>
-class SyncTask;
-
 // 同步任务
-template <typename T>
-class future {
- public:
-  T& get() {
-    while (!finished_.load()) {
-    }
-    return value_;
-  }
-  void set_value(const T& value) {
-    value_ = value;
-    finished_.store(true);
-  }
-  void set_value(T&& value) {
-    value_ = std::move(value);
-    finished_.store(true);
-  }
-
- private:
-  std::atomic_bool finished_{false};
-  T value_;
-};
-template <typename T>
-class SyncFastTask : public v8::Task {
- public:
-  explicit SyncFastTask() = default;
-  ~SyncFastTask() override = default;
-
-  std::unique_ptr<future<T>> GetFuture() {
-    auto fut = std::make_unique<future<T>>();
-    future_ = fut.get();
-    return fut;
-  }
-  void SetResult(const T& _Val) {
-    if (future_) {
-      future_->set_value(_Val);
-    }
-  }
-
- protected:
-  future<T>* future_{};
-};
-
 template <typename T>
 class SyncTask : public v8::Task {
  public:
   explicit SyncTask() = default;
   ~SyncTask() override = default;
 
-  std::future<T> GetFuture() { return promise_.get_future(); }
-  void SetResult(const T& _Val) { promise_.set_value(_Val); }
+  std::unique_ptr<base::Waiter<T>> CreateWaiter() {
+    auto waiter{std::make_unique<base::Waiter<T>>()};
+    waiter_ = waiter.get();
+    return waiter;
+  }
+
+  base::Waiter<T>* GetWaiter() { return waiter_; }
+
+  void SetWaiter(base::Waiter<T>* waiter) { waiter_ = waiter; }
+
+  void SetResult(const T& _Val) {
+    if (waiter_) {
+      waiter_->SetValue(_Val);
+    }
+  }
 
  protected:
-  std::promise<T> promise_;
+  base::Waiter<T>* waiter_{nullptr};
 };
 
-template <typename T>
-  requires std::is_void_v<T>
-class SyncTask<T> : public v8::Task {
+template <>
+class SyncTask<void> : public v8::Task {
  public:
   explicit SyncTask() = default;
   ~SyncTask() override = default;
@@ -86,7 +52,7 @@ class SyncTask<T> : public v8::Task {
 // 异步任务
 class AsyncInfo {
  public:
-  AsyncInfo(std::shared_ptr<IsolateHolder> isolate_holder,
+  AsyncInfo(const std::shared_ptr<IsolateHolder>& isolate_holder,
             RemoteHandle<v8::Context> context,
             RemoteHandle<v8::Promise::Resolver> resolver);
   ~AsyncInfo();
@@ -99,11 +65,11 @@ class AsyncInfo {
   RemoteHandle<v8::Context> context;
   RemoteHandle<v8::Promise::Resolver> resolver;
 };
+
 class AsyncTask : public v8::Task {
  public:
-  explicit AsyncTask(std::unique_ptr<AsyncInfo> info)
-      : info_{std::move(info)} {}
-  ~AsyncTask() override = default;
+  explicit AsyncTask(std::unique_ptr<AsyncInfo> info);
+  ~AsyncTask() override;
 
  protected:
   std::unique_ptr<AsyncInfo> info_;

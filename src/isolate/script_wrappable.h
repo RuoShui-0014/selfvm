@@ -19,20 +19,19 @@ class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
   static void Wrap(v8::Local<v8::Object> object, ScriptWrappable* wrappable);
 
   template <class T>
-  static T* Unwrap(v8::Local<v8::Object> object) {
+  static T* Unwrap(const v8::Local<v8::Object> object) {
     assert(!object.IsEmpty());
     assert(object->InternalFieldCount() > 1);
-    v8::Isolate* isolate = object->GetIsolate();
-    v8::WrapperDescriptor descriptor =
-        isolate->GetCppHeap()->wrapper_descriptor();
-    ScriptWrappable* ptr = static_cast<ScriptWrappable*>(
+    const v8::Isolate* isolate = object->GetIsolate();
+    const v8::WrapperDescriptor descriptor{
+        isolate->GetCppHeap()->wrapper_descriptor()};
+    auto* ptr{static_cast<ScriptWrappable*>(
         object->GetAlignedPointerFromInternalField(
-            descriptor.wrappable_instance_index));
-
+            descriptor.wrappable_instance_index))};
     return static_cast<T*>(ptr);
   }
 
-  v8::Local<v8::Object> V8Object(v8::Isolate* isolate) {
+  v8::Local<v8::Object> V8Object(v8::Isolate* isolate) const {
     return v8::Local<v8::Object>::New(isolate, wrapper_);
   }
 
@@ -46,7 +45,6 @@ class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
  private:
   v8::TracedReference<v8::Object> wrapper_;
 };
-
 
 /**
  * new object in v8 cppgc pool

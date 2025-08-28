@@ -11,7 +11,7 @@
 
 namespace svm {
 
-class ScriptTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
+class ScriptTask final : public SyncTask<CopyData> {
  public:
   ScriptTask(const std::shared_ptr<IsolateHolder>& isolate_holder,
              ContextId context_id,
@@ -31,23 +31,32 @@ class ScriptTask final : public SyncTask<std::pair<uint8_t*, size_t>> {
     v8::TryCatch try_catch{isolate};
     v8::Local<v8::Script> script{};
     v8::Local code{toString(isolate, script_)};
-    v8::ScriptOrigin scriptOrigin{
-        v8::ScriptOrigin(toString(isolate, filename_))};
-    if (v8::Script::Compile(context, code, &scriptOrigin).ToLocal(&script)) {
-      v8::MaybeLocal maybe_result{script->Run(context)};
-      if (!maybe_result.IsEmpty()) {
-        ExternalData::SourceData data{isolate, context,
-                                      maybe_result.ToLocalChecked()};
-        SetResult(ExternalData::SerializerSync(data));
-        return;
-      }
+    v8::ScriptOrigin scriptOrigin{toString(isolate, filename_)};
+
+    v8::Local<v8::Value> result{};
+    bool right{
+        v8::Script::Compile(context, code, &scriptOrigin).ToLocal(&script)};
+    if (right) {
+      right = {script->Run(context).ToLocal(&result)};
+    }
+    if (!GetWaiter()) {
+      return;
+    }
+
+    if (right) {
+      ExternalData::SourceData data{isolate, context, result};
+      SetResult(ExternalData::SerializerSync(data));
+      return;
     }
 
     if (try_catch.HasCaught()) {
       ExternalData::SourceData data{isolate, context, try_catch.Exception()};
       SetResult(ExternalData::SerializerSync(data));
       try_catch.Reset();
+      return;
     }
+
+    SetResult({});
   }
 
  private:
@@ -157,13 +166,18 @@ ContextHandle::~ContextHandle() {
 }
 
 // 同步任务
-std::pair<uint8_t*, size_t> ContextHandle::Eval(std::string script,
-                                                std::string filename) {
+CopyData ContextHandle::Eval(std::string script, std::string filename) {
+  auto waiter{base::Waiter<CopyData>{}};
   auto task{std::make_unique<ScriptTask>(
       isolate_holder_, GetContextId(), std::move(script), std::move(filename))};
-  auto future{task->GetFuture()};
+  task->SetWaiter(&waiter);
   isolate_holder_->PostTaskToSel(std::move(task));
-  return future.get();
+  return waiter.WaitFor();
+}
+void ContextHandle::EvalIgnored(std::string script, std::string filename) {
+  auto task{std::make_unique<ScriptTask>(
+      isolate_holder_, GetContextId(), std::move(script), std::move(filename))};
+  isolate_holder_->PostTaskToSel(std::move(task));
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
@@ -177,12 +191,15 @@ void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
 void ContextHandle::Release() const {
   isolate_holder_->ClearContext(address_);
 }
+
 std::shared_ptr<IsolateHolder> ContextHandle::GetIsolateHolder() const {
   return isolate_holder_;
 }
+
 v8::Isolate* ContextHandle::GetIsolateSel() const {
   return isolate_holder_->GetIsolateSel();
 }
+
 v8::Isolate* ContextHandle::GetIsolatePar() const {
   return isolate_holder_->GetIsolatePar();
 }
@@ -197,7 +214,6 @@ void ContextHandle::Trace(cppgc::Visitor* visitor) const {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
 void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() < 1 || !info[0]->IsString()) {
     return;
@@ -210,7 +226,7 @@ void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   ContextHandle* context_handle{
       ScriptWrappable::Unwrap<ContextHandle>(receiver)};
 
-  std::string script{*v8::String::Utf8Value(isolate, info[0])};
+  std::string script{*v8::String::Utf8Value{isolate, info[0]}};
   std::string filename{""};
   if (info.Length() > 1) {
     filename = *v8::String::Utf8Value(isolate, info[1]);
@@ -223,6 +239,27 @@ void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   } else {
     isolate->ThrowException(result);
   }
+}
+
+void EvalIgnoredOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (info.Length() < 1 || !info[0]->IsString()) {
+    return;
+  }
+
+  v8::Isolate* isolate{info.GetIsolate()};
+  v8::HandleScope scope{isolate};
+  v8::Local receiver{info.This()};
+  ContextHandle* context_handle{
+      ScriptWrappable::Unwrap<ContextHandle>(receiver)};
+
+  std::string script{*v8::String::Utf8Value(isolate, info[0])};
+  std::string filename{""};
+  if (info.Length() > 1) {
+    filename = *v8::String::Utf8Value(isolate, info[1]);
+  }
+
+  context_handle->EvalIgnored(std::move(script), std::move(filename));
 }
 
 void EvalAsyncOperationCallback(
@@ -258,21 +295,18 @@ void V8ContextHandle::InstallInterfaceTemplate(
     v8::Isolate* isolate,
     v8::Local<v8::Template> interface_template) {
   ConstructConfig constructor{"Context", 0, nullptr};
-  // AttributeConfig attrs[]{
-  //     {"context", AttributeGetterContextCallback, nullptr,
-  //      v8::PropertyAttribute::ReadOnly, Dependence::kPrototype},
-  // };
   OperationConfig operas[]{
       {"eval", 1, EvalOperationCallback, v8::PropertyAttribute::DontDelete,
        Dependence::kPrototype},
+      {"evalIgnored", 1, EvalIgnoredOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"evalAsync", 1, EvalAsyncOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
 
   InstallConstructor(isolate, interface_template, constructor);
 
-  v8::Local<v8::Signature> signature{
-      v8::Local<v8::Signature>::Cast(interface_template)};
+  v8::Local signature{v8::Local<v8::Signature>::Cast(interface_template)};
   // InstallAttributes(isolate, interface_template, signature, attrs);
   InstallOperations(isolate, interface_template, signature, operas);
 }

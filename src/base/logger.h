@@ -16,7 +16,7 @@ class Logger {
   enum class Level { kDebug, kInfo, kWarn, kError, kFatal };
 
   static Logger& Get();
-  static void Initialize(std::string file, Level level);
+  static void Initialize(const std::string& file, Level level);
 
   using NowTime = std::chrono::system_clock::time_point;
   static void Log(

@@ -55,12 +55,11 @@ class IsolateHolder {
  private:
   IsolateParams isolate_params_;
 
-  v8::Isolate* isolate_par_{};
-  v8::Isolate* isolate_sel_{};
+  v8::Isolate* isolate_par_{nullptr};
+  v8::Isolate* isolate_sel_{nullptr};
 
+  Scheduler* scheduler_par_{nullptr};
   std::unique_ptr<UVSchedulerSel> scheduler_sel_;
-  Scheduler* scheduler_par_{};
-
   std::unique_ptr<PerIsolateData> per_isolate_data_;
 
   std::mutex mutex_context_map_;

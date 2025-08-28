@@ -1,8 +1,6 @@
-//
-// Created by ruoshui on 25-7-25.
-//
-
 #pragma once
+
+namespace base {
 
 template <typename T>
 class raw_ptr {
@@ -23,3 +21,5 @@ class raw_ptr {
  private:
   T* ptr_{nullptr};
 };
+
+}  // namespace base

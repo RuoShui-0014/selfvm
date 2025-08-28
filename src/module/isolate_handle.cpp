@@ -201,19 +201,11 @@ std::shared_ptr<IsolateHolder> IsolateHandle::GetIsolateHolder() const {
   return isolate_holder_;
 }
 
-v8::Isolate* IsolateHandle::GetIsolateSel() const {
-  return isolate_holder_->GetIsolateSel();
-}
-
-v8::Isolate* IsolateHandle::GetIsolatePar() const {
-  return isolate_holder_->GetIsolatePar();
-}
-
 ContextHandle* IsolateHandle::GetContextHandle() {
   if (!context_handle_) {
     context_handle_ = CreateContext();
-    NewInstance<V8ContextHandle>(GetIsolatePar(),
-                                 GetIsolatePar()->GetCurrentContext(),
+    auto* isolate{isolate_holder_->GetIsolatePar()};
+    NewInstance<V8ContextHandle>(isolate, isolate->GetCurrentContext(),
                                  context_handle_.Get());
   }
   return context_handle_.Get();
@@ -228,21 +220,14 @@ v8::Local<v8::UnboundScript> IsolateHandle::GetScript(
   return isolate_holder_->GetScript(address);
 }
 
-Scheduler* IsolateHandle::GetSchedulerSel() const {
-  return isolate_holder_->GetSchedulerSel();
-}
-
-Scheduler* IsolateHandle::GetSchedulerPar() const {
-  return isolate_holder_->GetSchedulerPar();
-}
-
 ContextHandle* IsolateHandle::CreateContext() {
+  auto waiter{base::Waiter<ContextId>{}};
   auto task{std::make_unique<CreateContextTask>(isolate_holder_)};
-  auto future{task->GetFuture()};
+  task->SetWaiter(&waiter);
   isolate_holder_->PostTaskToSel(std::move(task));
-  auto id{future.get()};
+  auto id{waiter.WaitFor()};
 
-  v8::Isolate* isolate = GetIsolatePar();
+  auto* isolate{isolate_holder_->GetIsolatePar()};
   ContextHandle* context_handle{
       MakeCppGcObject<GC::kSpecified, ContextHandle>(isolate, this, id)};
   return context_handle;
@@ -255,17 +240,18 @@ void IsolateHandle::CreateContextAsync(std::unique_ptr<AsyncInfo> info) {
 
 ScriptHandle* IsolateHandle::CreateScript(std::string script,
                                           std::string filename) {
+  auto waiter{base::Waiter<ScriptId>{}};
   auto task{std::make_unique<CompileScriptTask>(
       isolate_holder_, GetContextHandle()->GetContextId(), script, filename)};
-  std::future future{task->GetFuture()};
+  task->SetWaiter(&waiter);
   isolate_holder_->PostTaskToSel(std::move(task));
-  ScriptId address{future.get()};
+  ScriptId address{waiter.WaitFor()};
 
   if (!address) {
     return nullptr;
   }
 
-  v8::Isolate* isolate{GetIsolatePar()};
+  auto* isolate{isolate_holder_->GetIsolatePar()};
   ScriptHandle* script_handle{
       MakeCppGcObject<GC::kSpecified, ScriptHandle>(isolate, this, address)};
   return script_handle;
@@ -281,7 +267,7 @@ void IsolateHandle::CreateScriptAsync(std::unique_ptr<AsyncInfo> info,
 
 SessionHandle* IsolateHandle::GetInspectorSession() {
   if (!session_handle_) {
-    v8::Isolate* isolate{GetIsolatePar()};
+    auto* isolate{isolate_holder_->GetIsolatePar()};
     SessionHandle* session_handle{
         MakeCppGcObject<GC::kSpecified, SessionHandle>(isolate, this)};
     NewInstance<V8SessionHandle>(isolate, isolate->GetCurrentContext(),
@@ -371,8 +357,8 @@ void CreateContextAsyncOperationCallback(
 
   auto async_info{std::make_unique<AsyncInfo>(
       isolate_handle->GetIsolateHolder(),
-      RemoteHandle(isolate, isolate->GetCurrentContext()),
-      RemoteHandle(isolate, resolver))};
+      RemoteHandle{isolate, isolate->GetCurrentContext()},
+      RemoteHandle{isolate, resolver})};
   isolate_handle->CreateContextAsync(std::move(async_info));
 
   info.GetReturnValue().Set(resolver->GetPromise());
@@ -443,8 +429,8 @@ void CreateScriptAsyncOperationCallback(
 
   auto async_info{std::make_unique<AsyncInfo>(
       isolate_handle->GetIsolateHolder(),
-      RemoteHandle(isolate, isolate->GetCurrentContext()),
-      RemoteHandle(isolate, resolver))};
+      RemoteHandle{isolate, isolate->GetCurrentContext()},
+      RemoteHandle{isolate, resolver})};
   isolate_handle->CreateScriptAsync(std::move(async_info), std::move(script),
                                     std::move(filename));
 

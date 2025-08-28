@@ -1,7 +1,3 @@
-//
-// Created by ruoshui on 25-7-8.
-//
-
 #pragma once
 
 #include "../base/raw_ptr.h"
@@ -12,7 +8,7 @@ namespace svm {
 
 class IsolateHolder;
 
-class LocalDOMWindow : public ScriptWrappable {
+class LocalDOMWindow final : public ScriptWrappable {
  public:
   explicit LocalDOMWindow(IsolateHolder* isolate_holder);
   ~LocalDOMWindow() override;
@@ -25,7 +21,7 @@ class LocalDOMWindow : public ScriptWrappable {
   LocalDOMWindow* window() { return this; }
 
  private:
-  raw_ptr<IsolateHolder> isolate_holder_;
+  base::raw_ptr<IsolateHolder> isolate_holder_;
 };
 
 class V8Window {

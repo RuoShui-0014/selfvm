@@ -17,6 +17,8 @@ class IsolateHandle;
 class AsyncInfo;
 
 using ContextId = v8::Context*;
+using ScriptId = v8::UnboundScript*;
+using CopyData = std::pair<uint8_t*, size_t>;
 
 class ContextHandle final : public ScriptWrappable {
  public:
@@ -24,7 +26,8 @@ class ContextHandle final : public ScriptWrappable {
   ~ContextHandle() override;
 
   /*********************** js interface *************************/
-  std::pair<uint8_t*, size_t> Eval(std::string script, std::string filename);
+  CopyData Eval(std::string script, std::string filename);
+  void EvalIgnored(std::string script, std::string filename);
   void EvalAsync(std::unique_ptr<AsyncInfo> info,
                  std::string script,
                  std::string filename);

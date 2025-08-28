@@ -46,7 +46,7 @@ void SessionHandle::Connect(int port) const {
   isolate_holder_->PostInterruptTaskToSel(
       std::make_unique<ConnectAgentTask>(isolate_holder_, port));
 }
-void SessionHandle::AddContext(ContextHandle* context_handle,
+void SessionHandle::AddContext(const ContextHandle* context_handle,
                                std::string name) {
   class AddContextTask : public SyncTask<bool> {
    public:
@@ -74,11 +74,12 @@ void SessionHandle::AddContext(ContextHandle* context_handle,
     std::string name_;
   };
 
+  auto waiter{base::Waiter<bool>{}};
   auto task{std::make_unique<AddContextTask>(
       isolate_holder_, context_handle->GetContextId(), std::move(name))};
-  std::future future{task->GetFuture()};
+  task->SetWaiter(&waiter);
   isolate_holder_->PostTaskToSel(std::move(task));
-  future.get();
+  waiter.Wait();
 }
 void SessionHandle::Dispose() const {
   class DisconnectAgentTask : public v8::Task {
