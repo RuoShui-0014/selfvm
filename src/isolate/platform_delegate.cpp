@@ -3,6 +3,7 @@
 #include <map>
 
 namespace svm {
+
 namespace {
 PlatformDelegate delegate;
 }
@@ -31,4 +32,5 @@ void PlatformDelegate::RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop) {
 void PlatformDelegate::UnregisterIsolate(v8::Isolate* isolate) {
   delegate.node_platform->UnregisterIsolate(isolate);
 }
+
 }  // namespace svm

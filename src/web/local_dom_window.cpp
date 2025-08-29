@@ -6,23 +6,64 @@
 
 namespace svm {
 
+class TimerTask : public v8::Task {
+ public:
+  TimerTask(IsolateHolder* isolate_holder,
+            v8::Isolate* isolate,
+            v8::Local<v8::Context> context,
+            v8::Local<v8::Function> callback)
+      : isolate_holder_{isolate_holder},
+        isolate_{isolate},
+        context_{context},
+        callback_{isolate, callback} {
+    isolate_holder_->GetSchedulerPar()->Ref();
+  }
+  ~TimerTask() override {
+    isolate_holder_->GetSchedulerPar()->Unref();
+  }
+
+  void Run() override {
+    v8::HandleScope handle_scope{isolate_};
+    v8::Local context{context_.Get(isolate_)};
+    v8::Context::Scope context_scope{context};
+
+    callback_.Get(isolate_)->Call(context, context->Global(), 0, nullptr);
+  }
+
+ private:
+  IsolateHolder* isolate_holder_;
+  v8::Isolate* isolate_;
+  RemoteHandle<v8::Context> context_;
+  RemoteHandle<v8::Function> callback_;
+};
+
 LocalDOMWindow::LocalDOMWindow(IsolateHolder* isolate_holder)
     : isolate_holder_{isolate_holder} {}
 LocalDOMWindow::~LocalDOMWindow() = default;
 
-void LocalDOMWindow::PostTaskToSel(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostTaskToSel(std::move(task));
+void LocalDOMWindow::PostMacroTaskToSel(std::unique_ptr<v8::Task> task) const {
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
 }
-void LocalDOMWindow::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostTaskToPar(std::move(task));
+void LocalDOMWindow::PostMacroTaskToPar(std::unique_ptr<v8::Task> task) const {
+  isolate_holder_->PostMacroTaskToPar(std::move(task));
 }
-void LocalDOMWindow::PostDelayTaskToSel(std::unique_ptr<v8::Task> task,
-                                        double delay) const {
-  isolate_holder_->PostDelayedTaskToSel(std::move(task), delay);
+uint32_t LocalDOMWindow::PostTimeoutTaskToSel(std::unique_ptr<v8::Task> task,
+                                              uint64_t ms) const {
+  return isolate_holder_->PostTimeoutTaskToSel(std::move(task), ms);
+}
+uint32_t LocalDOMWindow::PostIntervalTaskToSel(std::unique_ptr<v8::Task> task,
+                                               uint64_t ms) const {
+  return isolate_holder_->PostIntervalTaskToSel(std::move(task), ms);
 }
 void LocalDOMWindow::PostDelayTaskToPar(std::unique_ptr<v8::Task> task,
                                         double delay) const {
   isolate_holder_->PostDelayedTaskToPar(std::move(task), delay);
+}
+void LocalDOMWindow::ClearTimout(uint32_t id) const {
+  isolate_holder_->GetTimerManagerSel()->StopTimer(id);
+}
+void LocalDOMWindow::ClearInterval(uint32_t id) const {
+  isolate_holder_->GetTimerManagerSel()->StopTimer(id);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -41,15 +82,7 @@ void WindowAttributeGetCallback(
   V8SetReturnValue(info, return_value);
 }
 
-void AtobOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  // v8::Local receiver{info.This()};
-  //
-  // LocalDOMWindow* blink_receiver =
-  //     ScriptWrappable::Unwrap<LocalDOMWindow>(receiver);
-  // LocalDOMWindow* return_value{blink_receiver->window()};
-
-  // info.GetReturnValue().Set();
-}
+void AtobOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {}
 
 void BtoaOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate{info.GetIsolate()};
@@ -68,28 +101,6 @@ void BtoaOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
 void SetTimeoutOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  class SetTimeoutTask : public v8::Task {
-   public:
-    SetTimeoutTask(v8::Isolate* isolate,
-                   v8::Local<v8::Context> context,
-                   v8::Local<v8::Function> callback)
-        : isolate_{isolate}, context_{context}, callback_(isolate, callback) {}
-    ~SetTimeoutTask() override = default;
-
-    void Run() override {
-      v8::HandleScope handle_scope{isolate_};
-      v8::Local context{context_.Get(isolate_)};
-      v8::Context::Scope context_scope{context};
-
-      callback_.Get(isolate_)->Call(context, context->Global(), 0, nullptr);
-    }
-
-   private:
-    v8::Isolate* isolate_;
-    RemoteHandle<v8::Context> context_;
-    RemoteHandle<v8::Function> callback_;
-  };
-
   v8::Isolate* isolate{info.GetIsolate()};
   if (info.Length() < 2) {
     isolate->ThrowException(v8::Exception::TypeError(
@@ -104,50 +115,19 @@ void SetTimeoutOperationCallback(
 
   v8::Local context{isolate->GetCurrentContext()};
   v8::Local receiver{info.This()};
-  LocalDOMWindow* local_dom_window{
+  const LocalDOMWindow* local_dom_window{
       ScriptWrappable::Unwrap<LocalDOMWindow>(receiver)};
-  auto task{std::make_unique<SetTimeoutTask>(isolate, context,
-                                             info[0].As<v8::Function>())};
-  local_dom_window->PostDelayTaskToSel(
-      std::move(task), info[1].As<v8::Number>()->Value() / 1000);
+  auto task{std::make_unique<TimerTask>(local_dom_window->GetIsolateHolder(),
+                                        isolate, context,
+                                        info[0].As<v8::Function>())};
+  uint32_t id{local_dom_window->PostTimeoutTaskToSel(
+      std::move(task),
+      info[1].As<v8::Number>()->Int32Value(context).FromMaybe(0))};
+  info.GetReturnValue().Set(id);
 }
 
 void SetIntervalOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  class SetIntervalTask : public v8::Task {
-   public:
-    SetIntervalTask(v8::Isolate* isolate,
-                    v8::Local<v8::Context> context,
-                    v8::Local<v8::Function> callback,
-                    double delay)
-        : isolate_{isolate},
-          delay_{delay},
-          context_{context},
-          callback_{isolate, callback} {}
-    ~SetIntervalTask() override = default;
-
-    void Run() override {
-      v8::HandleScope handle_scope{isolate_};
-      v8::Local context{context_.Get(isolate_)};
-      v8::Context::Scope context_scope{context};
-
-      callback_.Get(isolate_)->Call(context, context->Global(), 0, nullptr);
-
-      v8::Local receiver{context->Global()};
-      LocalDOMWindow* local_dom_window{
-          ScriptWrappable::Unwrap<LocalDOMWindow>(receiver)};
-      auto task{std::make_unique<SetIntervalTask>(
-          isolate_, context, callback_.Get(isolate_), delay_)};
-      local_dom_window->PostDelayTaskToSel(std::move(task), delay_);
-    }
-
-   private:
-    v8::Isolate* isolate_;
-    double delay_;
-    RemoteHandle<v8::Context> context_;
-    RemoteHandle<v8::Function> callback_;
-  };
-
   v8::Isolate* isolate{info.GetIsolate()};
   if (info.Length() < 2) {
     isolate->ThrowException(v8::Exception::TypeError(
@@ -159,15 +139,56 @@ void SetIntervalOperationCallback(
   if (!info[0]->IsFunction() && !info[1]->IsNumber()) {
     return;
   }
-  double delay{info[1].As<v8::Number>()->Value() / 1000};
 
   v8::Local context{isolate->GetCurrentContext()};
   v8::Local receiver{info.This()};
   LocalDOMWindow* local_dom_window{
       ScriptWrappable::Unwrap<LocalDOMWindow>(receiver)};
-  auto task{std::make_unique<SetIntervalTask>(
-      isolate, context, info[0].As<v8::Function>(), delay)};
-  local_dom_window->PostDelayTaskToSel(std::move(task), delay);
+  auto task{std::make_unique<TimerTask>(local_dom_window->GetIsolateHolder(),
+                                        isolate, context,
+                                        info[0].As<v8::Function>())};
+  uint32_t id{local_dom_window->PostIntervalTaskToSel(
+      std::move(task),
+      info[1].As<v8::Number>()->Int32Value(context).FromMaybe(0))};
+  info.GetReturnValue().Set(id);
+}
+
+void ClearTimeoutOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate{info.GetIsolate()};
+  if (info.Length() < 1) {
+    return;
+  }
+  if (!info[0]->IsNumber()) {
+    return;
+  }
+
+  v8::Local context{isolate->GetCurrentContext()};
+  v8::Local receiver{info.This()};
+  LocalDOMWindow* local_dom_window{
+      ScriptWrappable::Unwrap<LocalDOMWindow>(receiver)};
+
+  int id{info[0].As<v8::Number>()->Int32Value(context).FromMaybe(0)};
+  local_dom_window->ClearTimout(id);
+}
+
+void ClearIntervalOperationCallback(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate{info.GetIsolate()};
+  if (info.Length() < 1) {
+    return;
+  }
+  if (!info[0]->IsNumber()) {
+    return;
+  }
+
+  v8::Local context{isolate->GetCurrentContext()};
+  v8::Local receiver{info.This()};
+  LocalDOMWindow* local_dom_window{
+      ScriptWrappable::Unwrap<LocalDOMWindow>(receiver)};
+
+  int id{info[0].As<v8::Number>()->Int32Value(context).FromMaybe(0)};
+  local_dom_window->ClearTimout(id);
 }
 
 void IsolateExposedConstructCallback(
@@ -200,6 +221,10 @@ void V8Window::InstallInterfaceTemplate(
       {"setTimeout", 2, SetTimeoutOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kInstance},
       {"setInterval", 2, SetIntervalOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kInstance},
+      {"clearTimeout", 1, ClearTimeoutOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kInstance},
+      {"clearInterval", 1, ClearIntervalOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kInstance},
   };
   ExposedConstructConfig exposedConstructs[]{

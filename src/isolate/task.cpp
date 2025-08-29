@@ -9,11 +9,11 @@ AsyncInfo::AsyncInfo(const std::shared_ptr<IsolateHolder>& isolate_holder,
                      RemoteHandle<v8::Context> context,
                      RemoteHandle<v8::Promise::Resolver> resolver)
     : isolate_holder_{isolate_holder}, context{context}, resolver{resolver} {
-  isolate_holder_->GetSchedulerPar()->KeepAlive();
+  isolate_holder_->GetSchedulerPar()->Ref();
 }
 
 AsyncInfo::~AsyncInfo() {
-  isolate_holder_->GetSchedulerPar()->WillDie();
+  isolate_holder_->GetSchedulerPar()->Unref();
 }
 
 v8::Isolate* AsyncInfo::GetIsolateSel() const {
@@ -25,7 +25,7 @@ v8::Isolate* AsyncInfo::GetIsolatePar() const {
 }
 
 void AsyncInfo::PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostHandleTaskToPar(std::move(task));
+  isolate_holder_->PostMicroTaskToPar(std::move(task));
 }
 
 AsyncTask::AsyncTask(std::unique_ptr<AsyncInfo> info)

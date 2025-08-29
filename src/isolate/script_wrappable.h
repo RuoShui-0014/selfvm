@@ -20,9 +20,11 @@ class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
 
   template <class T>
   static T* Unwrap(const v8::Local<v8::Object> object) {
-    assert(!object.IsEmpty());
-    assert(object->InternalFieldCount() > 1);
-    const v8::Isolate* isolate = object->GetIsolate();
+    assert(!object.IsEmpty() && "Unwrap target is empty.");
+    assert(object->InternalFieldCount() > 1 &&
+           "Unwrap target is internal field count not >1.");
+
+    const v8::Isolate* isolate{object->GetIsolate()};
     const v8::WrapperDescriptor descriptor{
         isolate->GetCppHeap()->wrapper_descriptor()};
     auto* ptr{static_cast<ScriptWrappable*>(
@@ -51,12 +53,18 @@ class ScriptWrappable : public cppgc::GarbageCollected<ScriptWrappable> {
  */
 template <typename T, typename... Args>
 T* MakeCppGcObject_1(Args&&... args) {
+  static_assert(std::is_base_of_v<ScriptWrappable, T>,
+                "Cppgc class have to base of ScriptWrappable.");
+
   return cppgc::MakeGarbageCollected<T>(
       v8::Isolate::GetCurrent()->GetCppHeap()->GetAllocationHandle(),
       std::forward<Args>(args)...);
 }
 template <typename T, typename... Args>
 T* MakeCppGcObject_2(v8::Isolate* isolate, Args&&... args) {
+  static_assert(std::is_base_of_v<ScriptWrappable, T>,
+                "Cppgc class have to base of ScriptWrappable.");
+
   return cppgc::MakeGarbageCollected<T>(
       isolate->GetCppHeap()->GetAllocationHandle(),
       std::forward<Args>(args)...);
@@ -65,6 +73,9 @@ T* MakeCppGcObject_2(v8::Isolate* isolate, Args&&... args) {
 enum class GC { kCurrent, kSpecified };
 template <GC e, typename T, typename... Args>
 T* MakeCppGcObject(Args&&... args) {
+  static_assert(std::is_base_of_v<ScriptWrappable, T>,
+                "Cppgc class have to base of ScriptWrappable.");
+
   if constexpr (e == GC::kCurrent) {
     return MakeCppGcObject_1<T>(std::forward<Args>(args)...);
   } else {

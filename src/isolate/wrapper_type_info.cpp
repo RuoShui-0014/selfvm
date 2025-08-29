@@ -11,11 +11,10 @@ v8::Local<v8::Template> WrapperTypeInfo::GetV8ClassTemplate(
   if (!v8_template.IsEmpty()) {
     return v8_template;
   }
+
   v8_template = v8::FunctionTemplate::New(isolate);
   install_interface_template_func(isolate, v8_template);
-
   per_isolate_data->AddV8Template(this, v8_template);
-
   return v8_template;
 }
 

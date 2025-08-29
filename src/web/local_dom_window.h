@@ -13,10 +13,19 @@ class LocalDOMWindow final : public ScriptWrappable {
   explicit LocalDOMWindow(IsolateHolder* isolate_holder);
   ~LocalDOMWindow() override;
 
-  void PostTaskToSel(std::unique_ptr<v8::Task> task) const;
-  void PostTaskToPar(std::unique_ptr<v8::Task> task) const;
-  void PostDelayTaskToSel(std::unique_ptr<v8::Task> task, double delay) const;
+  IsolateHolder* GetIsolateHolder() const { return isolate_holder_.get(); }
+
+  void PostMacroTaskToSel(std::unique_ptr<v8::Task> task) const;
+  uint32_t PostTimeoutTaskToSel(std::unique_ptr<v8::Task> task,
+                                uint64_t ms) const;
+  uint32_t PostIntervalTaskToSel(std::unique_ptr<v8::Task> task,
+                                 uint64_t ms) const;
+
+  void PostMacroTaskToPar(std::unique_ptr<v8::Task> task) const;
   void PostDelayTaskToPar(std::unique_ptr<v8::Task> task, double delay) const;
+
+  void ClearTimout(uint32_t id) const;
+  void ClearInterval(uint32_t id) const;
 
   LocalDOMWindow* window() { return this; }
 

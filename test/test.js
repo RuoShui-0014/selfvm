@@ -43,9 +43,9 @@ const ctx = isolate.context
 // delete this.ctx
 // svm.gc()
 let port = 10001;
-registerSession();
+// registerSession();
 const session = isolate.session
-session.connect(port++);
+// session.connect(port++);
 session.addContext(ctx, "session_01");
 
 debugger
@@ -60,33 +60,48 @@ debugger
 // `, "filename.js");
 // console.log(script.run(ctx))
 
-isolate.createScriptAsync("this.a = {title: 'createScriptAsync test.'}"
+isolate.createScriptAsync(`this.id = setInterval(()=>{this.num = 99;}, 2000)`
     , "filename.js").then(script1 => {
     const result = script1.run(ctx);
     console.log(`微任务成功 createScriptAsync() = `, result);
 }, error => {
     console.log(`微任务失败 createScriptAsync() = `, error);
 });
-
 let index = 0, id = 0;
 id = setInterval(async () => {
     try {
-        const result = await ctx.evalAsync(`this.isolate = new Isolate();
-this.ctx = isolate.context;
-this.session = isolate.session
-this.session.connect(${port++});
-debugger;
-this.session.addContext(ctx, "session_02");
-this.result = this.ctx.eval("debugger;this.a = {title: 'test 套娃'}");
-`, "test" + index++);
+        const result = await ctx.evalAsync(`this.id`, "test" + index++);
         console.log(`调试 eval result = `, result)
         svm.gc()
     } catch (e) {
         console.error(e)
     }
 
-    if (index >= 2) {
-        unregisterSession();
+    if (index >= 5) {
         clearInterval(id);
+        ctx.evalAsync(`clearInterval(this.id)`, "test" + index++);
     }
-}, 10000);
+}, 1500);
+
+// let index = 0, id = 0;
+// id = setInterval(async () => {
+//     try {
+//         const result = await ctx.evalAsync(`this.isolate = new Isolate();
+// this.ctx = isolate.context;
+// this.session = isolate.session
+// this.session.connect(${port++});
+// debugger;
+// this.session.addContext(ctx, "session_02");
+// this.result = this.ctx.eval("debugger;this.a = {title: 'test 套娃'}");
+// `, "test" + index++);
+//         console.log(`调试 eval result = `, result)
+//         svm.gc()
+//     } catch (e) {
+//         console.error(e)
+//     }
+//
+//     if (index >= 2) {
+//         unregisterSession();
+//         clearInterval(id);
+//     }
+// }, 10000);

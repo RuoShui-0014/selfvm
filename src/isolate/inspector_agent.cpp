@@ -36,10 +36,10 @@ Scheduler* InspectorAgent::GetAgent(int port) {
 
 InspectorAgent::InspectorAgent(v8::Isolate* isolate, Scheduler* scheduler)
     : isolate_{isolate}, scheduler_{scheduler} {
-  LOG_INFO("InspectorAgent create.");
+  LOG_INFO("Inspector agent create.");
 }
 InspectorAgent::~InspectorAgent() {
-  LOG_INFO("InspectorAgent Delete.");
+  LOG_INFO("Inspector agent delete.");
 }
 
 void InspectorAgent::Connect(int port) {

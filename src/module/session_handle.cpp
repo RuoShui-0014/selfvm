@@ -78,7 +78,7 @@ void SessionHandle::AddContext(const ContextHandle* context_handle,
   auto task{std::make_unique<AddContextTask>(
       isolate_holder_, context_handle->GetContextId(), std::move(name))};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostInterruptTaskToSel(std::move(task));
   waiter.Wait();
 }
 void SessionHandle::Dispose() const {

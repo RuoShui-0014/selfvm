@@ -1,7 +1,3 @@
-//
-// Created by ruoshui on 2025/8/8.
-//
-
 #pragma once
 
 #include <uv.h>
@@ -10,10 +6,10 @@
 
 namespace svm {
 
-class Request {
+class TcpStream {
  public:
-  explicit Request(uv_loop_t* loop, std::string url);
-  ~Request();
+  explicit TcpStream(uv_loop_t* loop, std::string url);
+  ~TcpStream();
 
   void Connect() const;
   void Send();
@@ -26,7 +22,6 @@ class Request {
  private:
   void SetStatus(int status);
   void SetData(const char* data);
-
 
   std::string url_;
   std::string data_;

@@ -76,14 +76,14 @@ std::pair<uint8_t*, size_t> ScriptHandle::Run(
   auto task{std::make_unique<ScriptRunTask>(
       isolate_holder_, context_handle->GetContextId(), address_)};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
   return waiter.WaitFor();
 }
 
 void ScriptHandle::RunIgnored(const ContextHandle* context_handle) {
   auto task{std::make_unique<ScriptRunTask>(
       isolate_holder_, context_handle->GetContextId(), address_)};
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
 }
 
 void ScriptHandle::Release() const {

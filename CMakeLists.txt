@@ -4,12 +4,7 @@ set(PROJECT_NAME self-vm)
 project(${PROJECT_NAME} VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} SHARED
-    src/base/raw_ptr.h
-    src/isolate/inspector_agent.cpp
-    src/isolate/inspector_agent.h
-    src/net/request.cpp
-    src/net/request.h)
+add_library(${PROJECT_NAME} SHARED)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${PROJECT_NAME} PRIVATE
@@ -44,6 +39,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_JS_INC})
 target_sources(${PROJECT_NAME} PRIVATE
     src/addon.cpp
 
+    src/base/raw_ptr.h
     src/base/logger.cpp
     src/base/logger.h
 
@@ -66,6 +62,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     src/isolate/external_data.h
     src/isolate/task.cpp
     src/isolate/task.h
+    src/isolate/inspector_agent.cpp
+    src/isolate/inspector_agent.h
 
     src/module/string.h
     src/module/isolate_handle.cpp
@@ -82,6 +80,11 @@ target_sources(${PROJECT_NAME} PRIVATE
 
     src/net/request.cpp
     src/net/request.h
+    src/net/tcp_stream.cpp
+    src/net/tcp_stream.h
+
+    src/native/timer_manager.cpp
+    src/native/timer_manager.h
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB})
 

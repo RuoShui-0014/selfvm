@@ -21,8 +21,8 @@ PerIsolateData::~PerIsolateData() {
 }
 
 v8::Local<v8::Template> PerIsolateData::FindV8Template(const void* key) {
-  auto result{template_map_.find(key)};
-  if (result != template_map_.end()) {
+  if (const auto result{template_map_.find(key)};
+      result != template_map_.end()) {
     return result->second.Get(isolate_);
   }
   return v8::Local<v8::Template>{};
@@ -41,6 +41,7 @@ void PerIsolateData::Reset(v8::Isolate* isolate) {
   isolate_ = isolate;
   isolate->SetData(IsolateData::kPerIsolateData, this);
 }
+
 Scheduler* PerIsolateData::GetScheduler() const {
   return scheduler_;
 }

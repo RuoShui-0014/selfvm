@@ -45,7 +45,7 @@ IsolateHolder::IsolateHolder(IsolateParams& params)
 }
 
 IsolateHolder::~IsolateHolder() {
-  LOG_INFO("IsolateHolder delete.");
+  LOG_INFO("Isolate holder delete.");
 
   context_map_.clear();
   unbound_script_map_.clear();
@@ -53,27 +53,32 @@ IsolateHolder::~IsolateHolder() {
   scheduler_sel_.reset();
 }
 
-void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task) const {
-  scheduler_sel_->PostTask(std::move(task));
+void IsolateHolder::PostMacroTaskToSel(std::unique_ptr<v8::Task> task) const {
+  scheduler_sel_->PostMacroTask(std::move(task));
 }
-void IsolateHolder::PostHandleTaskToSel(std::unique_ptr<v8::Task> task) const {
-  scheduler_sel_->PostHandleTask(std::move(task));
+void IsolateHolder::PostMicroTaskToSel(std::unique_ptr<v8::Task> task) const {
+  scheduler_sel_->PostMicroTask(std::move(task));
 }
-void IsolateHolder::PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
-                                         double delay_in_seconds) const {
-  scheduler_sel_->TaskRunner()->PostDelayedTask(std::move(task),
-                                                delay_in_seconds);
+uint32_t IsolateHolder::PostTimeoutTaskToSel(std::unique_ptr<v8::Task> task,
+                                             uint64_t ms) const {
+  return GetTimerManagerSel()->AddTimer(Timer::Type::ktimeout, ms,
+                                        std::move(task));
 }
+uint32_t IsolateHolder::PostIntervalTaskToSel(std::unique_ptr<v8::Task> task,
+                                              uint64_t ms) const {
+  return GetTimerManagerSel()->AddTimer(Timer::Type::kInterval, ms,
+                                        std::move(task));
+}
+
 void IsolateHolder::PostInterruptTaskToSel(
     std::unique_ptr<v8::Task> task) const {
   scheduler_sel_->PostInterruptTask(std::move(task));
 }
-
-void IsolateHolder::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
-  scheduler_par_->PostTask(std::move(task));
+void IsolateHolder::PostMacroTaskToPar(std::unique_ptr<v8::Task> task) const {
+  scheduler_par_->PostMacroTask(std::move(task));
 }
-void IsolateHolder::PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const {
-  scheduler_par_->PostHandleTask(std::move(task));
+void IsolateHolder::PostMicroTaskToPar(std::unique_ptr<v8::Task> task) const {
+  scheduler_par_->PostMicroTask(std::move(task));
 }
 void IsolateHolder::PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                                          double delay_in_seconds) const {

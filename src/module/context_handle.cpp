@@ -171,13 +171,13 @@ CopyData ContextHandle::Eval(std::string script, std::string filename) {
   auto task{std::make_unique<ScriptTask>(
       isolate_holder_, GetContextId(), std::move(script), std::move(filename))};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
   return waiter.WaitFor();
 }
 void ContextHandle::EvalIgnored(std::string script, std::string filename) {
   auto task{std::make_unique<ScriptTask>(
       isolate_holder_, GetContextId(), std::move(script), std::move(filename))};
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
@@ -185,7 +185,7 @@ void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
                               std::string filename) {
   auto task{std::make_unique<ScriptAsyncTask>(
       std::move(info), this, std::move(script), std::move(filename))};
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
 }
 
 void ContextHandle::Release() const {

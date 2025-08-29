@@ -14,7 +14,7 @@
 
 namespace svm {
 
-class CreateContextTask : public SyncTask<v8::Context*> {
+class CreateContextTask final : public SyncTask<v8::Context*> {
  public:
   explicit CreateContextTask(
       const std::shared_ptr<IsolateHolder>& isolate_holder)
@@ -31,7 +31,7 @@ class CreateContextTask : public SyncTask<v8::Context*> {
 };
 class CreateContextAsyncTask final : public AsyncTask {
  public:
-  class Callback : public v8::Task {
+  class Callback final : public v8::Task {
    public:
     explicit Callback(std::unique_ptr<AsyncInfo> info,
                       IsolateHandle* isolate_handle,
@@ -111,7 +111,7 @@ class CompileScriptTask final : public SyncTask<ScriptId> {
 };
 class CompileScriptAsyncTask final : public AsyncTask {
  public:
-  class Callback : public v8::Task {
+  class Callback final : public v8::Task {
    public:
     Callback(std::unique_ptr<AsyncInfo> info,
              IsolateHandle* isolate_handle,
@@ -224,7 +224,7 @@ ContextHandle* IsolateHandle::CreateContext() {
   auto waiter{base::Waiter<ContextId>{}};
   auto task{std::make_unique<CreateContextTask>(isolate_holder_)};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
   auto id{waiter.WaitFor()};
 
   auto* isolate{isolate_holder_->GetIsolatePar()};
@@ -235,7 +235,7 @@ ContextHandle* IsolateHandle::CreateContext() {
 
 void IsolateHandle::CreateContextAsync(std::unique_ptr<AsyncInfo> info) {
   auto task{std::make_unique<CreateContextAsyncTask>(std::move(info), this)};
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
 }
 
 ScriptHandle* IsolateHandle::CreateScript(std::string script,
@@ -244,7 +244,7 @@ ScriptHandle* IsolateHandle::CreateScript(std::string script,
   auto task{std::make_unique<CompileScriptTask>(
       isolate_holder_, GetContextHandle()->GetContextId(), script, filename)};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
   ScriptId address{waiter.WaitFor()};
 
   if (!address) {
@@ -262,7 +262,7 @@ void IsolateHandle::CreateScriptAsync(std::unique_ptr<AsyncInfo> info,
   auto task{std::make_unique<CompileScriptAsyncTask>(
       std::move(info), GetContextHandle(), std::move(script),
       std::move(filename))};
-  isolate_holder_->PostTaskToSel(std::move(task));
+  isolate_holder_->PostMacroTaskToSel(std::move(task));
 }
 
 SessionHandle* IsolateHandle::GetInspectorSession() {
@@ -278,7 +278,7 @@ SessionHandle* IsolateHandle::GetInspectorSession() {
 }
 
 void IsolateHandle::IsolateGc() const {
-  isolate_holder_->PostTaskToSel(
+  isolate_holder_->PostMacroTaskToSel(
       std::make_unique<IsolateGcTask>(isolate_holder_->GetIsolateSel()));
 }
 
