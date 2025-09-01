@@ -1,14 +1,10 @@
-//
-// Created by ruoshui on 25-7-2.
-//
-
 #pragma once
 
 #include <cppgc/member.h>
 
-#include "../isolate/script_wrappable.h"
-#include "../isolate/task.h"
-#include "../isolate/wrapper_type_info.h"
+#include "isolate/script_wrappable.h"
+#include "isolate/task.h"
+#include "isolate/wrapper_type_info.h"
 
 namespace svm {
 

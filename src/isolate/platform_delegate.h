@@ -6,20 +6,12 @@
 namespace svm {
 class PlatformDelegate final {
  public:
-  explicit PlatformDelegate(node::MultiIsolatePlatform* node_platform)
-      : node_platform{node_platform} {}
-
-  PlatformDelegate() = default;
-  ~PlatformDelegate() = default;
-
+  PlatformDelegate() = delete;
+  ~PlatformDelegate() = delete;
   PlatformDelegate(const PlatformDelegate&) = delete;
   PlatformDelegate(PlatformDelegate&&) = delete;
   auto operator=(const PlatformDelegate&) = delete;
-
-  auto operator=(PlatformDelegate&& delegate) noexcept -> PlatformDelegate& {
-    node_platform = std::exchange(delegate.node_platform, nullptr);
-    return *this;
-  }
+  auto operator=(PlatformDelegate&& delegate) noexcept = delete;
 
   static void InitializeDelegate();
   static node::MultiIsolatePlatform* GetNodePlatform();
@@ -27,7 +19,5 @@ class PlatformDelegate final {
                               node::IsolatePlatformDelegate* isolate_delegate);
   static void RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop);
   static void UnregisterIsolate(v8::Isolate* isolate);
-
-  node::MultiIsolatePlatform* node_platform = nullptr;
 };
 }  // namespace svm

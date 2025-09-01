@@ -3,14 +3,14 @@
 #include <cppgc/member.h>
 #include <cppgc/visitor.h>
 
-#include "../base/logger.h"
-#include "../isolate/isolate_holder.h"
-#include "../isolate/task.h"
-#include "../utils/utils.h"
-#include "context_handle.h"
-#include "script_handle.h"
-#include "session_handle.h"
-#include "string.h"
+#include "base/logger.h"
+#include "isolate/isolate_holder.h"
+#include "isolate/task.h"
+#include "module/context_handle.h"
+#include "module/script_handle.h"
+#include "module/session_handle.h"
+#include "utils/string.h"
+#include "utils/utils.h"
 
 namespace svm {
 
@@ -224,7 +224,7 @@ ContextHandle* IsolateHandle::CreateContext() {
   auto waiter{base::Waiter<ContextId>{}};
   auto task{std::make_unique<CreateContextTask>(isolate_holder_)};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
   auto id{waiter.WaitFor()};
 
   auto* isolate{isolate_holder_->GetIsolatePar()};
@@ -235,7 +235,7 @@ ContextHandle* IsolateHandle::CreateContext() {
 
 void IsolateHandle::CreateContextAsync(std::unique_ptr<AsyncInfo> info) {
   auto task{std::make_unique<CreateContextAsyncTask>(std::move(info), this)};
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
 }
 
 ScriptHandle* IsolateHandle::CreateScript(std::string script,
@@ -244,7 +244,7 @@ ScriptHandle* IsolateHandle::CreateScript(std::string script,
   auto task{std::make_unique<CompileScriptTask>(
       isolate_holder_, GetContextHandle()->GetContextId(), script, filename)};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
   ScriptId address{waiter.WaitFor()};
 
   if (!address) {
@@ -262,7 +262,7 @@ void IsolateHandle::CreateScriptAsync(std::unique_ptr<AsyncInfo> info,
   auto task{std::make_unique<CompileScriptAsyncTask>(
       std::move(info), GetContextHandle(), std::move(script),
       std::move(filename))};
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
 }
 
 SessionHandle* IsolateHandle::GetInspectorSession() {
@@ -278,8 +278,9 @@ SessionHandle* IsolateHandle::GetInspectorSession() {
 }
 
 void IsolateHandle::IsolateGc() const {
-  isolate_holder_->PostMacroTaskToSel(
-      std::make_unique<IsolateGcTask>(isolate_holder_->GetIsolateSel()));
+  isolate_holder_->PostTaskToSel(
+      std::make_unique<IsolateGcTask>(isolate_holder_->GetIsolateSel()),
+      Scheduler::TaskType::kMacro);
 }
 
 void IsolateHandle::Release() {

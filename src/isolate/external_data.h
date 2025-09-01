@@ -1,12 +1,16 @@
-//
-// Created by ruoshui on 25-7-4.
-//
-
 #pragma once
 
-#include "../utils/utils.h"
+#include "utils/utils.h"
 
 namespace svm {
+
+class DataDelegate final : public v8::ValueSerializer::Delegate {
+ public:
+  DataDelegate() = default;
+  ~DataDelegate() override = default;
+
+  void ThrowDataCloneError(v8::Local<v8::String> msg) override {}
+};
 
 class ExternalData {
  public:
@@ -22,16 +26,18 @@ class ExternalData {
   };
 
   static std::pair<uint8_t*, size_t> SerializerSync(const SourceData& source);
-  static std::pair<uint8_t*, size_t> SerializerAsync(const SourceData& source);
-
   static v8::Local<v8::Value> DeserializerSync(
       v8::Isolate* isolate,
       v8::Local<v8::Context> context,
-      std::pair<uint8_t*, size_t>& buff);
+      std::pair<uint8_t*, size_t>& buffer);
+
+  static std::pair<uint8_t*, size_t> SerializerAsync(const SourceData& source);
   static v8::Local<v8::Value> DeserializerAsync(
       v8::Isolate* isolate,
       v8::Local<v8::Context> context,
       std::pair<uint8_t*, size_t>& buff);
+
+  static void FreeBufferMemory(std::pair<uint8_t*, size_t>& buffer);
 };
 
 }  // namespace svm

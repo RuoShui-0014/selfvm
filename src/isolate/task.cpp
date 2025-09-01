@@ -1,7 +1,7 @@
 #include "task.h"
 
-#include "../isolate/isolate_holder.h"
-#include "../utils/utils.h"
+#include "isolate/isolate_holder.h"
+#include "utils/utils.h"
 
 namespace svm {
 
@@ -25,7 +25,7 @@ v8::Isolate* AsyncInfo::GetIsolatePar() const {
 }
 
 void AsyncInfo::PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostMicroTaskToPar(std::move(task));
+  isolate_holder_->PostTaskToPar(std::move(task), Scheduler::TaskType::kMicro);
 }
 
 AsyncTask::AsyncTask(std::unique_ptr<AsyncInfo> info)

@@ -1,13 +1,10 @@
-//
-// Created by ruoshui on 25-7-4.
-//
-
 #pragma once
+
 #include <v8.h>
 
 #include <unordered_map>
 
-#include "wrapper_type_info.h"
+#include "isolate/wrapper_type_info.h"
 
 namespace svm {
 
@@ -23,7 +20,7 @@ class PerIsolateData final {
 
   static PerIsolateData* From(v8::Isolate* isolate) {
     return static_cast<PerIsolateData*>(
-        isolate->GetData(static_cast<uint32_t>(IsolateData::kPerIsolateData)));
+        isolate->GetData(IsolateData::kPerIsolateData));
   }
 
   V8TemplateMap& GetV8TemplateMap() { return template_map_; }

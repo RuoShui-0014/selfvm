@@ -2,12 +2,11 @@
 
 #include <memory>
 
-#include "../isolate/task.h"
+#include "isolate/task.h"
 #include "uv.h"
 
 namespace svm {
 
-class IsolateHolder;
 class TimerManager;
 
 struct Timer {
@@ -18,8 +17,8 @@ struct Timer {
   std::unique_ptr<v8::Task> task;
   std::unique_ptr<uv_timer_t> timer;
   uint32_t delay;
-  Type type;
   uint32_t id;
+  Type type;
 };
 
 class TimerManager {
@@ -29,11 +28,12 @@ class TimerManager {
 
   static void OnCallback(uv_timer_t* time_t);
 
-  uint32_t AddTimer(Timer::Type type,
+  uint32_t AddTimer(std::unique_ptr<v8::Task> task,
                     uint64_t ms,
-                    std::unique_ptr<v8::Task> task);
+                    Timer::Type type);
   uint32_t AddTimer(std::unique_ptr<Timer> timer);
   void StopTimer(uint32_t id);
+  void ClearAllTimer();
 
  private:
   uv_loop_t* loop_{nullptr};

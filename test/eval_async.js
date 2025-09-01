@@ -1,17 +1,22 @@
-const { svm } = require('../self-vm');
+const {svm} = require('../self-vm');
 
 const isolate = new svm.Isolate();
 
 const ctx = isolate.context
 
 // context可通过evalSync进行代码的异步运行
-async function test(i) {
+async function test(index, num) {
     try {
-        console.time("eval_Async" + i)
+        if (index === num - 1) {
+            console.time("eval_Async" + index)
+        }
         ctx.evalAsync(`
-        this.a = {name: 'Jack', age: 18};
+        this.a = {name: 'Jack', age: ${index}};
         JSON.stringify(this.a);`, "self-vm.js").then(result => {
-            console.timeEnd("eval_Async" + i)
+            if (index === num - 1) {
+                console.timeEnd("eval_Async" + index)
+                console.log(result)
+            }
         }, error => {
             console.log(`微任务失败  evalAsync() = `, error);
         });
@@ -19,6 +24,8 @@ async function test(i) {
         console.error('Error:', err);
     }
 }
-for (let i = 0; i < 100; i++) {
-    test(i)
+
+const num = 1000
+for (let i = 0; i < num; i++) {
+    test(i, num)
 }

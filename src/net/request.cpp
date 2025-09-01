@@ -1,7 +1,3 @@
-//
-// Created by ruoshui on 2025/8/8.
-//
-
 #include "request.h"
 
 #include <iostream>

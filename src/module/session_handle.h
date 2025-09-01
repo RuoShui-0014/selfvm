@@ -1,16 +1,12 @@
-//
-// Created by ruoshui on 25-7-11.
-//
-
 #pragma once
 
 #include <cppgc/member.h>
 
 #include <optional>
 
-#include "../isolate/script_wrappable.h"
-#include "../utils/utils.h"
-#include "../vendor/v8-inspector.h"
+#include "isolate/script_wrappable.h"
+#include "utils/utils.h"
+#include "vendor/v8-inspector.h"
 
 namespace svm {
 

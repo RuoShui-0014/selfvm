@@ -1,15 +1,9 @@
-//
-// Created by ruoshui on 25-7-5.
-//
-
 #pragma once
 
 #include <v8.h>
 
-#include <future>
-
-#include "../base/waiter.h"
-#include "../utils/utils.h"
+#include "base/waiter.h"
+#include "utils/utils.h"
 
 namespace svm {
 
@@ -20,7 +14,7 @@ template <typename T>
 class SyncTask : public v8::Task {
  public:
   explicit SyncTask() = default;
-  ~SyncTask() override = default;
+  ~SyncTask() override {}
 
   std::unique_ptr<base::Waiter<T>> CreateWaiter() {
     auto waiter{std::make_unique<base::Waiter<T>>()};

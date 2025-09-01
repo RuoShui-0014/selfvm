@@ -1,6 +1,6 @@
-#include "wrapper_type_info.h"
+#include "isolate/wrapper_type_info.h"
 
-#include "per_isolate_data.h"
+#include "isolate/per_isolate_data.h"
 
 namespace svm {
 

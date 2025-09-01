@@ -4,7 +4,7 @@
 
 #include <span>
 
-#include "../isolate/wrapper_type_info.h"
+#include "isolate/wrapper_type_info.h"
 
 namespace svm {
 

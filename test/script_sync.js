@@ -5,6 +5,7 @@ const isolate = new svm.Isolate();
 const ctx = isolate.context
 
 measurePerformance(() => {
-    const script = isolate.createScript("this.a = {name: 'Jack', age: 18};", "filename.js");
+    const script = isolate.createScript(`this.a = {name: 'Jack', age: 18};
+    JSON.stringify(this.a);`, "filename.js");
     const result = script.run(ctx)
-}, 10000);
+}, 1000);

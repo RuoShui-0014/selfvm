@@ -1,13 +1,9 @@
-//
-// Created by ruoshui on 25-7-31.
-//
-
 #pragma once
 
-#include "../isolate/script_wrappable.h"
-#include "../utils/utils.h"
-#include "../vendor/v8-inspector.h"
-#include "scheduler.h"
+#include "isolate/scheduler.h"
+#include "isolate/script_wrappable.h"
+#include "utils/utils.h"
+#include "vendor/v8-inspector.h"
 
 namespace svm {
 

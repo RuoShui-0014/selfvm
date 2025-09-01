@@ -2,7 +2,7 @@
 
 #include <v8.h>
 
-#include "script_wrappable.h"
+#include "isolate/script_wrappable.h"
 
 namespace svm {
 

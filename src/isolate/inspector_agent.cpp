@@ -1,15 +1,11 @@
-//
-// Created by ruoshui on 25-7-31.
-//
+#include "isolate/inspector_agent.h"
 
-#include "inspector_agent.h"
+#include "base/logger.h"
+#include "isolate/scheduler.h"
 
-#ifdef DEBUG
+#if defined(DEBUG_FLAG)
 #include <iostream>
 #endif
-
-#include "../base/logger.h"
-#include "scheduler.h"
 
 namespace svm {
 
@@ -39,6 +35,8 @@ InspectorAgent::InspectorAgent(v8::Isolate* isolate, Scheduler* scheduler)
   LOG_INFO("Inspector agent create.");
 }
 InspectorAgent::~InspectorAgent() {
+  Disconnect();
+
   LOG_INFO("Inspector agent delete.");
 }
 
@@ -76,14 +74,14 @@ void InspectorAgent::Connect(int port) {
    private:
     int port_;
   };
-  UVSchedulerPar::nodejs_scheduler->PostInterruptTask(
-      std::make_unique<ConnectTask>(port));
+  UVSchedulerPar::nodejs_scheduler->PostTask(
+      std::make_unique<ConnectTask>(port), Scheduler::TaskType::kInterrupt);
   port_ = port;
   RegisterAgent(port, scheduler_);
   is_connected_ = true;
 }
 void InspectorAgent::Disconnect() {
-  if (!UVSchedulerPar::nodejs_scheduler) {
+  if (!UVSchedulerPar::nodejs_scheduler || !is_connected_) {
     return;
   }
 
@@ -110,8 +108,8 @@ void InspectorAgent::Disconnect() {
    private:
     int port_;
   };
-  UVSchedulerPar::nodejs_scheduler->PostInterruptTask(
-      std::make_unique<DisconnectTask>(port_));
+  UVSchedulerPar::nodejs_scheduler->PostTask(
+      std::make_unique<DisconnectTask>(port_), Scheduler::TaskType::kInterrupt);
   UnregisterAgent(port_);
   is_connected_ = false;
 }
@@ -145,8 +143,8 @@ void InspectorAgent::runMessageLoopOnPause(int context_group_id) {
   waiting_for_resume_.store(true);
 
   while (waiting_for_frontend_.load() && waiting_for_resume_.load()) {
-    UVSchedulerSel* scheduler{static_cast<UVSchedulerSel*>(scheduler_)};
-    scheduler->RunInterruptTasks();
+    auto* scheduler{static_cast<UVSchedulerSel*>(scheduler_)};
+    scheduler->FlushInterruptTasks();
   }
 
   running_nested_loop_.store(false);
@@ -198,8 +196,9 @@ void InspectorAgent::sendResponse(
     std::unique_ptr<v8_inspector::StringBuffer> message_;
   };
   if (UVSchedulerPar::nodejs_scheduler) {
-    UVSchedulerPar::nodejs_scheduler->PostInterruptTask(
-        std::make_unique<SendResponseTask>(port_, std::move(message)));
+    UVSchedulerPar::nodejs_scheduler->PostTask(
+        std::make_unique<SendResponseTask>(port_, std::move(message)),
+        Scheduler::TaskType::kInterrupt);
   }
 }
 void InspectorAgent::sendNotification(
@@ -241,8 +240,9 @@ void InspectorAgent::sendNotification(
     std::unique_ptr<v8_inspector::StringBuffer> message_;
   };
   if (UVSchedulerPar::nodejs_scheduler) {
-    UVSchedulerPar::nodejs_scheduler->PostInterruptTask(
-        std::make_unique<SendNotificationTask>(port_, std::move(message)));
+    UVSchedulerPar::nodejs_scheduler->PostTask(
+        std::make_unique<SendNotificationTask>(port_, std::move(message)),
+        Scheduler::TaskType::kInterrupt);
   }
 }
 void InspectorAgent::flushProtocolNotifications() {}

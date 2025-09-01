@@ -6,35 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(${PROJECT_NAME} SHARED)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        /GR-
-        /EHsc-
-        /wd4275
-        /wd4251
-        /wd4834
-    )
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
-        target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG)
-    elseif (CMAKE_BUILD_TYPE MATCHES "Release")
-        target_compile_options(${PROJECT_NAME} PRIVATE /O2)
-    endif ()
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wno-unused-result
-    )
-    if (CMAKE_BUILD_TYPE MATCHES "Debug")
-        target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG)
-    elseif (CMAKE_BUILD_TYPE MATCHES "Release")
-        target_compile_options(${PROJECT_NAME} PRIVATE -O2)
-    endif ()
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GUN")
-    target_compile_options(${PROJECT_NAME} PRIVATE
-        -Wno-unused-result
-    )
-endif ()
-
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_JS_INC})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_sources(${PROJECT_NAME} PRIVATE
     src/addon.cpp
@@ -65,7 +38,7 @@ target_sources(${PROJECT_NAME} PRIVATE
     src/isolate/inspector_agent.cpp
     src/isolate/inspector_agent.h
 
-    src/module/string.h
+    src/utils/string.h
     src/module/isolate_handle.cpp
     src/module/isolate_handle.h
     src/module/context_handle.cpp
@@ -87,6 +60,42 @@ target_sources(${PROJECT_NAME} PRIVATE
     src/native/timer_manager.h
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB})
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC OS_LINUX)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC OS_WIN)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC OS_MAC)
+endif ()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        /GR-
+        /EHsc-
+        /wd4275
+        /wd4251
+        /wd4834
+    )
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG)
+    elseif (CMAKE_BUILD_TYPE MATCHES "Release")
+        target_compile_options(${PROJECT_NAME} PRIVATE /O2)
+    endif ()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wno-unused-result
+    )
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG)
+    elseif (CMAKE_BUILD_TYPE MATCHES "Release")
+        target_compile_options(${PROJECT_NAME} PRIVATE -O2)
+    endif ()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${PROJECT_NAME} PRIVATE
+        -Wno-unused-result
+    )
+endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     PREFIX ""

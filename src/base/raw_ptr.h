@@ -9,6 +9,8 @@ class raw_ptr {
   explicit raw_ptr(T* ptr) : ptr_{ptr} {}
   ~raw_ptr() { ptr_ = nullptr; }
 
+  void operator=(T* ptr) { ptr_ = ptr; }
+
   raw_ptr(const raw_ptr&) = delete;
   raw_ptr(raw_ptr&&) = delete;
   raw_ptr& operator=(const raw_ptr&) = delete;

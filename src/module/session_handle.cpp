@@ -1,11 +1,11 @@
-#include "session_handle.h"
+#include "module/session_handle.h"
 
 #include <cppgc/visitor.h>
 
-#include "../base/logger.h"
-#include "../isolate/isolate_holder.h"
-#include "context_handle.h"
-#include "isolate_handle.h"
+#include "base/logger.h"
+#include "isolate/isolate_holder.h"
+#include "module/context_handle.h"
+#include "module/isolate_handle.h"
 
 namespace svm {
 
@@ -43,8 +43,9 @@ void SessionHandle::Connect(int port) const {
     int port_;
   };
 
-  isolate_holder_->PostInterruptTaskToSel(
-      std::make_unique<ConnectAgentTask>(isolate_holder_, port));
+  isolate_holder_->PostTaskToSel(
+      std::make_unique<ConnectAgentTask>(isolate_holder_, port),
+      Scheduler::TaskType::kInterrupt);
 }
 void SessionHandle::AddContext(const ContextHandle* context_handle,
                                std::string name) {
@@ -78,7 +79,8 @@ void SessionHandle::AddContext(const ContextHandle* context_handle,
   auto task{std::make_unique<AddContextTask>(
       isolate_holder_, context_handle->GetContextId(), std::move(name))};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostInterruptTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task),
+                                 Scheduler::TaskType::kInterrupt);
   waiter.Wait();
 }
 void SessionHandle::Dispose() const {
@@ -98,8 +100,9 @@ void SessionHandle::Dispose() const {
     std::shared_ptr<IsolateHolder> isolate_holder_;
   };
 
-  isolate_holder_->PostInterruptTaskToSel(
-      std::make_unique<DisconnectAgentTask>(isolate_holder_));
+  isolate_holder_->PostTaskToSel(
+      std::make_unique<DisconnectAgentTask>(isolate_holder_),
+      Scheduler::TaskType::kInterrupt);
 }
 
 void SessionHandle::Trace(cppgc::Visitor* visitor) const {

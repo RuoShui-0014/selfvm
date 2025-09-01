@@ -1,11 +1,7 @@
-//
-// Created by ruoshui on 25-7-2.
-//
-
 #pragma once
 
-#include "../isolate/script_wrappable.h"
-#include "../isolate/wrapper_type_info.h"
+#include "isolate/script_wrappable.h"
+#include "isolate/wrapper_type_info.h"
 
 namespace svm {
 

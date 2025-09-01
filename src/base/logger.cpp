@@ -10,13 +10,14 @@
 #include <syncstream>
 
 namespace base {
-Logger& Logger::Get() {
+
+Logger& Logger::Instance() {
   static Logger logger;
   return logger;
 }
 
-void Logger::Initialize(const std::string& file, const Level level) {
-  Logger& logger{Logger::Get()};
+void Logger::Initialize(std::string file, Level level) {
+  Logger& logger{Instance()};
 
   std::filesystem::create_directories(
       std::filesystem::path{file}.parent_path());
@@ -28,8 +29,8 @@ void Logger::Initialize(const std::string& file, const Level level) {
     SetThreadDescription(GetCurrentThread(), L"logger server");
 #endif
 
-    Logger& logger{Logger::Get()};
-    while (logger.running_.load()) {
+    Logger& logger{Instance()};
+    while (logger.running_.load(std::memory_order_acquire)) {
       {
         std::unique_lock lock{logger.mutex_};
         logger.cv_.wait(lock, [&logger]() {
@@ -37,10 +38,10 @@ void Logger::Initialize(const std::string& file, const Level level) {
         });
       }
 
-      WriteLog();
+      Write();
     }
 
-    WriteLog();
+    Write();
   });
 }
 
@@ -48,7 +49,7 @@ void Logger::Log(Level level,
                  std::string message,
                  const std::source_location& location,
                  NowTime time) {
-  Logger& logger{Logger::Get()};
+  Logger& logger{Instance()};
   if (level < logger.level_) {
     return;
   }
@@ -60,39 +61,39 @@ void Logger::Log(Level level,
 }
 
 Logger::~Logger() {
-  Logger& logger{Logger::Get()};
-  logger.running_.store(false);
+  Logger& logger{Instance()};
+  logger.running_.store(false, std::memory_order_release);
   logger.cv_.notify_one();
 
   if (logger.thread_.joinable()) {
     logger.thread_.join();
   }
 
-  logger.file_ << "\n";
   logger.file_.flush();
   logger.file_.close();
 }
 
-void Logger::WriteLog() {
+void Logger::Write() {
   static constexpr const char* leval_string[]{"DEBUG", "INFO", "WARN", "ERROR",
                                               "FATAL"};
 
-  Logger& logger{Logger::Get()};
+  Logger& logger{Instance()};
   std::queue<Info> queue;
   {
     std::lock_guard lock{logger.mutex_};
     queue.swap(logger.queue_);
   }
   while (!queue.empty()) {
-    auto [level, message, location, time]{std::move(queue.front())};
+    Info info{std::move(queue.front())};
     queue.pop();
-    logger.file_ << std::format("{:%Y-%m-%d %H:%M:%S} |{: <6}| {} | {}:{}:{}",
-                                time, leval_string[static_cast<int>(level)],
-                                message, location.file_name(), location.line(),
-                                location.function_name())
+    logger.file_ << std::format(
+                        "{:%Y-%m-%d %H:%M:%S} |{: <6}| {} | {}:{}:{}",
+                        info.time, leval_string[static_cast<int>(info.level)],
+                        info.message, info.location.file_name(),
+                        info.location.line(), info.location.function_name())
                  << std::endl;
   }
 }
 
-Logger::Logger() : level_{Level::kInfo} {}
+Logger::Logger() : level_(Level::kInfo) {}
 }  // namespace base

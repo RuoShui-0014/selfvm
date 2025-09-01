@@ -2,12 +2,12 @@
 
 #include <cppgc/visitor.h>
 
-#include "../base/logger.h"
-#include "../isolate/external_data.h"
-#include "../isolate/isolate_holder.h"
-#include "../isolate/task.h"
-#include "../utils/utils.h"
-#include "isolate_handle.h"
+#include "base/logger.h"
+#include "isolate/external_data.h"
+#include "isolate/isolate_holder.h"
+#include "isolate/task.h"
+#include "module/isolate_handle.h"
+#include "utils/utils.h"
 
 namespace svm {
 
@@ -76,7 +76,7 @@ class ScriptAsyncTask final : public AsyncTask {
 
     void Run() override {
       v8::Isolate* isolate{info_->isolate_holder_->GetIsolatePar()};
-      v8::Local<v8::Context> context{info_->context.Get(isolate)};
+      v8::Local context{info_->context.Get(isolate)};
       v8::Context::Scope context_scope{context};
 
       v8::Local<v8::Value> result{}, error{};
@@ -92,6 +92,7 @@ class ScriptAsyncTask final : public AsyncTask {
           error = try_catch.Exception();
           try_catch.Reset();
         }
+        ExternalData::FreeBufferMemory(buff_);
       }
 
       if (error.IsEmpty()) {
@@ -171,13 +172,13 @@ CopyData ContextHandle::Eval(std::string script, std::string filename) {
   auto task{std::make_unique<ScriptTask>(
       isolate_holder_, GetContextId(), std::move(script), std::move(filename))};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
   return waiter.WaitFor();
 }
 void ContextHandle::EvalIgnored(std::string script, std::string filename) {
   auto task{std::make_unique<ScriptTask>(
       isolate_holder_, GetContextId(), std::move(script), std::move(filename))};
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
@@ -185,7 +186,7 @@ void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
                               std::string filename) {
   auto task{std::make_unique<ScriptAsyncTask>(
       std::move(info), this, std::move(script), std::move(filename))};
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
 }
 
 void ContextHandle::Release() const {

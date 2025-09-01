@@ -1,36 +1,37 @@
-#include "platform_delegate.h"
+#include "isolate/platform_delegate.h"
 
-#include <map>
+#include "base/check.h"
 
 namespace svm {
 
 namespace {
-PlatformDelegate delegate;
+node::MultiIsolatePlatform* g_node_platform{nullptr};
 }
 
 void PlatformDelegate::InitializeDelegate() {
-  auto context{v8::Isolate::GetCurrent()->GetCurrentContext()};
+  const auto context{v8::Isolate::GetCurrent()->GetCurrentContext()};
   auto* node_platform{
       node::GetMultiIsolatePlatform(node::GetCurrentEnvironment(context))};
-  delegate = PlatformDelegate{node_platform};
+  g_node_platform = node_platform;
 }
 
 node::MultiIsolatePlatform* PlatformDelegate::GetNodePlatform() {
-  return delegate.node_platform;
+  CHECK(g_node_platform != nullptr, "Platform delegate not initialize.");
+  return g_node_platform;
 }
 
 void PlatformDelegate::RegisterIsolate(
     v8::Isolate* isolate,
     node::IsolatePlatformDelegate* isolate_delegate) {
-  delegate.node_platform->RegisterIsolate(isolate, isolate_delegate);
+  GetNodePlatform()->RegisterIsolate(isolate, isolate_delegate);
 }
 
 void PlatformDelegate::RegisterIsolate(v8::Isolate* isolate, uv_loop_t* loop) {
-  delegate.node_platform->RegisterIsolate(isolate, loop);
+  GetNodePlatform()->RegisterIsolate(isolate, loop);
 }
 
 void PlatformDelegate::UnregisterIsolate(v8::Isolate* isolate) {
-  delegate.node_platform->UnregisterIsolate(isolate);
+  GetNodePlatform()->UnregisterIsolate(isolate);
 }
 
 }  // namespace svm

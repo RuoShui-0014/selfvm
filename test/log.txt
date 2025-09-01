@@ -1,0 +1,1111 @@
+2025-08-29 17:20:50.4603249 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:100:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-29 17:20:50.4831708 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-29 17:20:50.4842682 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:39:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-29 17:20:50.5350393 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-29 17:20:50.5350519 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-29 17:20:50.5351819 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-29 17:20:50.5352051 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:42:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+
+2025-08-29 17:20:53.1444738 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:100:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-29 17:20:53.1582275 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-29 17:20:53.1593626 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:39:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-29 17:20:53.2135600 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-29 17:20:53.2135660 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-29 17:20:53.2136335 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-29 17:20:53.2136480 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:42:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+
+2025-08-29 17:20:54.8883743 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:100:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-29 17:20:54.9022116 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-29 17:20:54.9033554 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:39:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-29 17:20:54.9474052 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-29 17:20:54.9474107 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-29 17:20:54.9474812 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-29 17:20:54.9474943 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:42:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+
+2025-08-30 16:23:03.5566777 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:23:03.5776539 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:23:03.5787513 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:23:03.5829514 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:23:03.5829543 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:23:03.5830080 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:23:03.5830166 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:23:06.6422761 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:23:06.6537452 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:23:06.6547927 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:23:06.6592542 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:23:06.6592583 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:23:06.6593114 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:23:06.6593203 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:23:09.0010798 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:23:09.0124866 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:23:09.0135441 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:23:09.0182853 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:23:09.0182892 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:23:09.0183406 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:23:09.0183561 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:55:38.3217064 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:55:38.3337420 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:55:38.3348404 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:55:38.3410587 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:38.3410618 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:38.3411119 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:55:38.3411182 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:55:40.6874122 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:55:40.6990169 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:55:40.7001734 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:55:40.7049574 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:40.7049621 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:40.7050177 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:55:40.7050254 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:55:42.7229736 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:55:42.7345980 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:55:42.7356512 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:55:42.7407452 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:42.7407494 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:42.7408011 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:55:42.7408087 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:55:44.2887197 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:55:44.3004033 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:55:44.3014821 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:55:44.3067770 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:44.3067804 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:44.3068325 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:55:44.3068772 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:55:45.8447090 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:55:45.8563857 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:55:45.8574494 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:55:45.8618326 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:45.8618367 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:45.8618918 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:55:45.8619008 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:55:48.1281666 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:55:48.1397266 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:55:48.1407707 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:55:48.1457694 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:48.1457718 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:48.1458198 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:55:48.1458478 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:55:54.9687253 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:55:54.9800911 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:55:54.9811526 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:55:54.9901047 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:54.9901095 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:54.9901680 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:55:54.9901791 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:55:57.5249352 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:55:57.5364097 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:55:57.5374808 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:55:57.5459192 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:57.5459223 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:55:57.5459760 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:55:57.5459868 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:56:00.1467410 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:56:00.1582353 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:56:00.1593210 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:56:00.1689889 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:56:00.1689935 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:56:00.1690522 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:56:00.1690641 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:56:07.1190536 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:56:07.1305391 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:56:07.1315914 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:56:07.1410020 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:56:07.1410059 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:56:07.1410693 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:56:07.1410798 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:11.1719178 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:11.1839497 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:11.1850751 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:11.1911186 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:11.1911238 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:11.1911894 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:11.1911997 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:13.1899163 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:13.2017164 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:13.2027928 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:13.2074886 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:13.2074919 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:13.2075446 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:13.2075524 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:15.1283519 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:15.1399834 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:15.1410528 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:15.1456134 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:15.1456159 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:15.1456599 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:15.1457037 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:16.9288952 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:16.9404515 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:16.9415045 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:16.9458400 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:16.9458439 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:16.9458953 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:16.9459036 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:18.8701336 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:18.8816274 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:18.8826907 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:18.8876899 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:18.8876923 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:18.8877378 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:18.8877486 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:27.6664690 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:27.6780182 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:27.6790468 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:27.6830415 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:27.6830448 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:27.6830949 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:27.6831033 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:32.8882595 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:32.8996545 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:32.9006871 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:32.9089893 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:32.9089947 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:32.9090519 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:32.9090624 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:34.9682845 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:34.9797610 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:34.9808588 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:34.9894474 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:34.9894518 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:34.9895079 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:34.9895170 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:36.8885673 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:36.8999957 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:36.9010474 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:36.9101405 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:36.9101451 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:36.9102033 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:36.9102138 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:38.9167934 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:38.9283187 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:38.9293814 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:38.9380870 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:38.9380913 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:38.9381458 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:38.9381542 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:57:50.8307462 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:57:50.8423619 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:57:50.8434172 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:57:50.8924505 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:50.8924555 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:57:50.8925151 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:57:50.8925270 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:59:16.6500948 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:59:16.6615937 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:59:16.6626787 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:59:16.6671134 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:59:16.6671169 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:59:16.6671638 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:59:16.6671726 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:59:28.8711443 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:59:28.8824842 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:59:28.8835685 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:59:28.8880760 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:59:28.8880798 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:59:28.8881221 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:59:28.8881301 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:59:32.2209668 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:59:32.2324621 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:59:32.2335359 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:59:32.2382865 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:59:32.2382899 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:59:32.2383352 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:59:32.2383426 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 16:59:50.3329306 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 16:59:50.3445554 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 16:59:50.3455928 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 16:59:50.3992322 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:59:50.3992376 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 16:59:50.3993052 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 16:59:50.3993179 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:01:34.4910726 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:01:34.5022758 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:01:34.5033508 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:01:34.5056395 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:01:34.5056422 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:01:34.5056903 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:01:34.5056973 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:01:53.2504415 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:01:53.2618018 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:01:53.2629067 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:01:53.2673390 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:01:53.2673429 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:01:53.2673908 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:01:53.2673996 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:01:55.8495775 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:01:55.8606525 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:01:55.8617165 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:01:55.8658882 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:01:55.8658921 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:01:55.8659374 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:01:55.8659436 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:02:59.3925233 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:02:59.4037838 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:02:59.4048827 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:02:59.4126062 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:02:59.4126095 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:02:59.4126591 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:02:59.4126668 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:03:08.1899679 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:03:08.2011421 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:03:08.2021889 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:03:08.2099168 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:08.2099200 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:08.2099711 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:03:08.2099791 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:03:13.9240101 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:03:13.9352260 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:03:13.9362532 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:03:13.9448005 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:13.9448040 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:13.9448544 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:03:13.9448633 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:03:23.1312881 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:03:23.1423064 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:03:23.1433529 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:03:23.1519155 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:23.1519193 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:23.1519676 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:03:23.1519756 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:03:41.3522923 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:03:41.3635275 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:03:41.3646127 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:03:41.3675781 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:41.3675813 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:41.3676242 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:03:41.3676316 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:03:45.0313246 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:03:45.0423980 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:03:45.0434781 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:03:45.0469330 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:45.0469361 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:45.0469826 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:03:45.0469922 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:03:48.9709063 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:03:48.9820076 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:03:48.9830481 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:03:48.9918300 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:48.9918332 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:48.9918825 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:03:48.9918909 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:03:56.6696026 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:03:56.6807503 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:03:56.6818198 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:03:56.6846895 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:56.6846923 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:03:56.6847382 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:03:56.6847464 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:07.7219206 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:07.7330566 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:07.7341019 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:07.7975116 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:07.7975154 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:07.7975723 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:07.7975790 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:10.7537630 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:10.7656424 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:10.7667501 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:10.8308312 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:10.8308352 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:10.8308907 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:10.8308991 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:30.8855591 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:30.8973230 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:30.8984350 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:30.9648432 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:30.9648478 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:30.9649065 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:30.9649152 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:33.0526270 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:33.0640252 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:33.0650966 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:33.1324176 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:33.1324218 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:33.1324808 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:33.1324890 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:35.0935235 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:35.1048462 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:35.1059423 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:35.1753320 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:35.1753367 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:35.1753944 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:35.1754035 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:36.7933372 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:36.8048837 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:36.8059888 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:36.8723991 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:36.8724032 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:36.8724598 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:36.8724678 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:38.4540581 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:38.4652874 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:38.4663505 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:38.5334613 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:38.5334654 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:38.5335247 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:38.5335336 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:47.3508860 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:47.3621831 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:47.3632796 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:47.3720959 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:47.3720996 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:47.3721495 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:47.3721579 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:49.3315327 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:49.3426046 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:49.3436649 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:49.3525477 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:49.3525515 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:49.3526032 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:49.3526119 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:04:53.4544107 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:04:53.4662100 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:04:53.4673217 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:04:53.4706011 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:53.4706044 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:04:53.4706542 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:04:53.4706628 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:11:22.2978601 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:11:22.3089277 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:11:22.3099873 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:11:34.3371071 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:11:34.3482556 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:11:34.3493246 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:18:57.8741919 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:18:57.8906637 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:18:57.8915339 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 17:18:57.8918148 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:18:57.8921561 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 17:19:11.7891003 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:19:11.8059579 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:19:11.8069204 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 17:19:11.8072053 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:19:11.8075806 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 17:19:18.8865892 |DEBUG | Session handle create. | E:\src\self-vm\src\module\session_handle.cpp:15:__cdecl svm::SessionHandle::SessionHandle(IsolateHandle *)
+2025-08-30 17:19:49.0732156 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:19:49.0887085 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:19:49.0895316 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 17:19:49.0897932 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:19:49.0901591 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 17:19:53.8615626 |DEBUG | Session handle create. | E:\src\self-vm\src\module\session_handle.cpp:15:__cdecl svm::SessionHandle::SessionHandle(IsolateHandle *)
+2025-08-30 17:27:16.3762902 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:27:16.3885727 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:27:16.3896635 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:27:16.3939859 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:27:16.3939899 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:27:16.3940458 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:27:16.3940549 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:27:19.8427204 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:27:19.8542264 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:27:19.8553619 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:27:19.8598161 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:27:19.8598203 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:27:19.8598882 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:27:19.8599033 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:27:24.1695204 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:27:24.1806909 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:27:24.1817845 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:30:21.0705575 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:30:21.0818655 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:30:21.0829400 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:30:21.0860538 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:30:21.0860566 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:30:21.0861015 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:30:21.0861097 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:30:23.7940196 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:30:23.8053488 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:30:23.8064553 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:30:23.8097560 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:30:23.8097596 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:30:23.8098109 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:30:23.8098190 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:30:31.3897314 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:30:31.4009128 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:30:31.4020162 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:30:35.6728083 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:30:35.6839348 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:30:35.6849673 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:30:35.6912176 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:30:35.6912221 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:30:35.6912875 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:30:35.6912974 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:30:37.8341181 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:30:37.8455380 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:30:37.8466389 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:30:37.8527838 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:30:37.8527881 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:30:37.8528456 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:30:37.8528543 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:30:39.7110404 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:30:39.7223337 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:30:39.7234697 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:30:41.4146246 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:30:41.4258548 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:30:41.4269394 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:36:57.9978456 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:36:58.0095874 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:36:58.0106576 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:36:58.0150632 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:36:58.0150681 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:36:58.0151455 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:36:58.0151570 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:37:00.6970699 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:37:00.7084433 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:37:00.7095281 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:37:00.7145933 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:00.7145965 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:00.7146500 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:37:00.7146685 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:37:03.7574278 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:37:03.7687212 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:37:03.7697733 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:37:03.7740467 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:03.7740504 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:03.7741028 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:37:03.7741100 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:37:08.3588325 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:37:08.3699553 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:37:08.3710996 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:37:08.3743007 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:08.3743045 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:08.3743502 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:37:08.3743586 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:37:13.8762015 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:37:13.8872447 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:37:13.8883043 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:37:13.8970584 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:13.8970620 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:13.8971107 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:37:13.8971183 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:37:18.7967128 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:37:18.8079266 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:37:18.8089591 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:37:18.8177465 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:18.8177504 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:18.8177982 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:37:18.8178068 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:37:20.6807089 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:37:20.6920119 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:37:20.6930969 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:37:20.7019656 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:20.7019692 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:20.7020215 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:37:20.7020307 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 17:37:22.9603619 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:98:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 17:37:22.9716241 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 17:37:22.9727467 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 17:37:22.9817154 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:126:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:22.9817189 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:129:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 17:37:22.9817691 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 17:37:22.9817773 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:38:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 22:48:22.9715342 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 22:48:22.9842861 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 22:48:22.9853001 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 22:48:22.9856668 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 22:48:22.9860400 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 22:48:23.0397139 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:48:23.0397313 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:48:23.0398292 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 22:48:23.0398340 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 22:48:23.0398381 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 22:48:23.0398547 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 22:48:27.5774967 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 22:48:27.5893851 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 22:48:27.5903663 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 22:48:27.5906228 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 22:48:27.5909606 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 22:48:27.6410203 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:48:27.6410399 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:48:27.6411479 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 22:48:27.6411535 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 22:48:27.6411580 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 22:48:27.6411777 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 22:48:40.8186788 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 22:48:40.8306062 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 22:48:40.8316477 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 22:48:40.8319116 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 22:48:40.8322683 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 22:48:48.9439310 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 22:48:48.9439507 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 22:48:48.9439555 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 22:48:48.9439790 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 22:56:15.2461409 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 22:56:15.2584904 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 22:56:15.2595581 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 22:56:15.2598434 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 22:56:15.2601850 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 22:56:15.3058477 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:56:15.3058573 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:56:15.3059140 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 22:56:15.3059168 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 22:56:15.3059191 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 22:56:15.3059320 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 22:56:21.8449930 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 22:56:21.8566596 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 22:56:21.8576605 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 22:56:21.8579140 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 22:56:21.8582528 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 22:56:21.9069009 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:56:21.9069098 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:56:21.9069649 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 22:56:21.9069670 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 22:56:21.9069697 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 22:56:21.9069842 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 22:56:25.3079806 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 22:56:25.3200477 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 22:56:25.3210729 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 22:56:25.3213384 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 22:56:25.3216924 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 22:56:25.3705505 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:56:25.3705582 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 22:56:25.3706146 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 22:56:25.3706171 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 22:56:25.3706198 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 22:56:25.3706327 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:21.9483389 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:21.9608856 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:21.9619372 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:12:21.9621905 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:21.9625355 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:12:22.0121359 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:22.0121687 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:22.0123482 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:12:22.0123559 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:12:22.0123628 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:22.0123900 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:24.7809149 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:24.7928027 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:24.7937958 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:12:24.7940457 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:24.7943901 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:12:24.8411508 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:24.8411608 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:24.8412200 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:12:24.8412221 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:12:24.8412245 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:24.8412389 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:25.9178371 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:25.9298190 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:25.9308504 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:12:25.9311144 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:25.9314506 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:12:25.9860574 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:25.9860674 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:25.9861250 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:12:25.9861286 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:12:25.9861322 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:25.9861486 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:43.7516015 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:43.7634274 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:43.7646700 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:43.7715980 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:43.7716050 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:43.7717006 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:43.7717129 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:44.9620481 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:44.9734293 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:44.9745926 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:44.9787711 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:44.9787736 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:44.9788191 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:44.9788281 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:46.1235833 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:46.1350973 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:46.1362941 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:46.1405508 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:46.1405539 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:46.1406024 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:46.1406095 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:48.3426085 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:48.3539734 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:48.3551706 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:48.3593299 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:48.3593339 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:48.3593814 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:48.3593887 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:49.4807071 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:49.4919994 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:49.4931650 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:49.4978440 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:49.4978478 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:49.4978969 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:49.4979037 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:50.2414297 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:50.2534987 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:50.2547863 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:50.2591880 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:50.2591913 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:50.2592607 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:50.2592707 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:53.3000310 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:53.3112359 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:53.3124134 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:53.3166147 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:53.3166187 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:53.3166663 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:53.3166734 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:54.3424660 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:54.3540785 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:54.3553370 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:54.3597338 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:54.3597380 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:54.3597931 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:54.3598009 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:55.2437558 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:55.2555553 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:55.2567903 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:55.2610848 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:55.2610892 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:55.2611433 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:55.2611506 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:57.2381802 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:57.2494329 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:57.2506602 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:57.2562922 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:57.2562965 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:57.2563510 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:57.2563585 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:58.8803252 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:58.8919478 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:58.8931377 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:58.8974071 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:58.8974108 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:58.8974635 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:58.8974705 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:12:59.8028721 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:12:59.8142218 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:12:59.8154056 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:12:59.8196310 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:59.8196342 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:12:59.8196835 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:12:59.8196905 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:13:01.0980851 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:13:01.1094786 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:13:01.1106936 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:13:01.1154303 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:13:01.1154350 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:13:01.1154934 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:13:01.1155015 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:13:02.0205332 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:13:02.0320809 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:13:02.0332830 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:13:02.0383174 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:13:02.0383206 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:13:02.0383708 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:13:02.0383787 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:13:02.9816183 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:13:02.9929753 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:13:02.9941755 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:13:02.9987002 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:13:02.9987053 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:13:02.9987649 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:13:02.9987765 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:14:57.7400629 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:14:57.7513270 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:14:57.7525672 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:14:57.7542540 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:14:57.7542565 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:15:01.8980062 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:15:01.9092038 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:15:01.9104499 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:15:01.9118183 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:15:01.9118217 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:15:16.0285667 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:15:16.0443351 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:15:16.0456817 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:18:37.6960469 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:18:37.7084302 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:18:37.7094516 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:18:37.7097313 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:18:37.7100802 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:18:37.7617687 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:18:37.7617777 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:18:37.7618387 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:18:37.7618409 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:18:37.7618430 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:18:37.7618581 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:18:41.5931117 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:18:41.6054677 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:18:41.6065016 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:18:41.6067670 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:18:41.6071215 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:18:41.6536498 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:18:41.6536615 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:18:41.6537267 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:18:41.6537289 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:18:41.6537316 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:18:41.6537475 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:18:45.2720081 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:18:45.2838265 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:18:45.2848148 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:18:45.2850950 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:18:45.2854362 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:18:45.3350028 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:18:45.3350123 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:18:45.3350837 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:18:45.3350871 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:18:45.3350902 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:18:45.3351067 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:18:58.6929777 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:18:58.7052721 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:18:58.7062932 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:18:58.7066526 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:18:58.7070001 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:18:58.7610954 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:18:58.7611045 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:18:58.7611672 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:18:58.7611699 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:18:58.7611723 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:18:58.7611872 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:19:02.0909578 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:19:02.1029666 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:19:02.1039758 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:19:02.1042523 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:19:02.1045968 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:19:02.1529658 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:19:02.1529759 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:19:02.1530426 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:19:02.1530449 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:19:02.1530479 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:19:02.1530635 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:19:04.6941837 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:19:04.7060882 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:19:04.7070603 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:19:04.7073407 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:19:04.7076793 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:19:04.7609434 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:19:04.7609517 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-30 23:19:04.7610136 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-30 23:19:04.7610183 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-30 23:19:04.7610207 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-30 23:19:04.7610355 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-30 23:19:10.7723225 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:19:10.7842096 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:19:10.7852249 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:19:10.7855024 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:19:10.7858477 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:19:10.7859149 |DEBUG | Session handle create. | E:\src\self-vm\src\module\session_handle.cpp:15:__cdecl svm::SessionHandle::SessionHandle(IsolateHandle *)
+2025-08-30 23:19:10.7903620 |DEBUG | Script handle create. | E:\src\self-vm\src\module\script_handle.cpp:63:__cdecl svm::ScriptHandle::ScriptHandle(IsolateHandle *, ScriptId)
+2025-08-30 23:19:15.7984505 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:19:15.8020024 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:19:15.8024082 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:19:15.8029591 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:20:09.7076148 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:20:09.7190023 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:20:09.7199782 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:20:09.7202544 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:20:09.7205797 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:20:09.7206499 |DEBUG | Session handle create. | E:\src\self-vm\src\module\session_handle.cpp:15:__cdecl svm::SessionHandle::SessionHandle(IsolateHandle *)
+2025-08-30 23:20:09.7251920 |DEBUG | Script handle create. | E:\src\self-vm\src\module\script_handle.cpp:63:__cdecl svm::ScriptHandle::ScriptHandle(IsolateHandle *, ScriptId)
+2025-08-30 23:20:14.7337156 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:20:14.7347741 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:20:14.7351031 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:20:14.7354206 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:20:19.7376025 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:20:19.7406868 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:20:19.7412661 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:20:19.7418187 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:21:53.3052377 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-30 23:21:53.3208825 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:21:53.3218287 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:21:53.3221018 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:21:53.3224616 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:21:53.3225358 |DEBUG | Session handle create. | E:\src\self-vm\src\module\session_handle.cpp:15:__cdecl svm::SessionHandle::SessionHandle(IsolateHandle *)
+2025-08-30 23:21:56.2286840 |DEBUG | Script handle create. | E:\src\self-vm\src\module\script_handle.cpp:63:__cdecl svm::ScriptHandle::ScriptHandle(IsolateHandle *, ScriptId)
+2025-08-30 23:22:01.2308228 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:22:01.2317982 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:22:01.2320732 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:22:01.2323984 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-30 23:22:06.2395415 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-30 23:22:06.2409908 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-30 23:22:06.2413300 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-30 23:22:06.2417282 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-31 00:13:58.1249612 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:13:58.1374436 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:13:58.1384262 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-31 00:13:58.1387030 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:13:58.1390693 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-31 00:13:58.1902820 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:13:58.1903171 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:13:58.1905297 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-31 00:13:58.1905410 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-31 00:13:58.1905497 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:13:58.1905846 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:14:02.2072645 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:14:02.2189907 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:14:02.2200082 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-31 00:14:02.2202691 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:14:02.2206438 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-31 00:14:02.2750754 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:14:02.2750839 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:14:02.2751465 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-31 00:14:02.2751490 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-31 00:14:02.2751514 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:14:02.2751665 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:14:04.8220540 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:14:04.8339716 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:14:04.8349420 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-31 00:14:04.8352009 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:14:04.8355503 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-31 00:14:04.8817355 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:14:04.8817452 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:14:04.8818086 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-31 00:14:04.8818112 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-31 00:14:04.8818136 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:14:04.8818284 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:14:06.7873915 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:14:06.7991635 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:14:06.8001359 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-08-31 00:14:06.8003991 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:14:06.8007649 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-08-31 00:14:06.8509338 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:14:06.8509428 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:14:06.8510009 |DEBUG | Isolate handle delete. | E:\src\self-vm\src\module\isolate_handle.cpp:197:virtual __cdecl svm::IsolateHandle::~IsolateHandle(void)
+2025-08-31 00:14:06.8510038 |DEBUG | Context handle delete. | E:\src\self-vm\src\module\context_handle.cpp:163:virtual __cdecl svm::ContextHandle::~ContextHandle(void)
+2025-08-31 00:14:06.8510065 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:14:06.8510198 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:26:26.8841027 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:26:26.8960548 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:26:26.8973186 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:26:26.9015290 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:26.9015314 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:26.9015829 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:26:26.9015911 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:26:32.1052205 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:26:32.1164686 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:26:32.1176715 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:26:32.1266051 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:32.1266088 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:32.1266559 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:26:32.1266639 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:26:35.8065042 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:26:35.8178490 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:26:35.8191041 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:26:35.8279671 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:35.8279705 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:35.8280227 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:26:35.8280334 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:26:47.2554330 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:26:47.2668294 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:26:47.2680036 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:26:47.3324055 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:47.3324102 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:47.3325725 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:26:47.3325797 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:26:51.8454102 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:26:51.8566122 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:26:51.8578026 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:26:51.9228665 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:51.9228711 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:26:51.9230401 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:26:51.9230479 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:27:08.5878802 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:27:08.5992757 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:27:08.6004855 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:27:08.6154117 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:27:08.6154151 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:27:08.6154789 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:27:08.6154958 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:28:01.5060263 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:28:01.5174969 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:28:01.5188013 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:28:01.5315273 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:01.5315322 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:01.5316130 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:28:01.5316481 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:28:04.6552180 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:28:04.6665545 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:28:04.6677319 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:28:04.6787161 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:04.6787207 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:04.6787836 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:28:04.6787927 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:28:24.3031083 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:28:24.3147137 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:28:24.3159897 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:28:24.3201534 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:24.3201569 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:24.3202120 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:28:24.3202203 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:28:42.8610610 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:28:42.8725142 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:28:42.8737763 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:28:42.8770603 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:42.8770627 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:42.8771067 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:28:42.8771143 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:28:45.9192485 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:28:45.9304604 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:28:45.9316617 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:28:45.9351940 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:45.9351972 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:45.9352487 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:28:45.9352642 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:28:48.2602880 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:28:48.2716297 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:28:48.2728428 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:28:48.2760996 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:48.2761028 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:28:48.2761530 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:28:48.2761621 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:29:02.0027162 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:29:02.0139033 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:29:02.0151064 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:29:02.0274682 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:29:02.0274735 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:29:02.0275292 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:29:02.0284302 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 00:29:33.7895020 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:97:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 00:29:33.8008361 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:13:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 00:29:33.8020557 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 00:29:33.8136757 |INFO  | Nodejs scheduler delete. | E:\src\self-vm\src\addon.cpp:125:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:29:33.8136800 |INFO  | Nodejs PerIsolateData delete. | E:\src\self-vm\src\addon.cpp:128:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 00:29:33.8137380 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:48:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 00:29:33.8137857 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 18:29:17.7057327 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:143:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 18:29:17.7183297 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 18:29:17.7197014 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 18:29:17.7303604 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:135:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 18:29:17.7304383 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 18:29:17.7304861 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 18:29:21.0071816 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:143:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 18:29:21.0190511 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 18:29:21.0203214 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 18:29:21.0367494 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:135:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 18:29:21.0368164 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 18:29:21.0368317 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-08-31 18:29:27.1977086 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:143:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-08-31 18:29:27.2095072 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-08-31 18:29:27.2107548 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-08-31 18:29:27.2196193 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:135:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-08-31 18:29:27.2196772 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-08-31 18:29:27.2196861 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 07:37:59.6345944 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 07:37:59.6475957 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 07:37:59.6485032 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-09-01 07:37:59.6487993 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 07:37:59.6491514 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-09-01 08:05:50.5331679 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 08:05:50.5449643 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 08:05:50.5458125 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-09-01 08:05:50.5460772 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 08:05:50.5464256 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-09-01 08:06:21.4702644 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 08:06:21.4826224 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 08:06:21.4835142 |DEBUG | Isolate handle create. | E:\src\self-vm\src\module\isolate_handle.cpp:193:__cdecl svm::IsolateHandle::IsolateHandle(IsolateParams &)
+2025-09-01 08:06:21.4837919 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 08:06:21.4841475 |DEBUG | Context handle create. | E:\src\self-vm\src\module\context_handle.cpp:159:__cdecl svm::ContextHandle::ContextHandle(IsolateHandle *, v8::Context *)
+2025-09-01 10:08:52.6657988 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:08:52.6781208 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:08:52.6792454 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:08:52.6923600 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:08:52.6924169 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:08:52.6924265 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:08:54.7892778 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:08:54.8008274 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:08:54.8019122 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:08:54.8153857 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:08:54.8154437 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:08:54.8154547 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:08:56.5559681 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:08:56.5681444 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:08:56.5692580 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:08:56.5823132 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:08:56.5823723 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:08:56.5823817 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:08:58.5097006 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:08:58.5212261 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:08:58.5223235 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:08:58.5360456 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:08:58.5361029 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:08:58.5361127 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:09:00.2349012 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:09:00.2466399 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:09:00.2477735 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:09:00.2605312 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:09:00.2605853 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:09:00.2605954 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:09:02.1739657 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:09:02.1854299 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:09:02.1864781 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:09:02.1998035 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:09:02.1998611 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:09:02.1998694 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:15:02.0691383 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:15:02.0807495 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:15:02.0818485 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:15:02.0981038 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:15:02.0981719 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:15:02.0981927 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:15:04.6021410 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:15:04.6136581 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:15:04.6146796 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:15:04.6273997 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:15:04.6274551 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:15:04.6274657 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:15:16.0733930 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:15:16.0849263 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:15:16.0859642 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:15:16.8121363 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:15:16.8122020 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:15:16.8122118 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:15:19.9065778 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:15:19.9180732 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:15:19.9191307 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:15:20.8127641 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:15:20.8128268 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:15:20.8128373 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:15:30.0088130 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:15:30.0202154 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:15:30.0212621 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:17:14.8944217 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:17:14.9063704 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:17:14.9074726 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:17:15.8323927 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:17:15.8324522 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:17:15.8324631 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:17:27.1473060 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:17:27.1598615 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:17:27.1609946 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:17:44.4829871 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:17:44.4944117 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:17:44.4954996 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:17:45.4428153 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:17:45.4428814 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:17:45.4428899 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:17:58.9894948 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:17:59.0009238 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:17:59.0019918 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:17:59.8475352 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:17:59.8476010 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:17:59.8476096 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:18:10.8815101 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:18:10.8932157 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:18:10.8943529 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:18:11.7167469 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:18:11.7168113 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:18:11.7168196 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:18:19.3860142 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:18:19.3974120 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:18:19.3984908 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:18:20.1341653 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:18:20.1342286 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:18:20.1342369 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:18:25.7636694 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:18:25.7749394 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:18:25.7760053 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:18:25.8409557 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:18:25.8410186 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:18:25.8410279 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:18:56.7221827 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:18:56.7335194 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:18:56.7345866 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:18:57.3963516 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:18:57.3964108 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:18:57.3964195 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)
+2025-09-01 10:32:53.7049650 |INFO  | Self-vm load. | E:\src\self-vm\src\addon.cpp:145:void __cdecl svm::Initialize(v8::Local<v8::Object>)
+2025-09-01 10:32:53.7170426 |INFO  | IsolateHolder create. | E:\src\self-vm\src\isolate\isolate_holder.cpp:14:__cdecl svm::IsolateHolder::IsolateHolder(IsolateParams &)
+2025-09-01 10:32:53.7181180 |INFO  | Inspector agent create. | E:\src\self-vm\src\isolate\inspector_agent.cpp:35:__cdecl svm::InspectorAgent::InspectorAgent(v8::Isolate *, Scheduler *)
+2025-09-01 10:32:54.5669012 |INFO  | Nodejs clear success. | E:\src\self-vm\src\addon.cpp:137:auto __cdecl svm::Initialize(v8::Local<v8::Object>)::(anonymous class)::operator()(void *) const
+2025-09-01 10:32:54.5669719 |INFO  | Isolate holder delete. | E:\src\self-vm\src\isolate\isolate_holder.cpp:51:__cdecl svm::IsolateHolder::~IsolateHolder(void)
+2025-09-01 10:32:54.5669928 |INFO  | Inspector agent delete. | E:\src\self-vm\src\isolate\inspector_agent.cpp:40:virtual __cdecl svm::InspectorAgent::~InspectorAgent(void)

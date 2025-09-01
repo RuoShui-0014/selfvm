@@ -1,10 +1,11 @@
 #include "isolate_holder.h"
 
-#include "../base/logger.h"
-#include "../module/context_handle.h"
-#include "../utils/utils.h"
-#include "../web/local_dom_window.h"
-#include "platform_delegate.h"
+#include "base/check.h"
+#include "base/logger.h"
+#include "isolate/platform_delegate.h"
+#include "module/context_handle.h"
+#include "utils/utils.h"
+#include "web/local_dom_window.h"
 
 namespace svm {
 
@@ -30,6 +31,8 @@ IsolateHolder::IsolateHolder(IsolateParams& params)
   scheduler_sel_ =
       std::make_unique<UVSchedulerSel>(isolate_sel_, std::move(allocator));
   PlatformDelegate::RegisterIsolate(isolate_sel_, scheduler_sel_->GetLoop());
+
+  CHECK(PlatformDelegate::GetNodePlatform(), "");
   v8::Isolate::Initialize(isolate_sel_, create_params);
   scheduler_sel_->StartLoop();
   isolate_sel_->AddNearHeapLimitCallback(
@@ -50,44 +53,27 @@ IsolateHolder::~IsolateHolder() {
   context_map_.clear();
   unbound_script_map_.clear();
   per_isolate_data_.reset();
-  scheduler_sel_.reset();
 }
 
-void IsolateHolder::PostMacroTaskToSel(std::unique_ptr<v8::Task> task) const {
-  scheduler_sel_->PostMacroTask(std::move(task));
+void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task,
+                                  const Scheduler::TaskType type) const {
+  scheduler_sel_->PostTask(std::move(task), type);
 }
-void IsolateHolder::PostMicroTaskToSel(std::unique_ptr<v8::Task> task) const {
-  scheduler_sel_->PostMicroTask(std::move(task));
-}
-uint32_t IsolateHolder::PostTimeoutTaskToSel(std::unique_ptr<v8::Task> task,
-                                             uint64_t ms) const {
-  return GetTimerManagerSel()->AddTimer(Timer::Type::ktimeout, ms,
-                                        std::move(task));
-}
-uint32_t IsolateHolder::PostIntervalTaskToSel(std::unique_ptr<v8::Task> task,
-                                              uint64_t ms) const {
-  return GetTimerManagerSel()->AddTimer(Timer::Type::kInterval, ms,
-                                        std::move(task));
+uint32_t IsolateHolder::PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
+                                             uint64_t ms,
+                                             Timer::Type type) const {
+  return scheduler_sel_->PostDelayedTask(std::move(task), ms, type);
 }
 
-void IsolateHolder::PostInterruptTaskToSel(
-    std::unique_ptr<v8::Task> task) const {
-  scheduler_sel_->PostInterruptTask(std::move(task));
+void IsolateHolder::PostTaskToPar(std::unique_ptr<v8::Task> task,
+                                  const Scheduler::TaskType type) const {
+  scheduler_par_->PostTask(std::move(task), type);
 }
-void IsolateHolder::PostMacroTaskToPar(std::unique_ptr<v8::Task> task) const {
-  scheduler_par_->PostMacroTask(std::move(task));
-}
-void IsolateHolder::PostMicroTaskToPar(std::unique_ptr<v8::Task> task) const {
-  scheduler_par_->PostMicroTask(std::move(task));
-}
+
 void IsolateHolder::PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                                          double delay_in_seconds) const {
   scheduler_par_->TaskRunner()->PostDelayedTask(std::move(task),
                                                 delay_in_seconds);
-}
-void IsolateHolder::PostInterruptTaskToPar(
-    std::unique_ptr<v8::Task> task) const {
-  scheduler_par_->PostInterruptTask(std::move(task));
 }
 
 static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,

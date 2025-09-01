@@ -1,12 +1,12 @@
 #include "script_handle.h"
 
-#include "../base/logger.h"
-#include "../isolate/external_data.h"
-#include "../isolate/isolate_holder.h"
-#include "../isolate/task.h"
-#include "../utils/utils.h"
-#include "context_handle.h"
-#include "isolate_handle.h"
+#include "base/logger.h"
+#include "isolate/external_data.h"
+#include "isolate/isolate_holder.h"
+#include "isolate/task.h"
+#include "module/context_handle.h"
+#include "module/isolate_handle.h"
+#include "utils/utils.h"
 
 namespace svm {
 
@@ -76,14 +76,14 @@ std::pair<uint8_t*, size_t> ScriptHandle::Run(
   auto task{std::make_unique<ScriptRunTask>(
       isolate_holder_, context_handle->GetContextId(), address_)};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
   return waiter.WaitFor();
 }
 
 void ScriptHandle::RunIgnored(const ContextHandle* context_handle) {
   auto task{std::make_unique<ScriptRunTask>(
       isolate_holder_, context_handle->GetContextId(), address_)};
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
+  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
 }
 
 void ScriptHandle::Release() const {

@@ -4,10 +4,11 @@
 
 #include <unordered_map>
 
-#include "../native/timer_manager.h"
-#include "../utils/utils.h"
-#include "per_isolate_data.h"
-#include "scheduler.h"
+#include "base/raw_ptr.h"
+#include "isolate/per_isolate_data.h"
+#include "isolate/scheduler.h"
+#include "native/timer_manager.h"
+#include "utils/utils.h"
 
 namespace svm {
 
@@ -28,7 +29,7 @@ class IsolateHolder {
   v8::Isolate* GetIsolatePar() const { return isolate_par_; }
 
   Scheduler* GetSchedulerSel() const { return scheduler_sel_.get(); }
-  Scheduler* GetSchedulerPar() const { return scheduler_par_; }
+  Scheduler* GetSchedulerPar() const { return scheduler_par_.get(); }
 
   TimerManager* GetTimerManagerSel() const {
     return scheduler_sel_->GetTimerManager();
@@ -37,19 +38,16 @@ class IsolateHolder {
     return scheduler_par_->GetTimerManager();
   }
 
-  void PostMacroTaskToSel(std::unique_ptr<v8::Task> task) const;
-  void PostMicroTaskToSel(std::unique_ptr<v8::Task> task) const;
-  void PostInterruptTaskToSel(std::unique_ptr<v8::Task> task) const;
-  uint32_t PostTimeoutTaskToSel(std::unique_ptr<v8::Task> task,
-                                uint64_t ms) const;
-  uint32_t PostIntervalTaskToSel(std::unique_ptr<v8::Task> task,
-                                 uint64_t ms) const;
+  void PostTaskToSel(std::unique_ptr<v8::Task> task,
+                     Scheduler::TaskType type) const;
+  uint32_t PostDelayedTaskToSel(std::unique_ptr<v8::Task> task,
+                                uint64_t ms,
+                                Timer::Type type) const;
 
-  void PostMacroTaskToPar(std::unique_ptr<v8::Task> task) const;
-  void PostMicroTaskToPar(std::unique_ptr<v8::Task> task) const;
+  void PostTaskToPar(std::unique_ptr<v8::Task> task,
+                     Scheduler::TaskType type) const;
   void PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                             double delay_in_seconds) const;
-  void PostInterruptTaskToPar(std::unique_ptr<v8::Task> task) const;
 
   ContextId CreateContext();
   v8::Local<v8::Context> GetContext(ContextId address);
@@ -65,7 +63,7 @@ class IsolateHolder {
   v8::Isolate* isolate_par_{nullptr};
   v8::Isolate* isolate_sel_{nullptr};
 
-  Scheduler* scheduler_par_{nullptr};
+  base::raw_ptr<Scheduler> scheduler_par_{nullptr};
   std::unique_ptr<UVSchedulerSel> scheduler_sel_;
   std::unique_ptr<PerIsolateData> per_isolate_data_;
 

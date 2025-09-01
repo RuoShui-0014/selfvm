@@ -1,8 +1,8 @@
 #include "local_dom_window.h"
 
-#include "../isolate/isolate_holder.h"
-#include "../module/isolate_handle.h"
-#include "../utils/utils.h"
+#include "isolate/isolate_holder.h"
+#include "module/isolate_handle.h"
+#include "utils/utils.h"
 
 namespace svm {
 
@@ -18,9 +18,7 @@ class TimerTask : public v8::Task {
         callback_{isolate, callback} {
     isolate_holder_->GetSchedulerPar()->Ref();
   }
-  ~TimerTask() override {
-    isolate_holder_->GetSchedulerPar()->Unref();
-  }
+  ~TimerTask() override { isolate_holder_->GetSchedulerPar()->Unref(); }
 
   void Run() override {
     v8::HandleScope handle_scope{isolate_};
@@ -41,25 +39,29 @@ LocalDOMWindow::LocalDOMWindow(IsolateHolder* isolate_holder)
     : isolate_holder_{isolate_holder} {}
 LocalDOMWindow::~LocalDOMWindow() = default;
 
-void LocalDOMWindow::PostMacroTaskToSel(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostMacroTaskToSel(std::move(task));
-}
-void LocalDOMWindow::PostMacroTaskToPar(std::unique_ptr<v8::Task> task) const {
-  isolate_holder_->PostMacroTaskToPar(std::move(task));
+void LocalDOMWindow::PostTaskToSel(std::unique_ptr<v8::Task> task,
+                                   Scheduler::TaskType type) const {
+  isolate_holder_->PostTaskToSel(std::move(task), type);
 }
 uint32_t LocalDOMWindow::PostTimeoutTaskToSel(std::unique_ptr<v8::Task> task,
                                               uint64_t ms) const {
-  return isolate_holder_->PostTimeoutTaskToSel(std::move(task), ms);
+  return isolate_holder_->PostDelayedTaskToSel(std::move(task), ms,
+                                               Timer::Type::ktimeout);
 }
 uint32_t LocalDOMWindow::PostIntervalTaskToSel(std::unique_ptr<v8::Task> task,
                                                uint64_t ms) const {
-  return isolate_holder_->PostIntervalTaskToSel(std::move(task), ms);
+  return isolate_holder_->PostDelayedTaskToSel(std::move(task), ms,
+                                               Timer::Type::ktimeout);
+}
+void LocalDOMWindow::PostTaskToPar(std::unique_ptr<v8::Task> task,
+                                   Scheduler::TaskType type) const {
+  isolate_holder_->PostTaskToPar(std::move(task), type);
 }
 void LocalDOMWindow::PostDelayTaskToPar(std::unique_ptr<v8::Task> task,
                                         double delay) const {
   isolate_holder_->PostDelayedTaskToPar(std::move(task), delay);
 }
-void LocalDOMWindow::ClearTimout(uint32_t id) const {
+void LocalDOMWindow::ClearTimeout(uint32_t id) const {
   isolate_holder_->GetTimerManagerSel()->StopTimer(id);
 }
 void LocalDOMWindow::ClearInterval(uint32_t id) const {
@@ -169,7 +171,7 @@ void ClearTimeoutOperationCallback(
       ScriptWrappable::Unwrap<LocalDOMWindow>(receiver)};
 
   int id{info[0].As<v8::Number>()->Int32Value(context).FromMaybe(0)};
-  local_dom_window->ClearTimout(id);
+  local_dom_window->ClearTimeout(id);
 }
 
 void ClearIntervalOperationCallback(
@@ -188,7 +190,7 @@ void ClearIntervalOperationCallback(
       ScriptWrappable::Unwrap<LocalDOMWindow>(receiver)};
 
   int id{info[0].As<v8::Number>()->Int32Value(context).FromMaybe(0)};
-  local_dom_window->ClearTimout(id);
+  local_dom_window->ClearTimeout(id);
 }
 
 void IsolateExposedConstructCallback(

@@ -1,7 +1,7 @@
 #include "per_isolate_data.h"
 
-#include "scheduler.h"
-#include "wrapper_type_info.h"
+#include "isolate/scheduler.h"
+#include "isolate/wrapper_type_info.h"
 
 namespace svm {
 

@@ -11,27 +11,28 @@ class Waiter {
   ~Waiter() = default;
 
   void Wait() const {
-    while (!finished_.load(std::memory_order_acquire)) {
+    while (!finished_.test(std::memory_order_acquire)) {
     }
   }
 
   T& GetValue() { return value_; }
 
   T& WaitFor() {
-    while (!finished_.load(std::memory_order_acquire)) {
+    while (!finished_.test(std::memory_order_acquire)) {
     }
     return value_;
   }
 
   void SetValue(const T& value) {
     value_ = value;
-    finished_.store(true, std::memory_order_relaxed);
+    finished_.test_and_set(std::memory_order_relaxed);
   }
 
-  bool IsFinished() const { return finished_.load(std::memory_order_acquire); }
+  bool IsFinished() const { return finished_.test(std::memory_order_acquire); }
+  void Notify() { finished_.test_and_set(std::memory_order_relaxed); }
 
  private:
-  std::atomic_bool finished_{false};
+  std::atomic_flag finished_;
   T value_;
 };
 
@@ -42,14 +43,14 @@ class Waiter<void> {
   ~Waiter() = default;
 
   void Wait() const {
-    while (!finished_.load(std::memory_order_acquire)) {
+    while (!finished_.test(std::memory_order_acquire)) {
     }
   }
 
-  bool IsFinished() const { return finished_.load(std::memory_order_acquire); }
+  bool IsFinished() const { return finished_.test(std::memory_order_acquire); }
 
  private:
-  std::atomic_bool finished_{false};
+  std::atomic_flag finished_;
 };
 
 }  // namespace base

@@ -1,10 +1,10 @@
+#include "base/logger.h"
 #include "isolate/inspector_agent.h"
 #include "isolate/per_isolate_data.h"
 #include "isolate/platform_delegate.h"
 #include "isolate/scheduler.h"
 #include "module/isolate_handle.h"
-// #include "net/request.h"
-#include "base/logger.h"
+#include "net/tcp_stream.h"
 #include "utils/utils.h"
 
 namespace svm {
@@ -39,9 +39,10 @@ void SessionDispatchMessageCallback(
 
   int port{info[0]->Int32Value(context).FromJust()};
   std::string message{*v8::String::Utf8Value(isolate, info[1])};
-  if (Scheduler* scheduler = InspectorAgent::GetAgent(port)) {
-    scheduler->PostInterruptTask(std::make_unique<SessionDispatchMessage>(
-        scheduler, std::move(message)));
+  if (Scheduler * scheduler{InspectorAgent::GetAgent(port)}) {
+    scheduler->PostTask(
+        std::make_unique<SessionDispatchMessage>(scheduler, std::move(message)),
+        Scheduler::TaskType::kInterrupt);
   }
 }
 
@@ -67,7 +68,8 @@ void SessionDisposeCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
 
   const int port{info[0]->Int32Value(context).FromJust()};
   if (Scheduler* scheduler = InspectorAgent::GetAgent(port)) {
-    scheduler->PostInterruptTask(std::make_unique<DisposeAgentTask>(scheduler));
+    scheduler->PostTask(std::make_unique<DisposeAgentTask>(scheduler),
+                        Scheduler::TaskType::kInterrupt);
   }
 }
 
@@ -87,16 +89,17 @@ void CreateNodeEx(v8::Isolate* isolate,
 struct NodeData {
   UVSchedulerPar* g_scheduler_par{nullptr};
   PerIsolateData* g_per_isolate_data{nullptr};
+#ifdef DEBUG_FLAG
+  TcpStream* g_tcp_stream{nullptr};
+#endif
 } node_data;
 
 void Initialize(v8::Local<v8::Object> exports) {
-#ifdef DEBUG
+#ifdef DEBUG_FLAG
   base::Logger::Initialize("./log.txt", base::Logger::Level::kDebug);
 #else
   base::Logger::Initialize("./log.txt", base::Logger::Level::kInfo);
 #endif
-  LOG_INFO("Self-vm load.");
-
   v8::Isolate* isolate{v8::Isolate::GetCurrent()};
   v8::Local context{isolate->GetCurrentContext()};
 
@@ -111,23 +114,37 @@ void Initialize(v8::Local<v8::Object> exports) {
   CreateNodeEx(isolate, context, exports);
 
   /* test */
-  // Request* request = new Request(node::GetCurrentEventLoop(isolate), "");
-  // request->Connect();
+#ifdef DEBUG_FLAG
+  node_data.g_tcp_stream = new TcpStream{node::GetCurrentEventLoop(isolate)};
+  node_data.g_tcp_stream->DomainConnect("www.baidu.com", 443);
+#endif
 
   // release some object
   node::AddEnvironmentCleanupHook(
       isolate,
       [](void* arg) {
-        NodeData node_data{*static_cast<NodeData*>(arg)};
+#ifdef DEBUG_FLAG
+        const auto [g_scheduler_par, g_per_isolate_data,
+                    g_tcp_stream]{*static_cast<NodeData*>(arg)};
+#else
+        const auto [g_scheduler_par,
+                    g_per_isolate_data]{*static_cast<NodeData*>(arg)};
+#endif
 
-        delete node_data.g_scheduler_par;
-        LOG_INFO("Nodejs scheduler delete.");
+        delete g_scheduler_par;
+        delete g_per_isolate_data;
 
-        delete node_data.g_per_isolate_data;
-        LOG_INFO("Nodejs PerIsolateData delete.");
+        LOG_INFO("Nodejs clear success.");
+
+#ifdef DEBUG_FLAG
+        delete g_tcp_stream;
+#endif
       },
       &node_data);
+
+  LOG_INFO("Self-vm load.");
 }
 
-NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize)
+NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize);
+
 }  // namespace svm
