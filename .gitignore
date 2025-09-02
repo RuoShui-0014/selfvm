@@ -1,2 +1,3 @@
 /node_modules/
 /cmake-build-*/
+/test/js-env/
