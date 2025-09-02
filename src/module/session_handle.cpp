@@ -22,7 +22,7 @@ IsolateHandle* SessionHandle::GetIsolateHandle() const {
   return isolate_handle_.Get();
 }
 std::shared_ptr<IsolateHolder> SessionHandle::GetIsolateHolder() const {
-  return isolate_holder_;
+  return isolate_holder_.lock();
 }
 
 void SessionHandle::Connect(int port) const {
@@ -43,8 +43,8 @@ void SessionHandle::Connect(int port) const {
     int port_;
   };
 
-  isolate_holder_->PostTaskToSel(
-      std::make_unique<ConnectAgentTask>(isolate_holder_, port),
+  isolate_holder_.lock()->PostTaskToSel(
+      std::make_unique<ConnectAgentTask>(isolate_holder_.lock(), port),
       Scheduler::TaskType::kInterrupt);
 }
 void SessionHandle::AddContext(const ContextHandle* context_handle,
@@ -77,9 +77,9 @@ void SessionHandle::AddContext(const ContextHandle* context_handle,
 
   auto waiter{base::Waiter<bool>{}};
   auto task{std::make_unique<AddContextTask>(
-      isolate_holder_, context_handle->GetContextId(), std::move(name))};
+      isolate_holder_.lock(), context_handle->GetContextId(), std::move(name))};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostTaskToSel(std::move(task),
+  isolate_holder_.lock()->PostTaskToSel(std::move(task),
                                  Scheduler::TaskType::kInterrupt);
   waiter.Wait();
 }
@@ -100,8 +100,8 @@ void SessionHandle::Dispose() const {
     std::shared_ptr<IsolateHolder> isolate_holder_;
   };
 
-  isolate_holder_->PostTaskToSel(
-      std::make_unique<DisconnectAgentTask>(isolate_holder_),
+  isolate_holder_.lock()->PostTaskToSel(
+      std::make_unique<DisconnectAgentTask>(isolate_holder_.lock()),
       Scheduler::TaskType::kInterrupt);
 }
 

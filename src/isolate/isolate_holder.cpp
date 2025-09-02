@@ -4,6 +4,7 @@
 #include "base/logger.h"
 #include "isolate/platform_delegate.h"
 #include "module/context_handle.h"
+#include "tool/tools.h"
 #include "utils/utils.h"
 #include "web/local_dom_window.h"
 
@@ -45,14 +46,12 @@ IsolateHolder::IsolateHolder(IsolateParams& params)
       std::make_unique<PerIsolateData>(isolate_sel_, scheduler_sel_.get());
 
   scheduler_par_ = PerIsolateData::From(isolate_par_)->GetScheduler();
+  scheduler_par_->Ref();
 }
 
 IsolateHolder::~IsolateHolder() {
   LOG_INFO("Isolate holder delete.");
-
-  context_map_.clear();
-  unbound_script_map_.clear();
-  per_isolate_data_.reset();
+  Release();
 }
 
 void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task,
@@ -88,6 +87,8 @@ ContextId IsolateHolder::CreateContext() {
                                 ->GetV8ClassTemplate(isolate_sel_)
                                 .As<v8::FunctionTemplate>()
                                 ->InstanceTemplate()};
+  object_template->Set(toString(isolate_sel_, "rsvm"),
+                       CreateRsVM(isolate_sel_, true));
 
   v8::Local context{v8::Context::New(isolate_sel_, nullptr, object_template, {},
                                      &DeserializeInternalFieldsCallback)};
@@ -95,32 +96,31 @@ ContextId IsolateHolder::CreateContext() {
       context->Global(),
       MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_sel_, this));
 
-  context->AllowCodeGenerationFromStrings(false);
+  // context->AllowCodeGenerationFromStrings(false);
 
   context_map_.emplace(*context, context);
 
   return *context;
 }
-
+v8::Local<v8::Context> IsolateHolder::GetContext(ContextId address) {
+  if (const auto it{context_map_.find(address)}; it != context_map_.end()) {
+    return it->second.Get(isolate_sel_);
+  }
+  return {};
+}
 void IsolateHolder::ClearContext(ContextId address) {
   std::lock_guard lock{mutex_context_map_};
   context_map_.erase(address);
 }
 
-v8::Local<v8::Context> IsolateHolder::GetContext(ContextId address) {
-  const auto it{context_map_.find(address)};
-  if (it != context_map_.end()) {
-    return it->second.Get(isolate_sel_);
-  }
-  return {};
-}
 void IsolateHolder::CreateScript(v8::Local<v8::UnboundScript> unbound_script) {
   unbound_script_map_.emplace(*unbound_script,
                               RemoteHandle{isolate_sel_, unbound_script});
 }
+
 v8::Local<v8::UnboundScript> IsolateHolder::GetScript(ScriptId address) {
-  const auto it{unbound_script_map_.find(address)};
-  if (it != unbound_script_map_.end()) {
+  if (const auto it{unbound_script_map_.find(address)};
+      it != unbound_script_map_.end()) {
     return it->second.Get(isolate_sel_);
   }
   return {};
@@ -128,6 +128,15 @@ v8::Local<v8::UnboundScript> IsolateHolder::GetScript(ScriptId address) {
 void IsolateHolder::ClearScript(ScriptId address) {
   std::lock_guard lock{mutex_unbound_script_map_};
   unbound_script_map_.erase(address);
+}
+
+void IsolateHolder::Release() {
+  scheduler_par_->Unref();
+
+  context_map_.clear();
+  unbound_script_map_.clear();
+
+  per_isolate_data_.reset();
 }
 
 }  // namespace svm

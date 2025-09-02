@@ -526,8 +526,8 @@ void V8IsolateHandle::InstallInterfaceTemplate(
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"gc", 0, GcOperationCallback, v8::PropertyAttribute::DontDelete,
        Dependence::kPrototype},
-      // {"release", 0, ReleaseOperationCallback,
-      //  v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"release", 0, ReleaseOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
 
   InstallConstructor(isolate, interface_template, constructor);

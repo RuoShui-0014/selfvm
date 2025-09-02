@@ -2,6 +2,7 @@
 
 #include "isolate/isolate_holder.h"
 #include "module/isolate_handle.h"
+#include "tool/tools.h"
 #include "utils/utils.h"
 
 namespace svm {
@@ -211,30 +212,30 @@ void V8Window::InstallInterfaceTemplate(
     v8::Isolate* isolate,
     v8::Local<v8::Template> interface_template) {
   ConstructConfig constructor{"Window", 0, WindowConstructCallback};
+  InstallConstructor(isolate, interface_template, constructor);
+
   AttributeConfig attrs[]{
       {"window", WindowAttributeGetCallback, nullptr,
        v8::PropertyAttribute::ReadOnly, Dependence::kInstance},
   };
   OperationConfig operas[]{
-      {"atob", 1, AtobOperationCallback, v8::PropertyAttribute::DontDelete,
-       Dependence::kInstance},
-      {"btoa", 1, BtoaOperationCallback, v8::PropertyAttribute::DontDelete,
-       Dependence::kInstance},
+      // {"atob", 1, AtobOperationCallback, v8::PropertyAttribute::DontDelete,
+      //  Dependence::kInstance},
+      // {"btoa", 1, BtoaOperationCallback, v8::PropertyAttribute::DontDelete,
+      //  Dependence::kInstance},
       {"setTimeout", 2, SetTimeoutOperationCallback,
-       v8::PropertyAttribute::DontDelete, Dependence::kInstance},
+       v8::PropertyAttribute::None, Dependence::kInstance},
       {"setInterval", 2, SetIntervalOperationCallback,
-       v8::PropertyAttribute::DontDelete, Dependence::kInstance},
+       v8::PropertyAttribute::None, Dependence::kInstance},
       {"clearTimeout", 1, ClearTimeoutOperationCallback,
-       v8::PropertyAttribute::DontDelete, Dependence::kInstance},
+       v8::PropertyAttribute::None, Dependence::kInstance},
       {"clearInterval", 1, ClearIntervalOperationCallback,
-       v8::PropertyAttribute::DontDelete, Dependence::kInstance},
+       v8::PropertyAttribute::None, Dependence::kInstance},
   };
   ExposedConstructConfig exposedConstructs[]{
       {"Isolate", IsolateExposedConstructCallback, Dependence::kInstance},
       {"Window", WindowExposedConstructCallback, Dependence::kInstance},
   };
-
-  InstallConstructor(isolate, interface_template, constructor);
 
   v8::Local signature{v8::Local<v8::Signature>::Cast(interface_template)};
   InstallAttributes(isolate, interface_template, signature, attrs);

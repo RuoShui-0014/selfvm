@@ -58,6 +58,15 @@ target_sources(${PROJECT_NAME} PRIVATE
 
     src/native/timer_manager.cpp
     src/native/timer_manager.h
+
+    src/tool/tools.cpp
+    src/tool/tools.h
+    src/tool/utils.cpp
+    src/tool/utils.h
+#    src/tool/interface/window.cc
+#    src/tool/interface/window.h
+#    src/tool/interface/event_target.cc
+#    src/tool/interface/event_target.h
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_JS_LIB})
 

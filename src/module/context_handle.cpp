@@ -169,16 +169,20 @@ ContextHandle::~ContextHandle() {
 // 同步任务
 CopyData ContextHandle::Eval(std::string script, std::string filename) {
   auto waiter{base::Waiter<CopyData>{}};
-  auto task{std::make_unique<ScriptTask>(
-      isolate_holder_, GetContextId(), std::move(script), std::move(filename))};
+  auto task{std::make_unique<ScriptTask>(isolate_holder_.lock(), GetContextId(),
+                                         std::move(script),
+                                         std::move(filename))};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
+  isolate_holder_.lock()->PostTaskToSel(std::move(task),
+                                        Scheduler::TaskType::kMacro);
   return waiter.WaitFor();
 }
 void ContextHandle::EvalIgnored(std::string script, std::string filename) {
-  auto task{std::make_unique<ScriptTask>(
-      isolate_holder_, GetContextId(), std::move(script), std::move(filename))};
-  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
+  auto task{std::make_unique<ScriptTask>(isolate_holder_.lock(), GetContextId(),
+                                         std::move(script),
+                                         std::move(filename))};
+  isolate_holder_.lock()->PostTaskToSel(std::move(task),
+                                        Scheduler::TaskType::kMacro);
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
@@ -186,27 +190,30 @@ void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
                               std::string filename) {
   auto task{std::make_unique<ScriptAsyncTask>(
       std::move(info), this, std::move(script), std::move(filename))};
-  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
+  isolate_holder_.lock()->PostTaskToSel(std::move(task),
+                                        Scheduler::TaskType::kMacro);
 }
 
 void ContextHandle::Release() const {
-  isolate_holder_->ClearContext(address_);
+  if (const auto isolate_holder{isolate_holder_.lock()}) {
+    isolate_holder->ClearContext(address_);
+  }
 }
 
 std::shared_ptr<IsolateHolder> ContextHandle::GetIsolateHolder() const {
-  return isolate_holder_;
+  return isolate_holder_.lock();
 }
 
 v8::Isolate* ContextHandle::GetIsolateSel() const {
-  return isolate_holder_->GetIsolateSel();
+  return isolate_holder_.lock()->GetIsolateSel();
 }
 
 v8::Isolate* ContextHandle::GetIsolatePar() const {
-  return isolate_holder_->GetIsolatePar();
+  return isolate_holder_.lock()->GetIsolatePar();
 }
 
 v8::Local<v8::Context> ContextHandle::GetContext() const {
-  return isolate_holder_->GetContext(address_);
+  return isolate_holder_.lock()->GetContext(address_);
 }
 
 void ContextHandle::Trace(cppgc::Visitor* visitor) const {

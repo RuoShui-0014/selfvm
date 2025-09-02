@@ -32,6 +32,38 @@ class LocalDOMWindow final : public ScriptWrappable {
 
   LocalDOMWindow* window() { return this; }
 
+  bool log{false};
+  bool glog{false};
+
+  static void LogGetCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+    v8::Isolate* isolate{info.GetIsolate()};
+
+    const LocalDOMWindow* node_global{
+        Unwrap<LocalDOMWindow>(isolate->GetCurrentContext()->Global())};
+    info.GetReturnValue().Set(v8::Boolean::New(isolate, node_global->log));
+  }
+  static void LogSetCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+    v8::Isolate* isolate{info.GetIsolate()};
+
+    LocalDOMWindow* node_global{
+        Unwrap<LocalDOMWindow>(isolate->GetCurrentContext()->Global())};
+    node_global->log = info[0]->IsTrue();
+  }
+  static void GlogGetCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+    v8::Isolate* isolate{info.GetIsolate()};
+
+    const LocalDOMWindow* node_global{
+        Unwrap<LocalDOMWindow>(isolate->GetCurrentContext()->Global())};
+    info.GetReturnValue().Set(v8::Boolean::New(isolate, node_global->glog));
+  }
+  static void GlogSetCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
+    v8::Isolate* isolate{info.GetIsolate()};
+
+    LocalDOMWindow* node_global{
+        Unwrap<LocalDOMWindow>(isolate->GetCurrentContext()->Global())};
+    node_global->glog = info[0]->IsTrue();
+  }
+
  private:
   base::raw_ptr<IsolateHolder> isolate_holder_;
 };

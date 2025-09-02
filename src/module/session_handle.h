@@ -34,7 +34,7 @@ class SessionHandle final : public ScriptWrappable {
   friend class InspectorChannel;
 
   cppgc::Member<IsolateHandle> isolate_handle_;
-  std::shared_ptr<IsolateHolder> isolate_holder_;
+  std::weak_ptr<IsolateHolder> isolate_holder_;
 };
 
 class V8SessionHandle {

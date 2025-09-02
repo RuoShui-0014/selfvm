@@ -119,7 +119,7 @@ class UVSchedulerPar final : public UVScheduler {
  private:
   std::mutex mutex_macro_, mutex_micro_, mutex_interrupt_;
   TaskQueue tasks_macro_, tasks_micro_, tasks_interrupt_;
-  std::atomic_bool running{false};
+  std::atomic_bool running_{false};
 };
 
 }  // namespace svm

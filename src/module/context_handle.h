@@ -41,7 +41,7 @@ class ContextHandle final : public ScriptWrappable {
 
  private:
   cppgc::Member<IsolateHandle> isolate_handle_;
-  std::shared_ptr<IsolateHolder> isolate_holder_;
+  std::weak_ptr<IsolateHolder> isolate_holder_;
   ContextId const address_;
 };
 

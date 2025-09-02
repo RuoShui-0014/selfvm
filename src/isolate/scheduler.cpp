@@ -350,7 +350,7 @@ void UVSchedulerPar::FlushInterruptTasks() {
   }
 }
 void UVSchedulerPar::RunForegroundTask(std::unique_ptr<v8::Task> task) const {
-  if (!running.load()) {
+  if (!running_.load()) {
     return;
   }
 

@@ -18,25 +18,9 @@ declare module SelfVm {
         readonly context: Context;
 
         /**
-         * 低内存通知垃圾回收
+         * 获取Session
          */
-        gc(): void;
-
-
-        /**
-         * 获取isolate静态堆内存数据
-         */
-        getHeapStatistics(): {
-            total_heap_size: number;
-            total_heap_size_executable: number;
-            total_physical_size: number;
-            total_available_size: number;
-            used_heap_size: number;
-            heap_size_limit: number;
-            malloced_memory: number;
-            peak_malloced_memory: number;
-            does_zap_garbage: number;
-        };
+        readonly session: Session;
 
         /**
          * 创建Context同步获取结果
@@ -59,9 +43,30 @@ declare module SelfVm {
         createScriptAsync(code: string, filename?: string): Promise<Script>;
 
         /**
-         * 获取Session
+         * 低内存通知垃圾回收
          */
-        readonly session: Session;
+        gc(): void;
+
+
+        /**
+         * 获取isolate静态堆内存数据
+         */
+        getHeapStatistics(): {
+            total_heap_size: number;
+            total_heap_size_executable: number;
+            total_physical_size: number;
+            total_available_size: number;
+            used_heap_size: number;
+            heap_size_limit: number;
+            malloced_memory: number;
+            peak_malloced_memory: number;
+            does_zap_garbage: number;
+        };
+
+        /**
+         * 释放隔离实例
+         */
+        release(): void;
     }
 
     export class Context {

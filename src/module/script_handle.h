@@ -19,15 +19,15 @@ class ScriptHandle final : public ScriptWrappable {
   v8::Local<v8::UnboundScript> GetScript() const;
 
   /*********************** js interface *************************/
-  std::pair<uint8_t*, size_t> Run(const ContextHandle* context_handle);
-  void RunIgnored(const ContextHandle* context_handle);
+  std::pair<uint8_t*, size_t> Run(const ContextHandle* context_handle) const;
+  void RunIgnored(const ContextHandle* context_handle) const;
   void Release() const;
 
   void Trace(cppgc::Visitor* visitor) const override;
 
  private:
   cppgc::Member<IsolateHandle> isolate_handle_;
-  std::shared_ptr<IsolateHolder> isolate_holder_;
+  std::weak_ptr<IsolateHolder> isolate_holder_;
   ScriptId const address_;
 };
 

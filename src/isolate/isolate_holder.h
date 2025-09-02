@@ -57,6 +57,8 @@ class IsolateHolder {
   v8::Local<v8::UnboundScript> GetScript(ScriptId address);
   void ClearScript(ScriptId address);
 
+  void Release();
+
  private:
   IsolateParams isolate_params_;
 

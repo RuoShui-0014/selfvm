@@ -64,30 +64,35 @@ ScriptHandle::ScriptHandle(IsolateHandle* isolate_handle, ScriptId address)
 }
 ScriptHandle::~ScriptHandle() {
   LOG_DEBUG("Script handle delete.");
+  Release();
 }
 
 v8::Local<v8::UnboundScript> ScriptHandle::GetScript() const {
-  return isolate_holder_->GetScript(address_);
+  return isolate_holder_.lock()->GetScript(address_);
 }
 
 std::pair<uint8_t*, size_t> ScriptHandle::Run(
-    const ContextHandle* context_handle) {
+    const ContextHandle* context_handle) const {
   auto waiter{base::Waiter<std::pair<uint8_t*, size_t>>{}};
   auto task{std::make_unique<ScriptRunTask>(
-      isolate_holder_, context_handle->GetContextId(), address_)};
+      isolate_holder_.lock(), context_handle->GetContextId(), address_)};
   task->SetWaiter(&waiter);
-  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
+  isolate_holder_.lock()->PostTaskToSel(std::move(task),
+                                        Scheduler::TaskType::kMacro);
   return waiter.WaitFor();
 }
 
-void ScriptHandle::RunIgnored(const ContextHandle* context_handle) {
+void ScriptHandle::RunIgnored(const ContextHandle* context_handle) const {
   auto task{std::make_unique<ScriptRunTask>(
-      isolate_holder_, context_handle->GetContextId(), address_)};
-  isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
+      isolate_holder_.lock(), context_handle->GetContextId(), address_)};
+  isolate_holder_.lock()->PostTaskToSel(std::move(task),
+                                        Scheduler::TaskType::kMacro);
 }
 
 void ScriptHandle::Release() const {
-  isolate_holder_->ClearScript(address_);
+  if (const auto isolate_holder{isolate_holder_.lock()}) {
+    isolate_holder->ClearScript(address_);
+  }
 }
 
 void ScriptHandle::Trace(cppgc::Visitor* visitor) const {
