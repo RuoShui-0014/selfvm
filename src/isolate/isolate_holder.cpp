@@ -29,29 +29,25 @@ IsolateHolder::IsolateHolder(IsolateParams& params)
   create_params.array_buffer_allocator = allocator.get();
 
   isolate_sel_ = v8::Isolate::Allocate();
-  scheduler_sel_ =
-      std::make_unique<UVSchedulerSel>(isolate_sel_, std::move(allocator));
+  scheduler_sel_ = std::make_unique<UVScheduler<Scheduler::Type::kSelf>>(
+      isolate_sel_, std::move(allocator));
   PlatformDelegate::RegisterIsolate(isolate_sel_, scheduler_sel_->GetLoop());
-
-  CHECK(PlatformDelegate::GetNodePlatform(), "");
   v8::Isolate::Initialize(isolate_sel_, create_params);
   scheduler_sel_->StartLoop();
-  isolate_sel_->AddNearHeapLimitCallback(
-      [](void* data, size_t current_limit, size_t initial_limit) {
-        // 增加100MB堆限制
-        return current_limit + 100 * 1024 * 1024;
-      },
-      nullptr);
   per_isolate_data_ =
       std::make_unique<PerIsolateData>(isolate_sel_, scheduler_sel_.get());
 
-  scheduler_par_ = PerIsolateData::From(isolate_par_)->GetScheduler();
+  scheduler_par_ = isolate_params_.scheduler_par;
   scheduler_par_->Ref();
+
+  Scheduler::node_scheduler->Ref();
 }
 
 IsolateHolder::~IsolateHolder() {
   LOG_INFO("Isolate holder delete.");
-  Release();
+  if (scheduler_sel_) {
+    Release();
+  }
 }
 
 void IsolateHolder::PostTaskToSel(std::unique_ptr<v8::Task> task,
@@ -142,11 +138,13 @@ void IsolateHolder::ClearScript(ScriptId address) {
 
 void IsolateHolder::Release() {
   scheduler_par_->Unref();
+  Scheduler::node_scheduler->Unref();
 
   context_map_.clear();
   unbound_script_map_.clear();
 
   per_isolate_data_.reset();
+  scheduler_sel_.reset();
 }
 
 }  // namespace svm

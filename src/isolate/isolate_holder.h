@@ -6,7 +6,7 @@
 
 #include "base/raw_ptr.h"
 #include "isolate/per_isolate_data.h"
-#include "isolate/scheduler.h"
+#include "isolate/scheduler_self.h"
 #include "native/timer_manager.h"
 #include "utils/utils.h"
 
@@ -14,6 +14,7 @@ namespace svm {
 
 struct IsolateParams {
   v8::Isolate* isolate_par;
+  Scheduler* scheduler_par;
   size_t memory_limit;
 };
 
@@ -49,7 +50,7 @@ class IsolateHolder {
   void PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                             double delay_in_seconds) const;
 
-  enum class ContextType{ kNormal, kMini, kWeb};
+  enum class ContextType { kNormal, kMini, kWeb };
   ContextId CreateNormalEnv();
   ContextId CreateWebEnv();
 
@@ -70,7 +71,7 @@ class IsolateHolder {
   v8::Isolate* isolate_sel_{nullptr};
 
   base::raw_ptr<Scheduler> scheduler_par_{nullptr};
-  std::unique_ptr<UVSchedulerSel> scheduler_sel_;
+  std::unique_ptr<UVScheduler<Scheduler::Type::kSelf>> scheduler_sel_;
   std::unique_ptr<PerIsolateData> per_isolate_data_;
 
   std::mutex mutex_context_map_;

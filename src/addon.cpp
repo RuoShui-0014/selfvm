@@ -2,7 +2,8 @@
 #include "isolate/inspector_agent.h"
 #include "isolate/per_isolate_data.h"
 #include "isolate/platform_delegate.h"
-#include "isolate/scheduler.h"
+#include "isolate/scheduler_node.h"
+#include "isolate/scheduler_self.h"
 #include "module/isolate_handle.h"
 #include "net/tcp_stream.h"
 #include "utils/utils.h"
@@ -22,7 +23,7 @@ void SessionDispatchMessageCallback(
     ~SessionDispatchMessage() override = default;
 
     void Run() override {
-      static_cast<UVSchedulerSel*>(scheduler_)
+      static_cast<UVScheduler<Scheduler::Type::kSelf>*>(scheduler_)
           ->AgentDispatchProtocolMessage(message_);
     }
 
@@ -53,7 +54,8 @@ void SessionDisposeCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
     ~DisposeAgentTask() override = default;
 
     void Run() override {
-      static_cast<UVSchedulerSel*>(scheduler_)->AgentDispose();
+      static_cast<UVScheduler<Scheduler::Type::kSelf>*>(scheduler_)
+          ->AgentDispose();
     }
 
    private:
@@ -87,7 +89,7 @@ void CreateNodeEx(v8::Isolate* isolate,
 }
 
 struct NodeData {
-  UVSchedulerPar* g_scheduler_par{nullptr};
+  Scheduler* g_node_scheduler{nullptr};
   PerIsolateData* g_per_isolate_data{nullptr};
 #ifdef DEBUG_FLAG
   TcpStream* g_tcp_stream{nullptr};
@@ -105,19 +107,19 @@ void Initialize(v8::Local<v8::Object> exports) {
 
   // init nodejs env
   PlatformDelegate::InitializeDelegate();
-  node_data.g_scheduler_par =
-      new UVSchedulerPar(isolate, node::GetCurrentEventLoop(isolate));
+  node_data.g_node_scheduler = new UVScheduler<Scheduler::Type::kNode>(
+      isolate, node::GetCurrentEventLoop(isolate));
   node_data.g_per_isolate_data =
-      new PerIsolateData(isolate, node_data.g_scheduler_par);
+      new PerIsolateData(isolate, node_data.g_node_scheduler);
 
   //
   CreateNodeEx(isolate, context, exports);
 
   /* test */
-// #ifdef DEBUG_FLAG
-//   node_data.g_tcp_stream = new TcpStream{node::GetCurrentEventLoop(isolate)};
-//   node_data.g_tcp_stream->DomainConnect("www.runoob.com", 80);
-// #endif
+#ifdef DEBUG_FLAG
+  node_data.g_tcp_stream = new TcpStream{node::GetCurrentEventLoop(isolate)};
+  node_data.g_tcp_stream->DomainConnect("www.runoob.com", 443);
+#endif
 
   // release some object
   node::AddEnvironmentCleanupHook(

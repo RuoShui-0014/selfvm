@@ -4,7 +4,11 @@ set(PROJECT_NAME self-vm)
 project(${PROJECT_NAME} VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
-add_library(${PROJECT_NAME} SHARED)
+add_library(${PROJECT_NAME} SHARED
+    src/isolate/scheduler_node.cpp
+    src/isolate/scheduler_node.h
+    src/isolate/scheduler_self.cpp
+    src/isolate/scheduler_self.h)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_JS_INC})
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -47,6 +51,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     src/module/session_handle.h
     src/module/script_handle.cpp
     src/module/script_handle.h
+    src/module/snapshot_handle.cpp
+    src/module/snapshot_handle.h
 
     src/web/local_dom_window.cpp
     src/web/local_dom_window.h

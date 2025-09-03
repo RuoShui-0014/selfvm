@@ -48,7 +48,7 @@ class V8SessionHandle {
       v8::Local<v8::Template> interface_template);
 
  private:
-  friend SessionHandle;
+  friend V8SessionHandle;
   static const WrapperTypeInfo wrapper_type_info_;
 };
 

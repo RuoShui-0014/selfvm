@@ -20,8 +20,9 @@ void TimerManager::OnCallback(uv_timer_t* time_t) {
     timer->task->Run();
     timer->timer_manager->StopTimer(timer->id);
   } else {
+    uv_timer_start(timer->timer.get(), OnCallback, timer->delay, 0);
     timer->task->Run();
-    uv_timer_again(timer->timer.get());
+    // uv_timer_again(timer->timer.get());
   }
 }
 

@@ -1,11 +1,11 @@
 'use strict';
 
-const { svm, registerSession, unregisterSession } = require('../self-vm');
+const {svm, registerSession, unregisterSession} = require('../self-vm');
 
 /* 创建Isolate */
-const isolate = new svm.Isolate({memoryLimit: 128});
+this.isolate = new svm.Isolate({memoryLimit: 128});
 /* isolate有一个默认的上下文环境 */
-const ctx = isolate.context
+const ctx = this.isolate.context
 
 /* context可通过eval进行代码的同步运行 */
 // try {
@@ -42,11 +42,11 @@ const ctx = isolate.context
 // this.ctx = isolate.createContext()
 // delete this.ctx
 // svm.gc()
-let port = 10001;
-registerSession();
-const session = isolate.session
-session.connect(port++);
-session.addContext(ctx, "session_01");
+// let port = 10001;
+// registerSession();
+// const session = isolate.session
+// session.connect(port++);
+// session.addContext(ctx, "session_01");
 
 debugger
 // 子环境中创建子环境
@@ -60,33 +60,34 @@ debugger
 // `, "filename.js");
 // console.log(script.run(ctx))
 
-isolate.createScriptAsync("this.a = {title: 'createScriptAsync test.'}"
-    , "filename.js").then(script1 => {
-    const result = script1.run(ctx);
-    console.log(`微任务成功 createScriptAsync() = `, result);
-}, error => {
-    console.log(`微任务失败 createScriptAsync() = `, error);
-});
+ctx.eval(`
+this.a = {title: 'createScriptAsync test.'};
+this.isolate = new Isolate()
+this.isolate.context.eval("this.id=setInterval(()=>{}, 1000)")
+let id, num = 0;
+id = setInterval(()=>{
+    if (num++>=5){
+        clearInterval(id);
+        this.isolate.context.eval("clearInterval(this.id)")
+        this.isolate.release();
+    }
+}, 1000)
+`, "filename.js");
 
 let index = 0, id = 0;
 id = setInterval(async () => {
-    try {
-        const result = await ctx.evalAsync(`this.isolate = new Isolate();
-this.ctx = isolate.context;
-this.session = isolate.session
-this.session.connect(${port++});
-debugger;
-this.session.addContext(ctx, "session_02");
-this.result = this.ctx.eval("debugger;this.a = {title: 'test 套娃'}");
-`, "test" + index++);
-        console.log(`调试 eval result = `, result)
-        svm.gc()
-    } catch (e) {
-        console.error(e)
-    }
+    // try {
+    //     const result = await ctx.evalAsync(`{title: 'test 套娃'}`, "test" + index++);
+    //     console.log(`调试 eval result = `, result)
+    //     svm.gc()
+    // } catch (e) {
+    //     console.error(e)
+    // }
 
-    if (index >= 2) {
-        unregisterSession();
+    if (index++ >= 10) {
+        // unregisterSession();
         clearInterval(id);
+        console.log("ddddddddd")
+        this.isolate.release();
     }
-}, 10000);
+}, 1000);

@@ -52,7 +52,7 @@ uint32_t LocalDOMWindow::PostTimeoutTaskToSel(std::unique_ptr<v8::Task> task,
 uint32_t LocalDOMWindow::PostIntervalTaskToSel(std::unique_ptr<v8::Task> task,
                                                uint64_t ms) const {
   return isolate_holder_->PostDelayedTaskToSel(std::move(task), ms,
-                                               Timer::Type::ktimeout);
+                                               Timer::Type::kInterval);
 }
 void LocalDOMWindow::PostTaskToPar(std::unique_ptr<v8::Task> task,
                                    Scheduler::TaskType type) const {

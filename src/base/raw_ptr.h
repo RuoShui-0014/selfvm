@@ -16,6 +16,7 @@ class raw_ptr {
   raw_ptr& operator=(const raw_ptr&) = delete;
 
   T* get() const { return ptr_; }
+  void reset() { ptr_ = nullptr; }
   T& operator*() const { return *ptr_; }
   T* operator->() const { return ptr_; }
   explicit operator bool() const { return ptr_ == nullptr; }

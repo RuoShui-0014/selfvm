@@ -126,11 +126,18 @@ class CompileScriptAsyncTask final : public AsyncTask {
     void Run() override {
       v8::Isolate* isolate{info_->GetIsolatePar()};
       v8::Local context{isolate->GetCurrentContext()};
-      ScriptHandle* script_handle{MakeCppGcObject<GC::kSpecified, ScriptHandle>(
-          isolate, isolate_handle_, unbound_script_)};
-      v8::Local target{
-          NewInstance<V8ScriptHandle>(isolate, context, script_handle)};
-      info_->resolver.Get(isolate)->Resolve(context, target);
+      if (unbound_script_) {
+        ScriptHandle* script_handle{
+            MakeCppGcObject<GC::kSpecified, ScriptHandle>(
+                isolate, isolate_handle_, unbound_script_)};
+        v8::Local target{
+            NewInstance<V8ScriptHandle>(isolate, context, script_handle)};
+        info_->resolver.Get(isolate)->Resolve(context, target);
+      } else {
+        info_->resolver.Get(isolate)->Reject(
+            context, v8::Exception::TypeError(
+                         toString(isolate, "compile script failed.")));
+      }
     }
 
     std::unique_ptr<AsyncInfo> info_;
@@ -284,8 +291,8 @@ void IsolateHandle::IsolateGc() const {
       Scheduler::TaskType::kMacro);
 }
 
-void IsolateHandle::Release() {
-  isolate_holder_.reset();
+void IsolateHandle::Release() const {
+  isolate_holder_->Release();
 }
 
 v8::HeapStatistics IsolateHandle::GetHeapStatistics() const {
@@ -320,7 +327,8 @@ void ConstructCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
         info[0], StringTable<Table>::Get().memory_limit);
   }
 
-  IsolateParams params{isolate, memory_limit};
+  IsolateParams params{isolate, PerIsolateData::From(isolate)->GetScheduler(),
+                       memory_limit};
   IsolateHandle* isolate_handle{IsolateHandle::Create(params)};
   ScriptWrappable::Wrap(info.This(), isolate_handle);
 }
@@ -395,9 +403,9 @@ void CreateScriptOperationCallback(
       ScriptWrappable::Unwrap<IsolateHandle>(receiver)};
   ScriptHandle* script_handle{
       isolate_handle->CreateScript(std::move(script), std::move(filename))};
-  v8::Local target{NewInstance<V8ScriptHandle>(
-      isolate, isolate->GetCurrentContext(), script_handle)};
   if (script_handle) {
+    v8::Local target{NewInstance<V8ScriptHandle>(
+      isolate, isolate->GetCurrentContext(), script_handle)};
     info.GetReturnValue().Set(target);
   } else {
     isolate->ThrowException(v8::Exception::TypeError(

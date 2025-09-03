@@ -34,7 +34,8 @@ void SessionHandle::Connect(int port) const {
     ~ConnectAgentTask() override = default;
 
     void Run() override {
-      static_cast<UVSchedulerSel*>(isolate_holder_->GetSchedulerSel())
+      static_cast<UVScheduler<Scheduler::Type::kSelf>*>(
+          isolate_holder_->GetSchedulerSel())
           ->AgentConnect(port_);
     }
 
@@ -64,7 +65,8 @@ void SessionHandle::AddContext(const ContextHandle* context_handle,
       v8::HandleScope handle_scope{isolate};
 
       v8::Local context{isolate_holder_->GetContext(address_)};
-      static_cast<UVSchedulerSel*>(isolate_holder_->GetSchedulerSel())
+      static_cast<UVScheduler<Scheduler::Type::kSelf>*>(
+          isolate_holder_->GetSchedulerSel())
           ->AgentAddContext(context, std::move(name_));
       SetResult(true);
     }
@@ -92,7 +94,8 @@ void SessionHandle::Dispose() const {
     ~DisconnectAgentTask() override = default;
 
     void Run() override {
-      static_cast<UVSchedulerSel*>(isolate_holder_->GetSchedulerSel())
+      static_cast<UVScheduler<Scheduler::Type::kSelf>*>(
+          isolate_holder_->GetSchedulerSel())
           ->AgentDisconnect();
     }
 

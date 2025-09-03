@@ -46,7 +46,7 @@ class LazyWaiter<void> {
   LazyWaiter() = default;
   ~LazyWaiter() = default;
 
-  void Wait() const { finished_.wait(false); }
+  void Wait() const { finished_.wait(false, std::memory_order_acq_rel); }
   void Notify() {
     finished_.store(true, std::memory_order_relaxed);
     finished_.notify_one();

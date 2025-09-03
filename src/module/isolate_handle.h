@@ -39,7 +39,7 @@ class IsolateHandle final : public ScriptWrappable {
   SessionHandle* GetInspectorSession();
   v8::HeapStatistics GetHeapStatistics() const;
   void IsolateGc() const;
-  void Release();
+  void Release() const;
 
   void Trace(cppgc::Visitor* visitor) const override;
 
