@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/utils.h"
+#include <v8.h>
 
 namespace svm {
 
@@ -10,6 +10,28 @@ class DataDelegate final : public v8::ValueSerializer::Delegate {
   ~DataDelegate() override = default;
 
   void ThrowDataCloneError(v8::Local<v8::String> msg) override {}
+};
+
+class CopyData {
+ public:
+  CopyData() = default;
+  CopyData(v8::Local<v8::Context> context, v8::Local<v8::Value> value);
+  ~CopyData();
+
+  CopyData(const CopyData&) = delete;
+  CopyData& operator=(const CopyData&) = delete;
+
+  CopyData(CopyData&&) noexcept;
+  CopyData& operator=(CopyData&&);
+
+  void Serializer(v8::Local<v8::Context> context, v8::Local<v8::Value> value);
+  v8::Local<v8::Value> Deserializer(v8::Local<v8::Context> context) const;
+  bool IsEmpty() const { return buffer_.first == nullptr; }
+  size_t GetSize() const { return buffer_.second; }
+  void Clear();
+
+ private:
+  std::pair<uint8_t*, size_t> buffer_;
 };
 
 class ExternalData {

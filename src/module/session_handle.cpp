@@ -48,7 +48,7 @@ void SessionHandle::Connect(int port) const {
       Scheduler::TaskType::kInterrupt);
 }
 void SessionHandle::AddContext(const ContextHandle* context_handle,
-                               std::string name) {
+                               std::string name) const {
   class AddContextTask : public SyncTask<bool> {
    public:
     AddContextTask(const std::shared_ptr<IsolateHolder>& isolate_holder,
@@ -75,12 +75,12 @@ void SessionHandle::AddContext(const ContextHandle* context_handle,
     std::string name_;
   };
 
-  auto waiter{base::Waiter<bool>{}};
+  auto waiter{base::LazyWaiter<bool>{}};
   auto task{std::make_unique<AddContextTask>(
       isolate_holder_.lock(), context_handle->GetContextId(), std::move(name))};
   task->SetWaiter(&waiter);
   isolate_holder_.lock()->PostTaskToSel(std::move(task),
-                                 Scheduler::TaskType::kInterrupt);
+                                        Scheduler::TaskType::kInterrupt);
   waiter.Wait();
 }
 void SessionHandle::Dispose() const {

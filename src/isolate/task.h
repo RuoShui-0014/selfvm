@@ -14,26 +14,38 @@ template <typename T>
 class SyncTask : public v8::Task {
  public:
   explicit SyncTask() = default;
-  ~SyncTask() override {}
+  ~SyncTask() override {
+    if (waiter_) {
+      waiter_->Notify();
+    }
+  }
 
-  std::unique_ptr<base::Waiter<T>> CreateWaiter() {
-    auto waiter{std::make_unique<base::Waiter<T>>()};
+  std::unique_ptr<base::SpinWaiter<T>> CreateWaiter() {
+    auto waiter{std::make_unique<base::SpinWaiter<T>>()};
     waiter_ = waiter.get();
     return waiter;
   }
 
-  base::Waiter<T>* GetWaiter() { return waiter_; }
+  base::LazyWaiter<T>* GetWaiter() { return waiter_; }
 
-  void SetWaiter(base::Waiter<T>* waiter) { waiter_ = waiter; }
+  void SetWaiter(base::LazyWaiter<T>* waiter) { waiter_ = waiter; }
 
   void SetResult(const T& _Val) {
     if (waiter_) {
       waiter_->SetValue(_Val);
+      waiter_ = nullptr;
+    }
+  }
+
+  void SetResult(T&& _Val) {
+    if (waiter_) {
+      waiter_->SetValue(std::move(_Val));
+      waiter_ = nullptr;
     }
   }
 
  protected:
-  base::Waiter<T>* waiter_{nullptr};
+  base::LazyWaiter<T>* waiter_{nullptr};
 };
 
 template <>
@@ -53,7 +65,7 @@ class AsyncInfo {
 
   v8::Isolate* GetIsolateSel() const;
   v8::Isolate* GetIsolatePar() const;
-  void PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const;
+  void PostTaskToPar(std::unique_ptr<v8::Task> task) const;
 
   std::shared_ptr<IsolateHolder> isolate_holder_;
   RemoteHandle<v8::Context> context;

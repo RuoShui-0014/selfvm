@@ -49,7 +49,11 @@ class IsolateHolder {
   void PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                             double delay_in_seconds) const;
 
-  ContextId CreateContext();
+  enum class ContextType{ kNormal, kMini, kWeb};
+  ContextId CreateNormalEnv();
+  ContextId CreateWebEnv();
+
+  ContextId CreateContext(ContextType type);
   v8::Local<v8::Context> GetContext(ContextId address);
   void ClearContext(ContextId address);
 

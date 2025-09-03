@@ -22,7 +22,8 @@ class CreateContextTask final : public SyncTask<v8::Context*> {
   ~CreateContextTask() override = default;
 
   void Run() override {
-    v8::Context* address{isolate_holder_->CreateContext()};
+    v8::Context* address{
+        isolate_holder_->CreateContext(IsolateHolder::ContextType::kWeb)};
     SetResult(address);
   }
 
@@ -33,7 +34,7 @@ class CreateContextAsyncTask final : public AsyncTask {
  public:
   class Callback final : public v8::Task {
    public:
-    explicit Callback(std::unique_ptr<AsyncInfo> info,
+    explicit Callback(std::unique_ptr<AsyncInfo>& info,
                       IsolateHandle* isolate_handle,
                       v8::Context* address)
         : info_{std::move(info)},
@@ -58,15 +59,16 @@ class CreateContextAsyncTask final : public AsyncTask {
     cppgc::Member<IsolateHandle> isolate_handle_;
     v8::Context* const address_;
   };
-  explicit CreateContextAsyncTask(std::unique_ptr<AsyncInfo> info,
+  explicit CreateContextAsyncTask(std::unique_ptr<AsyncInfo>& info,
                                   IsolateHandle* isolate_handle)
       : AsyncTask{std::move(info)}, isolate_handle_{isolate_handle} {}
   ~CreateContextAsyncTask() override = default;
 
   void Run() override {
-    v8::Context* const address{info_->isolate_holder_->CreateContext()};
-    info_->PostHandleTaskToPar(std::make_unique<Callback>(
-        std::move(info_), isolate_handle_.Get(), address));
+    v8::Context* const address{info_->isolate_holder_->CreateContext(
+        IsolateHolder::ContextType::kWeb)};
+    info_->PostTaskToPar(
+        std::make_unique<Callback>(info_, isolate_handle_.Get(), address));
   }
 
  private:
@@ -113,7 +115,7 @@ class CompileScriptAsyncTask final : public AsyncTask {
  public:
   class Callback final : public v8::Task {
    public:
-    Callback(std::unique_ptr<AsyncInfo> info,
+    Callback(std::unique_ptr<AsyncInfo>& info,
              IsolateHandle* isolate_handle,
              v8::UnboundScript* unbound_script)
         : info_{std::move(info)},
@@ -157,17 +159,16 @@ class CompileScriptAsyncTask final : public AsyncTask {
     if (v8::ScriptCompiler::CompileUnboundScript(isolate, &source)
             .ToLocal(&unbound_script)) {
       context_handle_->GetIsolateHolder()->CreateScript(unbound_script);
-      info_->PostHandleTaskToPar(std::make_unique<Callback>(
-          std::move(info_), context_handle_->GetIsolateHandle(),
-          *unbound_script));
+      info_->PostTaskToPar(std::make_unique<Callback>(
+          info_, context_handle_->GetIsolateHandle(), *unbound_script));
     } else {
-      info_->PostHandleTaskToPar(std::make_unique<Callback>(
-          std::move(info_), context_handle_->GetIsolateHandle(), nullptr));
+      info_->PostTaskToPar(std::make_unique<Callback>(
+          info_, context_handle_->GetIsolateHandle(), nullptr));
     }
   }
 
  private:
-  cppgc::WeakMember<ContextHandle> context_handle_;
+  cppgc::Member<ContextHandle> context_handle_;
   std::string script_;
   std::string filename_;
 };
@@ -221,7 +222,7 @@ v8::Local<v8::UnboundScript> IsolateHandle::GetScript(
 }
 
 ContextHandle* IsolateHandle::CreateContext() {
-  auto waiter{base::Waiter<ContextId>{}};
+  auto waiter{base::LazyWaiter<ContextId>{}};
   auto task{std::make_unique<CreateContextTask>(isolate_holder_)};
   task->SetWaiter(&waiter);
   isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
@@ -234,13 +235,13 @@ ContextHandle* IsolateHandle::CreateContext() {
 }
 
 void IsolateHandle::CreateContextAsync(std::unique_ptr<AsyncInfo> info) {
-  auto task{std::make_unique<CreateContextAsyncTask>(std::move(info), this)};
+  auto task{std::make_unique<CreateContextAsyncTask>(info, this)};
   isolate_holder_->PostTaskToSel(std::move(task), Scheduler::TaskType::kMacro);
 }
 
 ScriptHandle* IsolateHandle::CreateScript(std::string script,
                                           std::string filename) {
-  auto waiter{base::Waiter<ScriptId>{}};
+  auto waiter{base::LazyWaiter<ScriptId>{}};
   auto task{std::make_unique<CompileScriptTask>(
       isolate_holder_, GetContextHandle()->GetContextId(), script, filename)};
   task->SetWaiter(&waiter);
@@ -367,17 +368,20 @@ void CreateContextAsyncOperationCallback(
 
 void CreateScriptOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate{info.GetIsolate()};
   if (info.Length() < 1) {
+    isolate->ThrowException(v8::Exception::TypeError(toString(
+        isolate,
+        "Wrong number of arguments, at least one argument and is string.")));
     return;
   }
 
-  v8::Isolate* isolate{info.GetIsolate()};
   std::string script{}, filename{};
   if (info[0]->IsString()) {
     script = *v8::String::Utf8Value(isolate, info[0]);
     if (script == "") {
       isolate->ThrowException(v8::Exception::TypeError(
-          toString(isolate, "The script must be a string and not is empty")));
+          toString(isolate, "The script string can not is empty")));
       return;
     }
   }

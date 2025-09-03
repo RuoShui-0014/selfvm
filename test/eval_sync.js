@@ -8,4 +8,6 @@ measurePerformance(() => {
     ctx.eval(`
         this.a = {name: 'Jack', age: 18};
         JSON.stringify(this.a);`, "filename.js");
-}, 100000);
+}, 10000);
+
+isolate.release();

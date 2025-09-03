@@ -24,7 +24,7 @@ v8::Isolate* AsyncInfo::GetIsolatePar() const {
   return isolate_holder_->GetIsolatePar();
 }
 
-void AsyncInfo::PostHandleTaskToPar(std::unique_ptr<v8::Task> task) const {
+void AsyncInfo::PostTaskToPar(std::unique_ptr<v8::Task> task) const {
   isolate_holder_->PostTaskToPar(std::move(task), Scheduler::TaskType::kMicro);
 }
 

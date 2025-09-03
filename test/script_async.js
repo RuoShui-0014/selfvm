@@ -4,13 +4,20 @@ const isolate = new svm.Isolate();
 const ctx = isolate.context
 
 // context可通过eval进行代码的同步运行
-async function test(i) {
+async function test(index, num) {
     try {
-        console.time("ScriptAsync" + i)
+        if (index === num - 1) {
+            console.time("ScriptAsync" + index)
+        }
         isolate.createScriptAsync("this.a = {name: 'Jack', age: 18}"
             , "filename.js").then(script => {
-            console.timeEnd("ScriptAsync" + i);
-            script.run(ctx);
+            script.runAsync(ctx).then(value => {
+                if (index === num - 1) {
+                    console.log("script.runAsync", value);
+                    console.timeEnd("ScriptAsync" + index);
+                    isolate.release();
+                }
+            })
         }, error => {
             console.log(`微任务失败`, error);
         });
@@ -19,6 +26,7 @@ async function test(i) {
     }
 }
 
-for (let i = 0; i < 100; i++) {
-    test(i);
+const num = 1000;
+for (let i = 0; i < num; i++) {
+    test(i, num);
 }

@@ -9,3 +9,5 @@ measurePerformance(() => {
     JSON.stringify(this.a);`, "filename.js");
     const result = script.run(ctx)
 }, 1000);
+
+isolate.release();

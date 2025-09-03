@@ -34,7 +34,7 @@ module.exports = {
                 ws.on('close', dispose);
 
                 ws.on('message', function (message) {
-                    console.log('onMessage<', message.toString())
+                    // console.log('onMessage<', message.toString())
                     try {
                         self_vm.sessionDispatchMessage(port, message.toString());
                     } catch (err) {
@@ -43,7 +43,7 @@ module.exports = {
                 });
 
                 sessionMap.get(port).onResponse = (msg) => {
-                    console.log('onResponse>', msg.toString())
+                    // console.log('onResponse>', msg.toString())
                     try {
                         ws.send(msg);
                     } catch (err) {
@@ -51,7 +51,7 @@ module.exports = {
                     }
                 }
                 sessionMap.get(port).onNotification = (msg) => {
-                    console.log('onNotification>', msg.toString())
+                    // console.log('onNotification>', msg.toString())
                     try {
                         ws.send(msg);
                     } catch (err) {

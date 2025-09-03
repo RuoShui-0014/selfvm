@@ -250,10 +250,7 @@ void UVSchedulerSel::StartLoop() {
     PlatformDelegate::UnregisterIsolate(isolate_);
     isolate_->Dispose();
 
-    uv_close(reinterpret_cast<uv_handle_t*>(uv_task_), [](uv_handle_t* handle) {
-      delete reinterpret_cast<uv_async_t*>(handle);
-    });
-    uv_loop_close(uv_loop_);
+    delete uv_task_;
     delete uv_loop_;
   }};
 }

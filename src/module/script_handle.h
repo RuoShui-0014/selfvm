@@ -2,13 +2,16 @@
 
 #include "isolate/script_wrappable.h"
 #include "isolate/wrapper_type_info.h"
+#include "isolate/external_data.h"
 
 namespace svm {
 
 class IsolateHolder;
 class IsolateHandle;
 class ContextHandle;
+class AsyncInfo;
 
+using ContextId = v8::Context*;
 using ScriptId = v8::UnboundScript*;
 
 class ScriptHandle final : public ScriptWrappable {
@@ -16,10 +19,13 @@ class ScriptHandle final : public ScriptWrappable {
   explicit ScriptHandle(IsolateHandle* isolate_handle, ScriptId address);
   ~ScriptHandle() override;
 
+  std::shared_ptr<IsolateHolder> GetIsolateHolder() const;
   v8::Local<v8::UnboundScript> GetScript() const;
 
   /*********************** js interface *************************/
-  std::pair<uint8_t*, size_t> Run(const ContextHandle* context_handle) const;
+  CopyData Run(const ContextHandle* context_handle) const;
+  void RunAsync(std::unique_ptr<AsyncInfo> info,
+                ContextId context_id) const;
   void RunIgnored(const ContextHandle* context_handle) const;
   void Release() const;
 
@@ -28,7 +34,7 @@ class ScriptHandle final : public ScriptWrappable {
  private:
   cppgc::Member<IsolateHandle> isolate_handle_;
   std::weak_ptr<IsolateHolder> isolate_holder_;
-  ScriptId const address_;
+  ScriptId const script_id_;
 };
 
 class V8ScriptHandle {

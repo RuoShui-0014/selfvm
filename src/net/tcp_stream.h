@@ -1,5 +1,6 @@
 #pragma once
 
+#include <openssl/ssl.h>
 #include <uv.h>
 
 #include <string>
@@ -14,7 +15,7 @@ class TcpStream {
   void DNSResolve();
   void DomainConnect(const std::string& domain, int port);
   void IPV4Connect(const char* ipv4);
-  void Write();
+  void Write(std::string data);
   void Read();
   void Close();
 
@@ -35,8 +36,14 @@ class TcpStream {
   uv_tcp_t tcp_{};
   uv_connect_t connect_{};
   uv_write_t write_{};
-  uv_stream_t* stream_{};
   uv_shutdown_t shutdown_{};
+
+  SSL_CTX* ssl_ctx_{nullptr};
+  SSL* ssl_{nullptr};
+  BIO* bio_read_{nullptr};
+  BIO* bio_write_{nullptr};
+  uv_poll_t ssl_handshake_poll_;
+
   bool connected_{false};
 };
 

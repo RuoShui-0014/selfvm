@@ -114,10 +114,10 @@ void Initialize(v8::Local<v8::Object> exports) {
   CreateNodeEx(isolate, context, exports);
 
   /* test */
-#ifdef DEBUG_FLAG
-  node_data.g_tcp_stream = new TcpStream{node::GetCurrentEventLoop(isolate)};
-  node_data.g_tcp_stream->DomainConnect("www.baidu.com", 443);
-#endif
+// #ifdef DEBUG_FLAG
+//   node_data.g_tcp_stream = new TcpStream{node::GetCurrentEventLoop(isolate)};
+//   node_data.g_tcp_stream->DomainConnect("www.runoob.com", 80);
+// #endif
 
   // release some object
   node::AddEnvironmentCleanupHook(

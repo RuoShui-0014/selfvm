@@ -5,10 +5,63 @@
 namespace base {
 
 template <typename T>
-class Waiter {
+class LazyWaiter {
  public:
-  Waiter() = default;
-  ~Waiter() = default;
+  LazyWaiter() = default;
+  ~LazyWaiter() = default;
+
+  void Wait() const { finished_.wait(false); }
+
+  T& GetValue() { return value_; }
+
+  T& WaitFor() {
+    finished_.wait(false);
+    return value_;
+  }
+
+  void SetValue(const T& value) {
+    value_ = value;
+    Notify();
+  }
+
+  void SetValue(T&& value) {
+    value_ = std::move(value);
+    Notify();
+  }
+
+  bool IsFinished() const { return finished_.load(); }
+  void Notify() {
+    finished_.store(true);
+    finished_.notify_one();
+  }
+
+ private:
+  std::atomic_bool finished_{false};
+  T value_;
+};
+
+template <>
+class LazyWaiter<void> {
+ public:
+  LazyWaiter() = default;
+  ~LazyWaiter() = default;
+
+  void Wait() const { finished_.wait(false); }
+  void Notify() {
+    finished_.store(true, std::memory_order_relaxed);
+    finished_.notify_one();
+  }
+  bool IsFinished() const { return finished_.load(std::memory_order_acquire); }
+
+ private:
+  std::atomic_bool finished_;
+};
+
+template <typename T>
+class SpinWaiter {
+ public:
+  SpinWaiter() = default;
+  ~SpinWaiter() = default;
 
   void Wait() const {
     while (!finished_.test(std::memory_order_acquire)) {
@@ -25,7 +78,7 @@ class Waiter {
 
   void SetValue(const T& value) {
     value_ = value;
-    finished_.test_and_set(std::memory_order_relaxed);
+    Notify();
   }
 
   bool IsFinished() const { return finished_.test(std::memory_order_acquire); }
@@ -37,10 +90,10 @@ class Waiter {
 };
 
 template <>
-class Waiter<void> {
+class SpinWaiter<void> {
  public:
-  Waiter() = default;
-  ~Waiter() = default;
+  SpinWaiter() = default;
+  ~SpinWaiter() = default;
 
   void Wait() const {
     while (!finished_.test(std::memory_order_acquire)) {
@@ -48,6 +101,7 @@ class Waiter<void> {
   }
 
   bool IsFinished() const { return finished_.test(std::memory_order_acquire); }
+  void Notify() { finished_.test_and_set(std::memory_order_relaxed); }
 
  private:
   std::atomic_flag finished_;

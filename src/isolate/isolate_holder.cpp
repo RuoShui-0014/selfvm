@@ -75,14 +75,12 @@ void IsolateHolder::PostDelayedTaskToPar(std::unique_ptr<v8::Task> task,
                                                 delay_in_seconds);
 }
 
-static void DeserializeInternalFieldsCallback(v8::Local<v8::Object> /*holder*/,
-                                              int /*index*/,
-                                              v8::StartupData /*payload*/,
-                                              void* /*data*/) {}
-ContextId IsolateHolder::CreateContext() {
-  v8::Isolate::Scope isolate_scope{isolate_sel_};
-  v8::HandleScope handle_scope{isolate_sel_};
-
+ContextId IsolateHolder::CreateNormalEnv() {
+  v8::Local context{v8::Context::New(isolate_sel_, nullptr, {}, {})};
+  context_map_.emplace(*context, context);
+  return *context;
+}
+ContextId IsolateHolder::CreateWebEnv() {
   v8::Local object_template{V8Window::GetWrapperTypeInfo()
                                 ->GetV8ClassTemplate(isolate_sel_)
                                 .As<v8::FunctionTemplate>()
@@ -90,17 +88,29 @@ ContextId IsolateHolder::CreateContext() {
   object_template->Set(toString(isolate_sel_, "rsvm"),
                        CreateRsVM(isolate_sel_, true));
 
-  v8::Local context{v8::Context::New(isolate_sel_, nullptr, object_template, {},
-                                     &DeserializeInternalFieldsCallback)};
+  v8::Local context{
+      v8::Context::New(isolate_sel_, nullptr, object_template, {})};
   ScriptWrappable::Wrap(
       context->Global(),
       MakeCppGcObject<GC::kSpecified, LocalDOMWindow>(isolate_sel_, this));
-
-  // context->AllowCodeGenerationFromStrings(false);
-
   context_map_.emplace(*context, context);
-
   return *context;
+}
+
+ContextId IsolateHolder::CreateContext(ContextType type) {
+  v8::Isolate::Scope isolate_scope{isolate_sel_};
+  v8::HandleScope handle_scope{isolate_sel_};
+
+  switch (type) {
+    case ContextType::kNormal:
+      return CreateNormalEnv();
+    case ContextType::kMini:
+      return CreateNormalEnv();
+    case ContextType::kWeb:
+      return CreateWebEnv();
+  }
+
+  return CreateNormalEnv();
 }
 v8::Local<v8::Context> IsolateHolder::GetContext(ContextId address) {
   if (const auto it{context_map_.find(address)}; it != context_map_.end()) {

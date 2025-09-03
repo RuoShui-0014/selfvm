@@ -76,14 +76,14 @@ declare module SelfVm {
         eval(code: string, filename?: string): any;
 
         /**
-         * 运行代码忽略结果
-         */
-        evalIgnored(code: string, filename?: string): any;
-
-        /**
          * 运行代码异步获取结果
          */
         evalAsync(code: string, filename?: string): Promise<any>;
+
+        /**
+         * 运行代码忽略结果，即不必同步等待
+         */
+        evalIgnored(code: string, filename?: string): any;
     }
 
     export class Script {
@@ -93,14 +93,14 @@ declare module SelfVm {
         run(context: Context): any;
 
         /**
-         * 运行代码忽略结果
-         */
-        runIgnored(context: Context): any;
-
-        /**
          * 运行代码异步获取结果
          */
         runAsync(context: Context): any;
+
+        /**
+         * 运行代码忽略结果，即不必同步等待
+         */
+        runIgnored(context: Context): any;
     }
 
     export class Session {

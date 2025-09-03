@@ -2,6 +2,7 @@
 
 #include <cppgc/member.h>
 
+#include "isolate/external_data.h"
 #include "isolate/script_wrappable.h"
 #include "isolate/task.h"
 #include "isolate/wrapper_type_info.h"
@@ -14,7 +15,6 @@ class AsyncInfo;
 
 using ContextId = v8::Context*;
 using ScriptId = v8::UnboundScript*;
-using CopyData = std::pair<uint8_t*, size_t>;
 
 class ContextHandle final : public ScriptWrappable {
  public:
@@ -22,16 +22,16 @@ class ContextHandle final : public ScriptWrappable {
   ~ContextHandle() override;
 
   /*********************** js interface *************************/
-  CopyData Eval(std::string script, std::string filename);
-  void EvalIgnored(std::string script, std::string filename);
+  CopyData Eval(std::string script, std::string filename) const;
+  void EvalIgnored(std::string script, std::string filename) const;
   void EvalAsync(std::unique_ptr<AsyncInfo> info,
                  std::string script,
-                 std::string filename);
+                 std::string filename) const;
   void Release() const;
 
   IsolateHandle* GetIsolateHandle() const { return isolate_handle_.Get(); };
   std::shared_ptr<IsolateHolder> GetIsolateHolder() const;
-  ContextId GetContextId() const { return address_; }
+  ContextId GetContextId() const { return context_id_; }
   v8::Local<v8::Context> GetContext() const;
 
   v8::Isolate* GetIsolateSel() const;
@@ -42,7 +42,7 @@ class ContextHandle final : public ScriptWrappable {
  private:
   cppgc::Member<IsolateHandle> isolate_handle_;
   std::weak_ptr<IsolateHolder> isolate_holder_;
-  ContextId const address_;
+  const ContextId context_id_;
 };
 
 class V8ContextHandle {

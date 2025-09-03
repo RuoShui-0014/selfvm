@@ -89,7 +89,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     if (CMAKE_BUILD_TYPE MATCHES "Debug")
         target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG)
     elseif (CMAKE_BUILD_TYPE MATCHES "Release")
-        target_compile_options(${PROJECT_NAME} PRIVATE /O2)
+        target_compile_options(${PROJECT_NAME} PRIVATE /Ox)
     endif ()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${PROJECT_NAME} PRIVATE
@@ -98,12 +98,17 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (CMAKE_BUILD_TYPE MATCHES "Debug")
         target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG)
     elseif (CMAKE_BUILD_TYPE MATCHES "Release")
-        target_compile_options(${PROJECT_NAME} PRIVATE -O2)
+        target_compile_options(${PROJECT_NAME} PRIVATE -Ox)
     endif ()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE
         -Wno-unused-result
     )
+    if (CMAKE_BUILD_TYPE MATCHES "Debug")
+        target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG)
+    elseif (CMAKE_BUILD_TYPE MATCHES "Release")
+        target_compile_options(${PROJECT_NAME} PRIVATE -O3)
+    endif ()
 endif ()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

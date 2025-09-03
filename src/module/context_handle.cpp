@@ -11,17 +11,17 @@
 
 namespace svm {
 
-class ScriptTask final : public SyncTask<CopyData> {
+class EvalTask final : public SyncTask<CopyData> {
  public:
-  ScriptTask(const std::shared_ptr<IsolateHolder>& isolate_holder,
-             ContextId context_id,
-             std::string script,
-             std::string filename)
+  EvalTask(const std::shared_ptr<IsolateHolder>& isolate_holder,
+           ContextId context_id,
+           std::string script,
+           std::string filename)
       : isolate_holder_{isolate_holder},
         context_id_{context_id},
         script_{std::move(script)},
         filename_{std::move(filename)} {}
-  ~ScriptTask() override = default;
+  ~EvalTask() override = default;
 
   void Run() override {
     v8::Isolate* isolate{isolate_holder_->GetIsolateSel()};
@@ -44,14 +44,14 @@ class ScriptTask final : public SyncTask<CopyData> {
     }
 
     if (right) {
-      ExternalData::SourceData data{isolate, context, result};
-      SetResult(ExternalData::SerializerSync(data));
+      CopyData copy_data{context, result};
+      SetResult(std::move(copy_data));
       return;
     }
 
     if (try_catch.HasCaught()) {
-      ExternalData::SourceData data{isolate, context, try_catch.Exception()};
-      SetResult(ExternalData::SerializerSync(data));
+      CopyData copy_data{context, try_catch.Exception()};
+      SetResult(std::move(copy_data));
       try_catch.Reset();
       return;
     }
@@ -65,13 +65,12 @@ class ScriptTask final : public SyncTask<CopyData> {
   std::string script_;
   std::string filename_;
 };
-class ScriptAsyncTask final : public AsyncTask {
+class EvalAsyncTask final : public AsyncTask {
  public:
   class Callback : public v8::Task {
    public:
-    explicit Callback(std::unique_ptr<AsyncInfo> info,
-                      std::pair<uint8_t*, size_t> buff)
-        : info_{std::move(info)}, buff_{std::move(buff)} {}
+    explicit Callback(std::unique_ptr<AsyncInfo>& info, CopyData copy_data)
+        : info_{std::move(info)}, copy_data_{std::move(copy_data)} {}
     ~Callback() override = default;
 
     void Run() override {
@@ -82,9 +81,8 @@ class ScriptAsyncTask final : public AsyncTask {
       v8::Local<v8::Value> result{}, error{};
       {
         v8::TryCatch try_catch{isolate};
-        v8::ValueDeserializer deserializer{isolate, buff_.first, buff_.second};
-        deserializer.ReadHeader(context);
-        if (deserializer.ReadValue(context).ToLocal(&result)) {
+        result = copy_data_.Deserializer(context);
+        if (!result.IsEmpty()) {
           if (result->IsNativeError()) {
             error = result;
           }
@@ -92,7 +90,6 @@ class ScriptAsyncTask final : public AsyncTask {
           error = try_catch.Exception();
           try_catch.Reset();
         }
-        ExternalData::FreeBufferMemory(buff_);
       }
 
       if (error.IsEmpty()) {
@@ -104,21 +101,22 @@ class ScriptAsyncTask final : public AsyncTask {
 
    private:
     std::unique_ptr<AsyncInfo> info_;
-    std::pair<uint8_t*, size_t> buff_;
+    CopyData copy_data_;
   };
-  explicit ScriptAsyncTask(std::unique_ptr<AsyncInfo> info,
-                           ContextHandle* context_handle,
-                           std::string script,
-                           std::string filename)
+  explicit EvalAsyncTask(std::unique_ptr<AsyncInfo>& info,
+                         ContextId context_id,
+                         std::string script,
+                         std::string filename)
       : AsyncTask{std::move(info)},
-        context_handle_{context_handle},
+        context_id_{context_id},
         script_{std::move(script)},
         filename_{std::move(filename)} {}
-  ~ScriptAsyncTask() override = default;
+  ~EvalAsyncTask() override = default;
 
   void Run() override {
     v8::Isolate* isolate{info_->GetIsolateSel()};
-    v8::Local context{context_handle_->GetContext()};
+    auto& isolate_holder{info_->isolate_holder_};
+    v8::Local context{isolate_holder->GetContext(context_id_)};
     v8::Context::Scope context_scope{context};
 
     v8::TryCatch try_catch{isolate};
@@ -128,26 +126,23 @@ class ScriptAsyncTask final : public AsyncTask {
     if (v8::Script::Compile(context, code, &scriptOrigin).ToLocal(&script)) {
       v8::MaybeLocal maybe_result{script->Run(context)};
       if (!maybe_result.IsEmpty()) {
-        ExternalData::SourceData data{isolate, context,
-                                      maybe_result.ToLocalChecked()};
-        auto buff{ExternalData::SerializerAsync(data)};
-        info_->PostHandleTaskToPar(
-            std::make_unique<Callback>(std::move(info_), buff));
+        CopyData copy_data{context, maybe_result.ToLocalChecked()};
+        info_->PostTaskToPar(
+            std::make_unique<Callback>(info_, std::move(copy_data)));
         return;
       }
     }
 
     if (try_catch.HasCaught()) {
-      ExternalData::SourceData data{isolate, context, try_catch.Exception()};
-      auto buff{ExternalData::SerializerAsync(data)};
-      info_->PostHandleTaskToPar(
-          std::make_unique<Callback>(std::move(info_), buff));
+      CopyData copy_data{context, try_catch.Exception()};
+      info_->PostTaskToPar(
+          std::make_unique<Callback>(info_, std::move(copy_data)));
       try_catch.Reset();
     }
   }
 
  private:
-  cppgc::Member<ContextHandle> context_handle_;
+  const ContextId context_id_;
   std::string script_;
   std::string filename_;
 };
@@ -156,7 +151,7 @@ ContextHandle::ContextHandle(IsolateHandle* isolate_handle,
                              v8::Context* address)
     : isolate_handle_{isolate_handle},
       isolate_holder_{isolate_handle->GetIsolateHolder()},
-      address_{address} {
+      context_id_{address} {
   LOG_DEBUG("Context handle create.");
 }
 
@@ -167,36 +162,35 @@ ContextHandle::~ContextHandle() {
 }
 
 // 同步任务
-CopyData ContextHandle::Eval(std::string script, std::string filename) {
-  auto waiter{base::Waiter<CopyData>{}};
-  auto task{std::make_unique<ScriptTask>(isolate_holder_.lock(), GetContextId(),
-                                         std::move(script),
-                                         std::move(filename))};
+CopyData ContextHandle::Eval(std::string script, std::string filename) const {
+  auto waiter{base::LazyWaiter<CopyData>{}};
+  auto task{std::make_unique<EvalTask>(isolate_holder_.lock(), GetContextId(),
+                                       std::move(script), std::move(filename))};
   task->SetWaiter(&waiter);
   isolate_holder_.lock()->PostTaskToSel(std::move(task),
                                         Scheduler::TaskType::kMacro);
-  return waiter.WaitFor();
+  return std::move(waiter.WaitFor());
 }
-void ContextHandle::EvalIgnored(std::string script, std::string filename) {
-  auto task{std::make_unique<ScriptTask>(isolate_holder_.lock(), GetContextId(),
-                                         std::move(script),
-                                         std::move(filename))};
+void ContextHandle::EvalIgnored(std::string script,
+                                std::string filename) const {
+  auto task{std::make_unique<EvalTask>(isolate_holder_.lock(), GetContextId(),
+                                       std::move(script), std::move(filename))};
   isolate_holder_.lock()->PostTaskToSel(std::move(task),
                                         Scheduler::TaskType::kMacro);
 }
 
 void ContextHandle::EvalAsync(std::unique_ptr<AsyncInfo> info,
                               std::string script,
-                              std::string filename) {
-  auto task{std::make_unique<ScriptAsyncTask>(
-      std::move(info), this, std::move(script), std::move(filename))};
+                              std::string filename) const {
+  auto task{std::make_unique<EvalAsyncTask>(
+      info, context_id_, std::move(script), std::move(filename))};
   isolate_holder_.lock()->PostTaskToSel(std::move(task),
                                         Scheduler::TaskType::kMacro);
 }
 
 void ContextHandle::Release() const {
   if (const auto isolate_holder{isolate_holder_.lock()}) {
-    isolate_holder->ClearContext(address_);
+    isolate_holder->ClearContext(context_id_);
   }
 }
 
@@ -213,7 +207,7 @@ v8::Isolate* ContextHandle::GetIsolatePar() const {
 }
 
 v8::Local<v8::Context> ContextHandle::GetContext() const {
-  return isolate_holder_.lock()->GetContext(address_);
+  return isolate_holder_.lock()->GetContext(context_id_);
 }
 
 void ContextHandle::Trace(cppgc::Visitor* visitor) const {
@@ -240,12 +234,15 @@ void EvalOperationCallback(const v8::FunctionCallbackInfo<v8::Value>& info) {
     filename = *v8::String::Utf8Value(isolate, info[1]);
   }
 
-  auto buff{context_handle->Eval(std::move(script), std::move(filename))};
-  v8::Local result{ExternalData::DeserializerSync(isolate, context, buff)};
-  if (!result->IsNativeError()) {
-    info.GetReturnValue().Set(result);
+  auto copy_data{context_handle->Eval(std::move(script), std::move(filename))};
+  if (!copy_data.IsEmpty()) {
+    v8::Local result{copy_data.Deserializer(context)};
+    if (!result->IsNativeError()) {
+      info.GetReturnValue().Set(result);
+    } else {
+      isolate->ThrowException(result);
+    }
   } else {
-    isolate->ThrowException(result);
   }
 }
 
@@ -272,11 +269,13 @@ void EvalIgnoredOperationCallback(
 
 void EvalAsyncOperationCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
+  v8::Isolate* isolate{info.GetIsolate()};
   if (info.Length() < 1 || !info[0]->IsString()) {
+    isolate->ThrowException(v8::Exception::TypeError(
+        toString(isolate, "The first argument must be a string.")));
     return;
   }
 
-  v8::Isolate* isolate{info.GetIsolate()};
   v8::HandleScope scope{isolate};
 
   v8::Local receiver{info.This()};
@@ -289,7 +288,7 @@ void EvalAsyncOperationCallback(
       RemoteHandle(isolate, isolate->GetCurrentContext()),
       RemoteHandle(isolate, resolver))};
   std::string script{*v8::String::Utf8Value(isolate, info[0])};
-  std::string filename{""};
+  std::string filename{};
   if (info.Length() > 1) {
     filename = *v8::String::Utf8Value(isolate, info[1]);
   }
@@ -306,9 +305,9 @@ void V8ContextHandle::InstallInterfaceTemplate(
   OperationConfig operas[]{
       {"eval", 1, EvalOperationCallback, v8::PropertyAttribute::DontDelete,
        Dependence::kPrototype},
-      {"evalIgnored", 1, EvalIgnoredOperationCallback,
-       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
       {"evalAsync", 1, EvalAsyncOperationCallback,
+       v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
+      {"evalIgnored", 1, EvalIgnoredOperationCallback,
        v8::PropertyAttribute::DontDelete, Dependence::kPrototype},
   };
 
